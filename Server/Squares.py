@@ -11,6 +11,21 @@ class Square:
         self._id = square_id
         self._players = []
 
+    def add_player(self, player):
+        """
+        Adds the player to this square
+        """
+        self._players.append(player)
+
+    def remove_player(self, player):
+        """
+        Removes the player from the current square
+        """
+        try:
+            self._players.remove(player)
+        except ValueError:
+            raise ValueError("Square.remove_player(p): p not on square")
+
 class ActionSquare(Square):
     """
     This class represents an Actionable Square. This includes:
@@ -35,7 +50,7 @@ class PropertySquare(Square):
     This class represents a property square.
     """
 
-    def __init__(self, square_id, price, rent, estate):
+    def __init__(self, square_id, price, rent, estate, property_id):
         """
         price - the price to buy the property
         rent - the base rent price*
@@ -48,6 +63,7 @@ class PropertySquare(Square):
         self._price = price 
         self._rent = rent 
         self._estate = estate
+        self._property_id = property_id
 
 class UtilitySquare(Square):
     """
