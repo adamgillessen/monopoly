@@ -6,10 +6,10 @@ class Square:
     def __init__(self, square_id):
         """
         id - the id of the square in relation to the baord [0-39]
-        type - the type of square [Action|Property]
         players - The players which are on the Square at any given moment
         """
         self._id = square_id
+        self._players = []
 
 class ActionSquare(Square):
     """
@@ -35,10 +35,11 @@ class PropertySquare(Square):
     This class represents a property square.
     """
 
-    def __init__(self, square_id, price, rent):
+    def __init__(self, square_id, price, rent, estate):
         """
         price - the price to buy the property
         rent - the base rent price*
+        estate - the estate id of the property
 
         *The base rent well double for each house built on the property. A hotel
         equates to 5 houses. So  rent = base_rent * (2^num_houses_on_square)
@@ -46,6 +47,7 @@ class PropertySquare(Square):
         super().__init__(square_id)
         self._price = price 
         self._rent = rent 
+        self._estate = estate
 
 class UtilitySquare(Square):
     """
@@ -64,9 +66,10 @@ class UtilitySquare(Square):
 class TransportSquare(Square):
     """
     This class represents a transport square. There are four of these in the game.
+    The base rent is common to all transports. 
     """
 
-    def __init__(self, square_id, rent):
+    def __init__(self, square_id, rent = 500):
         """
         rent - this is the base_rent of the square*
 
