@@ -6,7 +6,6 @@
 /**
  * Global variables
  */
-var connector = undefined;
 var parser = new Parser();
 
 /**
@@ -15,38 +14,42 @@ var parser = new Parser();
  * @constructor
  */
 function Parser() {
+    this.tree = {
+        "player_join_ack": function (data) {
+            if (data["key"] === game_controller.identification_number) {
+                game_controller.client_id = data['your_id'];
+
+                showPlayerNum(data["current_player"], data["expects"]);
+                if (data["start_game"]) {
+                    startRound();
+                }
+            }
+        }
+    };
+
     this.parse = function (raw_data) {
-        console.log(raw_data);
+        var data = JSON.parse(raw_data);
+
+        this.tree[data["type"]](data);
     };
 }
 
+function create_websocket(ip, port) {
+    game_controller.socket = new WebSocket(sprintf("ws://%s:%s", ip, port));
+    game_controller.socket.onmessage = function (e) {
+        parser.parse(e.data);
+    };
+
+    game_controller.socket.onopen = function () {
+        game_controller.socket.send(generatePlayerJoinMsg());
+    };
+
+    window.onbeforeunload = function() {
+        game_controller.socket.onclose = function () {}; // disable onclose handler first
+        game_controller.socket.close()
+    };
+}
 
 $(document).ready(function () {
-    function create_websocket(ip, port) {
-        var tmp = new WebSocket(sprintf("ws://%s:%s", ip, port));
-        tmp.onmessage = function (e) {
-            parser.parse(e.data);
-        };
 
-        window.onbeforeunload = function() {
-            tmp.onclose = function () {}; // disable onclose handler first
-            tmp.close()
-        };
-    }
-
-    $("#btnConnect").click(function () {
-        if (connector != undefined) {
-            connector.close();
-            connector = undefined;
-        }
-
-        var ip = $("#input-IP").val();
-        var port = $("#input-port").val();
-
-        if (connector != undefined) {
-            connector.close();
-            connector = undefined;
-        }
-        connector = create_websocket(ip, port);
-    });
 });

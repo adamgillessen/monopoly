@@ -1,4 +1,5 @@
 {
+    "type": "board_sync",
     "cells": {
         "0": {
             "action_id": 0,
