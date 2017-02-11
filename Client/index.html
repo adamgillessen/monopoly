@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monopoly</title>
+
+    <script src="lib/jquery-3.1.1.js"></script>
+    <script src="lib/sprintf.js"></script>
+    <script src="js/helper.js"></script>
+    <!--<script src="js/communication.js"></script>-->
+    <script src="js/controller.js"></script>
+    <script src="js/lobby_controller.js"></script>
+    <link rel="stylesheet" type="text/css" href="scss/board-layout.css">
+</head>
+
+<body>
+<!--Hide things here-->
+<div id="hideout" style="display: none">
+    <!--<div id="player-0" class="player">-->
+    <!--0-->
+    <!--</div>-->
+</div>
+
+<div id="lobby">
+    <div id="connect-to">
+        <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
+        <input type="text" id="input-port" placeholder="port" value="4444"></input>
+        <button>Connect</button>
+    </div>
+    <div id="waiting">
+        <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
+    </div>
+</div>
+
+<div id="game-area">
+    <div id="main-board" class="">
+        <div id="top" class="float">
+            <div id="cell-10" class="corner cell top_left_corner">
+
+            </div>
+            <div id="top_middle_container" class="h_container float">
+                <div id="cell-11" class="cell"></div>
+                <div id="cell-12" class="cell"></div>
+                <div id="cell-13" class="cell"></div>
+                <div id="cell-14" class="cell"></div>
+                <div id="cell-15" class="cell"></div>
+                <div id="cell-16" class="cell"></div>
+                <div id="cell-17" class="cell"></div>
+                <div id="cell-18" class="cell"></div>
+                <div id="cell-19" class="cell"></div>
+            </div>
+            <div id="cell-20" class="corner cell top_right_corner">
+
+            </div>
+        </div>
+        <div id="middle" class="float">
+            <div id="middle_left_container" class="v_container">
+                <div id="cell-9" class="cell"></div>
+                <div id="cell-8" class="cell"></div>
+                <div id="cell-7" class="cell"></div>
+                <div id="cell-6" class="cell"></div>
+                <div id="cell-5" class="cell"></div>
+                <div id="cell-4" class="cell"></div>
+                <div id="cell-3" class="cell"></div>
+                <div id="cell-2" class="cell"></div>
+                <div id="cell-1" class="cell"></div>
+            </div>
+            <div id="middle_middle" class="middle">
+                <div id="control-pane">
+                    <button id="btnRoll">
+                        Roll
+                    </button>
+                </div>
+            </div>
+            <div id="middle_right_container" class="v_container ">
+                <div id="cell-21" class="cell"></div>
+                <div id="cell-22" class="cell"></div>
+                <div id="cell-23" class="cell"></div>
+                <div id="cell-24" class="cell"></div>
+                <div id="cell-25" class="cell"></div>
+                <div id="cell-26" class="cell"></div>
+                <div id="cell-27" class="cell"></div>
+                <div id="cell-28" class="cell"></div>
+                <div id="cell-29" class="cell"></div>
+            </div>
+        </div>
+        <div id="bottom" class="float">
+            <div id="cell-0" class="corner cell bottom_left_corner">
+
+            </div>
+            <div id="bottom_middle_container" class="h_container float">
+                <div id="cell-39" class="cell"></div>
+                <div id="cell-38" class="cell"></div>
+                <div id="cell-37" class="cell"></div>
+                <div id="cell-36" class="cell"></div>
+                <div id="cell-35" class="cell"></div>
+                <div id="cell-34" class="cell"></div>
+                <div id="cell-33" class="cell"></div>
+                <div id="cell-32" class="cell"></div>
+                <div id="cell-31" class="cell"></div>
+            </div>
+            <div id="cell-30" class="corner cell bottom_right_corner">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="detail-pane" class="border">
+        <div id="property">
+            <div id="property-id">
+                property-id
+            </div>
+            <div id="name">
+                name
+            </div>
+            <div id="owner">
+                owner
+            </div>
+            <div id="price">
+                price
+            </div>
+        </div>
+        <div id="action">
+            <div id="action-id">
+                Action-id
+            </div>
+            <div id="description">
+                Description
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
