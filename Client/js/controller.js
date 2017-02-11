@@ -125,7 +125,8 @@ function BoardViewController() {
     };
 }
 
-function main() {
+// Main
+$(document).ready(function () {
     // Randomly set color for each cell
     $(".cell").each(function () {
         $(this).css("background-color", ranColor());
@@ -143,6 +144,4 @@ function main() {
     new BoardViewController().showCellNames();
 
     // console.log(board.selectPlayer(1));
-}
-
-$(document).ready(main);
+});

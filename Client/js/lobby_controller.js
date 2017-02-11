@@ -2,7 +2,11 @@
  * Created by jeff on 09/02/2017.
  */
 
-function main() {
+function lobby() {
+    console.log("I am called");
+}
+
+$(document).ready(function () {
     $("#game-area").hide();
     $("#waiting").hide();
 
@@ -32,6 +36,4 @@ function main() {
         $("#lobby").hide();
         $("#game-area").show();
     }
-}
-
-$(document).ready(main);
+});
