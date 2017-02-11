@@ -1,0 +1,6 @@
+{
+    // Type of message should stay consistent
+    "type": "player_join",
+    //A random number only used to identify this client
+    "key": 123456
+}

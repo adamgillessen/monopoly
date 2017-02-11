@@ -1,0 +1,5 @@
+{
+    "1": "player_join",
+    "2": "player_join_ack",
+    "3": "board_sync"
+}
