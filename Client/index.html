@@ -6,20 +6,18 @@
 
     <script src="lib/jquery-3.1.1.js"></script>
     <script src="lib/sprintf.js"></script>
-    <script src="js/helper.js"></script>
-    <script src="js/game_controller.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/models.js"></script>
     <script src="js/communication.js"></script>
-    <script src="js/controller.js"></script>
-    <script src="js/lobby_controller.js"></script>
+    <script src="js/lobbyController.js"></script>
+    <script src="js/game.js"></script>
+
     <link rel="stylesheet" type="text/css" href="scss/board-layout.css">
 </head>
 
 <body>
 <!--Hide things here-->
 <div id="hideout" style="display: none">
-    <!--<div id="player-0" class="player">-->
-    <!--0-->
-    <!--</div>-->
 </div>
 
 <div id="lobby">
@@ -27,6 +25,7 @@
         <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
         <input type="text" id="input-port" placeholder="port" value="4444">
         <button id="btnConnect">Connect</button>
+        <button id="btnCheat-pypassServer" class="dev">[For Dev]Jump to start</button>
     </div>
     <div id="waiting">
         <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>

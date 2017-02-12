@@ -4,11 +4,6 @@
  */
 
 /**
- * Global variables
- */
-var parser = new Parser();
-
-/**
  * Parser Class
  * Parse message received from server
  * @constructor
@@ -16,8 +11,8 @@ var parser = new Parser();
 function Parser() {
     this.tree = {
         "player_join_ack": function (data) {
-            if (data["key"] === game_controller.identification_number) {
-                game_controller.client_id = data['your_id'];
+            if (data["key"] === game.identification_number) {
+                game.client_id = data['your_id'];
 
                 showPlayerNum(data["current_player"], data["expects"]);
                 if (data["start_game"]) {
@@ -27,29 +22,30 @@ function Parser() {
         }
     };
 
-    this.parse = function (raw_data) {
+    Parser.prototype.parse = function (raw_data) {
         var data = JSON.parse(raw_data);
 
         this.tree[data["type"]](data);
     };
 }
 
-function create_websocket(ip, port) {
-    game_controller.socket = new WebSocket(sprintf("ws://%s:%s", ip, port));
-    game_controller.socket.onmessage = function (e) {
-        parser.parse(e.data);
+/**
+ * Create a WebSocket connected to given IP:port
+ * @param {string} ip
+ * @param {string} port
+ */
+function createWebSocket(ip, port) {
+    game.socket = new WebSocket(sprintf("ws://%s:%s", ip, port));
+    game.socket.onmessage = function (e) {
+        game.parser.parse(e.data);
     };
 
-    game_controller.socket.onopen = function () {
-        game_controller.socket.send(generatePlayerJoinMsg());
+    game.socket.onopen = function () {
+        game.socket.send(generatePlayerJoinMsg());
     };
 
     window.onbeforeunload = function() {
-        game_controller.socket.onclose = function () {}; // disable onclose handler first
-        game_controller.socket.close()
+        game.socket.onclose = function () {}; // disable onclose handler first
+        game.socket.close()
     };
 }
-
-$(document).ready(function () {
-
-});

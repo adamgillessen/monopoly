@@ -33,26 +33,3 @@ function ranColor() {
     return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
 }
 
-function createPlayers(num) {
-    var template = '<div id="player-%d" class="player">%d</div>';
-
-    for (var lop = 0; lop < num; lop++) {
-        selectCell(0).append($(sprintf(template, lop, lop)));
-    }
-
-    $(".player").each(function () {
-        $(this).css("background-color", function () {
-            return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
-        });
-    });
-}
-
-/**
- *
- * @param {int|undefined} from: id of cell from
- * @param {int} to: id of cell to
- * @param {int} player: player id
- */
-function movePlayer(to, player, from) {
-    selectPlayer(player).detach().appendTo(selectCell(to));
-}

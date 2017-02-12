@@ -3,17 +3,19 @@
  */
 
 /**
- * Model
+ * Layer: Model
+ * Store info of the entire board game
+ * Includes info for every cell and every player
  * @constructor
  */
 function Board() {
-    // A list holds all cells info
+    // A dict holds all cells info
     this.cells = {};
-    // A list holds all players info
+    // A dict holds all players info
     this.players = {};
 
     // Simulate server
-    this.randomlyGenerateCells = function () {
+    Board.prototype.randomlyGenerateCells = function () {
         var list_properties = [1, 3, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24, 26, 27, 29, 31, 32, 34, 37, 39];
 
         var property_id = 0;
@@ -29,20 +31,18 @@ function Board() {
         }
     };
 
-    this.add_all_players = function (num) {
-        createPlayers(num);
-
+    Board.prototype.createPlayers = function (num) {
         for (var lop = 0; lop < num; lop++) {
             this.players[lop] = new Player(lop);
         }
     };
 
     /**
-     *
+     * Return player by ID
      * @param {int} id
      * @returns {Player}
      */
-    this.selectPlayer = function (id) {
+    Board.prototype.selectPlayer = function (id) {
         return this.players[id];
     };
 
@@ -50,15 +50,16 @@ function Board() {
      * Return ID of cell where the player lands
      * @param {int} id
      */
-    this.playerAt = function (id) {
+    Board.prototype.playerAtByID = function (id) {
         return this.players[id].position;
     }
 }
 
 /**
- * Model
- * @param cell_id
- * @param property_id
+ * Layer: Model
+ * Property Class
+ * @param {int} cell_id
+ * @param {int} property_id
  * @constructor
  */
 function Property(cell_id, property_id) {
@@ -77,6 +78,13 @@ function Property(cell_id, property_id) {
     this.owner = -1;
 }
 
+/**
+ * Layer: Model
+ * Action Class
+ * @param {int} cell_id
+ * @param {int} action_id
+ * @constructor
+ */
 function Action(cell_id, action_id) {
     // An unique ID for every cell
     // Also represents the position on board
@@ -104,7 +112,8 @@ function Player(id) {
 
     };
 
-    this.move = function (step) {
+    Player.prototype.move = function (step) {
+        console.log(this);
         var from = this.position;
 
         this.position = this.position + step;
@@ -118,30 +127,37 @@ function Player(id) {
 }
 
 function BoardViewController() {
-    this.showCellNames = function () {
-        $(".cell").each(function () {
-            $(this).text("Hospital");
-        })
+    // Add circles that represents players to HTML
+    BoardViewController.prototype.createPlayers = function (num) {
+        var template = '<div id="player-%d" class="player">%d</div>';
+
+        for (var lop = 0; lop < num; lop++) {
+            $("#hideout").append($(sprintf(template, lop, lop)));
+        }
+
+        $(".player").each(function () {
+            $(this).css("background-color", function () {
+                return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
+            });
+        });
     };
+
+    BoardViewController.prototype.initBoard = function () {
+        // Randomly set color for each cell
+        $(".cell").each(function () {
+            $(this).css("background-color", ranColor());
+            $(this).text("Hospital");
+        });
+    };
+
+    /**
+     * Layer: View
+     * Move circle that represents player to the given cell by id
+     * @param {int|undefined} from: id of cell from
+     * @param {int} to: id of cell to
+     * @param {int} player: player id
+     */
+    BoardViewController.prototype.movePlayer = function (player, to, from) {
+        selectPlayer(player).detach().appendTo(selectCell(to));
+    }
 }
-
-// Main
-$(document).ready(function () {
-    // Randomly set color for each cell
-    $(".cell").each(function () {
-        $(this).css("background-color", ranColor());
-    });
-
-    $("#btnRoll").click(function () {
-        board.selectPlayer(0).move(3);
-        movePlayer(board.playerAt(0), 0, 0);
-    });
-
-    var board = new Board();
-    board.randomlyGenerateCells();
-    board.add_all_players(4);
-
-    new BoardViewController().showCellNames();
-
-    // console.log(board.selectPlayer(1));
-});
