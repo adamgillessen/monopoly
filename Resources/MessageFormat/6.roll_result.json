@@ -1,0 +1,5 @@
+{
+    "type": "roll_result",
+    // Two dices, so result are two numbers, stored in an array
+    "result": [3, 4]
+}

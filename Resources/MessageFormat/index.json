@@ -1,0 +1,14 @@
+{
+    // c-s
+    "1": "player_join",
+    // s-c
+    "2": "player_join_ack",
+    // s-c
+    "3": "board_sync",
+    // s-c
+    "4": "your_turn",
+    // c-s
+    "5": "roll",
+    // s-c
+    "6": "roll_result"
+}
