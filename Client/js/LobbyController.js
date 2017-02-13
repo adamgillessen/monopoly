@@ -8,6 +8,10 @@
  * @param expects
  */
 function updatePlayerNum(current, expects) {
+    if (current == 2) {
+        $("#btnJumpstart").show();
+    }
+
     $("#waiting").show();
     $("#connect-to").hide();
 
@@ -18,7 +22,7 @@ function updatePlayerNum(current, expects) {
 /**
  * Simple hide and show components
  */
-function startRound() {
+function hideLobbyShowBoard() {
     $("#lobby").hide();
     $("#game-area").show();
 }
@@ -27,20 +31,16 @@ $(document).ready(function () {
     $("#game-area").hide();
     $("#control-pane").hide();
     $("#waiting").hide();
+    $("#btnJumpstart").hide();
 
     $("#btnConnect").click(function () {
-        if (game.socket !== undefined) {
-            game.socket.close();
-            game.socket = undefined;
-        }
-
         var ip = $("#input-IP").val();
         var port = $("#input-port").val();
 
-        createWebSocket(ip, port);
+        game.connector.connect(ip, port);
     });
 
     $("#btnJumpstart").click(function () {
-        sendMessage(getMsgFunc("start_game_now")());
+        sendMessage(generateMessage("start_game_now", null));
     });
 });
