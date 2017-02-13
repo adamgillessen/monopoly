@@ -1,0 +1,14 @@
+{
+    // Type of message should stay consistent
+    "type": "player_join_ack",
+    //Same as the one received from client
+    "key": 123456,
+    //client id, from 1 to 4
+    "your_id": 2,
+    //number of players connected so far
+    "current_player": 2,
+    // number of players expected to start the game (usually 4),
+    "expects": 4,
+    // Only comes true when all players are connected
+    "game_start": false
+}
