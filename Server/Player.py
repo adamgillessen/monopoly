@@ -22,6 +22,7 @@ class Player:
         self._transports = set() 
         self._free = False 
         self._jail = False 
+        self._double_roll = False 
 
     def __str__(self):
         """
