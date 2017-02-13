@@ -1,5 +1,7 @@
 {
     "type": "roll_result",
+    // Target client's ID
+    "source": 1,
     // Two dices, so result are two numbers, stored in an array
     "result": [3, 4]
 }

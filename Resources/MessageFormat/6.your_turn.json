@@ -1,5 +1,5 @@
 {
     "type": "your_turn",
     // ID of client
-    "client": 1
+    "source": 1
 }

@@ -1,0 +1,7 @@
+{
+    "type": "buy",
+    // ID of client who bought
+    "source": 1,
+    // ID of property bought
+    "property": 1
+}

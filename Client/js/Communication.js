@@ -21,22 +21,42 @@ function Parser() {
                 startRound();
             }
         },
+        "board_sync": function (data) {
+            //todo
+        },
         "your_turn": function (data) {
-            if (data["player"] === game.client_id) {
+            if (data["source"] === game.client_id) {
                 game.viewController.yourTurn();
             }
+        },
+        "roll_result": function (data) {
+            // todo: Show result
+            if (data["source"] === game.client_id) {
+                // todo: move player
+            } else {
+                // todo: update player
+            }
+        },
+        "buy_ack": function (data) {
+            // todo: Show result
         }
     };
 
-    Parser.prototype.call = function (jsonObj) {
-        console.log(jsonObj);
-        console.log(game.identification_number);
+    /**
+     * Execute functions based on type of message received
+     * @param jsonObj
+     */
+    Parser.prototype.receiveMsg = function (jsonObj) {
         this.tree[jsonObj["type"]](jsonObj);
     };
 
+    /**
+     * Turn JSON string into javascript-compatible object
+     * @param raw_data
+     */
     Parser.prototype.parse = function (raw_data) {
         var jsonObj = JSON.parse(raw_data);
-        this.call(jsonObj);
+        this.receiveMsg(jsonObj);
     };
 }
 
@@ -52,7 +72,7 @@ function createWebSocket(ip, port) {
     };
 
     game.socket.onopen = function () {
-        game.socket.send(generateMsg("player_join"));
+        sendMessage(getMsgFunc("player_join")());
     };
 
     window.onbeforeunload = function () {
@@ -62,30 +82,75 @@ function createWebSocket(ip, port) {
     };
 }
 
+/**
+ * send message to server
+ * @param {string|object} msg
+ */
 function sendMessage(msg) {
-    console.log("Sending: \n" + msg);
-    game.socket.send(msg);
+    if (typeof msg == "string") {
+        game.socket.send(msg);
+    } else {
+        game.socket.send(JSON.stringify(msg));
+    }
+
 }
 
-function generateMsg(type) {
-    generateMsg.message = {
-        "player_join": function () {
-            // todo: random this
-            game.identification_number = 1234;
+// todo: write into a Class
+/**
+ * Return function that generates message obj
+ * @param type
+ * @returns {*}
+ */
+function getMsgFunc(type) {
+    /**
+     * Generate common part of message
+     * @param {string} type
+     * @param {Array} include
+     * @returns {*}
+     */
+    getMsgFunc.generateHeader = function (type, include) {
+        var obj = {};
+        obj.type = type;
 
-            return {
-                type: "player_join",
-                key: game.identification_number
-            };
+        for (var each in include) {
+            switch (include[each]) {
+                case "source":
+                    obj.source = game.client_id;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return obj;
+    };
+
+    getMsgFunc.message = {
+        "player_join": function () {
+            game.identification_number = ranRange(10000);
+
+            var ret = getMsgFunc.generateHeader("player_join", []);
+            ret.key = game.identification_number;
+
+            return ret;
         },
         "roll": function () {
-            console.log(game.client_id);
-            return {
-                type: "roll",
-                client: game.client_id
-            };
+            return getMsgFunc.generateHeader("roll", ["source"]);
+        },
+        "end_turn": function () {
+            return getMsgFunc.generateHeader("end_turn", ["source"]);
+        },
+        /**
+         * @param {int} property
+         * @returns {{type: string, source: int, property: int}}
+         */
+        "buy": function (property) {
+            var ret = getMsgFunc.generateHeader("buy", ["source"]);
+            ret.property = property;
+
+            return ret;
         }
     };
 
-    return JSON.stringify(generateMsg.message[type]());
+    return getMsgFunc.message[type];
 }
