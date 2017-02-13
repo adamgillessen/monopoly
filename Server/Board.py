@@ -1,5 +1,6 @@
 from Squares import * 
 from Player import * 
+import random
 
 class Board:
     """
@@ -95,6 +96,13 @@ class Board:
             s += str(square) + " "
         return s 
 
+    def roll_dice(self):
+        """
+        Simulates a dice roll. Returns a pair of integers representing the value
+        on each dice. 
+        """
+        d1, d2 = (random.randint(1, 7) for _ in range(2))
+        return d1, d2 
 
     def move_player(self, player_id, new_pos):
         """
