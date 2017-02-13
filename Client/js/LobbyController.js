@@ -22,7 +22,7 @@ function updatePlayerNum(current, expects) {
 /**
  * Simple hide and show components
  */
-function startRound() {
+function hideLobbyShowBoard() {
     $("#lobby").hide();
     $("#game-area").show();
 }

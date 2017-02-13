@@ -59,7 +59,8 @@ parseMessage = function (data) {
 
             updatePlayerNum(data["current_player"], data["expects"]);
             if (data["game_start"]) {
-                startRound();
+                hideLobbyShowBoard();
+                game.initGame(parseInt(data["current_player"]));
             }
         },
         "board_sync": function (data) {
