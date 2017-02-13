@@ -4,17 +4,6 @@
 
 function Game() {
     /**
-     * WebSocket, use this to send message to server
-     * @type {WebSocket}
-     */
-    this.socket = undefined;
-
-    /**
-     * Used only during connecting phase for server to identify client
-     * @type {int}
-     */
-    this.identificationNum = undefined;
-    /**
      * Unique ID for this player/client
      * Obtained from server
      * @type {int}
@@ -22,10 +11,11 @@ function Game() {
     this.clientID = undefined;
 
     /**
-     * Parser for message from server
-     * @type {Parser}
+     * Instance of Connector class
+     * @type {Connector}
      */
-    this.parser = new Parser();
+    this.connector = new Connector();
+
     this.model = new Board();
     this.viewController = new GameController();
 }

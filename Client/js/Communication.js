@@ -3,16 +3,57 @@
  * WebSocket demo
  */
 
+
+function Connector() {
+    this.webSocket = undefined;
+    /**
+     * Identify this client during player_join phase
+     * @type {int}
+     */
+    this.key = undefined;
+
+    /**
+     * Connect to server by creating new WebSocket
+     * @param {string} ip
+     * @param {string} port
+     */
+    Connector.prototype.connect = function (ip, port) {
+        if (this.webSocket != undefined) {
+            this.webSocket.close();
+            this.webSocket = undefined;
+        }
+
+        this.webSocket = new WebSocket(sprintf("ws://%s:%s", ip, port));
+
+        this.webSocket.onmessage = function (e) {
+            parseMessage(e.data);
+        };
+
+        this.webSocket.onopen = function () {
+            sendMessage(generateMessage("player_join", null));
+        };
+
+        window.onbeforeunload = function (me) {
+            return function () {
+                // Clear onclose function
+                me.webSocket.onclose = function () {
+                };
+                me.webSocket.close();
+            };
+        }(this);
+    };
+}
+
 /**
- * Parser Class
- * Parse message received from server
- * @constructor
+ * Parse message that received from server
+ * data could be JSON object or JSON string
+ * @param {Object|string} data
  */
-function Parser() {
-    this.tree = {
+parseMessage = function (data) {
+    parseMessage._parseTree = {
         "player_join_ack": function (data) {
-            // todo: remove -1 part
-            if (data["key"] === game.identificationNum || data["key"] == -1) {
+            // todo: remove -2 part
+            if (data["key"] === game.connector.key || data["key"] == -2) {
                 game.clientID = data['your_id'];
             }
 
@@ -42,123 +83,91 @@ function Parser() {
         }
     };
 
-    /**
-     * Execute functions based on type of message received
-     * @param jsonObj
-     */
-    Parser.prototype.receiveMsg = function (jsonObj) {
-        this.tree[jsonObj["type"]](jsonObj);
-    };
-
-    /**
-     * Turn JSON string into javascript-compatible object
-     * @param raw_data
-     */
-    Parser.prototype.parse = function (raw_data) {
-        var jsonObj = JSON.parse(raw_data);
-        this.receiveMsg(jsonObj);
-    };
-}
+    if (typeof data == "string") {
+        data = JSON.parse(data);
+    }
+    (parseMessage._parseTree[data.type])(data);
+};
 
 /**
- * Create a WebSocket connected to given IP:port
- * @param {string} ip
- * @param {string} port
+ * Send message to server
+ * msg could be JSON string or JSON object
+ * @param {string|Object} msg
  */
-function createWebSocket(ip, port) {
-    game.socket = new WebSocket(sprintf("ws://%s:%s", ip, port));
-    game.socket.onmessage = function (e) {
-        game.parser.parse(e.data);
-    };
-
-    game.socket.onopen = function () {
-        sendMessage(getMsgFunc("player_join")());
-    };
-
-    window.onbeforeunload = function () {
-        game.socket.onclose = function () {
-        }; // disable onclose handler first
-        game.socket.close();
-    };
-}
-
-/**
- * send message to server
- * @param {string|object} msg
- */
-function sendMessage(msg) {
+sendMessage = function (msg) {
     console.log(msg);
+
     if (typeof msg == "string") {
-        game.socket.send(msg);
+        game.connector.webSocket.send(msg);
     } else {
-        game.socket.send(JSON.stringify(msg));
+        game.connector.webSocket.send(JSON.stringify(msg));
+    }
+};
+
+/**
+ * Generate some common field of a message
+ * @param {string} type
+ * @param {Array|null} include
+ * @returns {{}}
+ * @private
+ */
+_generateHeader = function (type, include) {
+    var obj = {};
+    obj.type = type;
+
+    if (include == null) {
+        return obj;
     }
 
-}
+    for (var each in include) {
+        switch (include[each]) {
+            case "source":
+                obj.source = game.clientID;
+                break;
+            default:
+                break;
+        }
+    }
 
-// todo: write into a Class
+    return obj;
+};
+
 /**
- * Return function that generates message obj
- * @param type
+ *
+ * @param {string} type
+ * @param {Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
  * @returns {*}
  */
-function getMsgFunc(type) {
-    /**
-     * Generate common part of message
-     * @param {string} type
-     * @param {Array} include
-     * @returns {*}
-     */
-    getMsgFunc.generateHeader = function (type, include) {
-        var obj = {};
-        obj.type = type;
-
-        if (include == null) {
-            return obj;
-        }
-
-        for (var each in include) {
-            switch (include[each]) {
-                case "source":
-                    obj.source = game.clientID;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return obj;
-    };
-
-    getMsgFunc.message = {
+generateMessage = function (type, parameter) {
+    generateMessage._messageTree = {
         "start_game_now": function () {
-            return getMsgFunc.generateHeader("start_game_now", null);
+            return _generateHeader("start_game_now", null);
         },
         "player_join": function () {
-            game.identificationNum = ranRange(10000);
+            game.connector.key = ranRange(10000);
 
-            var ret = getMsgFunc.generateHeader("player_join", null);
-            ret.key = game.identificationNum;
+            var ret = _generateHeader("player_join", null);
+            ret.key = game.connector.key;
 
             return ret;
         },
         "roll": function () {
-            return getMsgFunc.generateHeader("roll", ["source"]);
+            return _generateHeader("roll", ["source"]);
         },
         "end_turn": function () {
-            return getMsgFunc.generateHeader("end_turn", ["source"]);
+            return _generateHeader("end_turn", ["source"]);
         },
         /**
-         * @param {int} property
-         * @returns {{type: string, source: int, property: int}}
+         * @param {Object} parameter
+         * @returns {{type: string, source: int, property: int}|*}
          */
-        "buy": function (property) {
-            var ret = getMsgFunc.generateHeader("buy", ["source"]);
-            ret.property = property;
+        "buy": function (parameter) {
+            var ret = _generateHeader("buy", ["source"]);
+            ret.property = parameter.property;
 
             return ret;
         }
     };
 
-    return getMsgFunc.message[type];
-}
+    return generateMessage._messageTree[type](parameter);
+};
