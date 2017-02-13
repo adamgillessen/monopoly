@@ -1,61 +1,72 @@
 import websocket_server
 import json
 
+"""
+Run:
+    sudo pip3 install websocket-server
+to install the websocket_server
+"""
+
+
 class Server:
     """
-    This class is a server that will handle multiple asynchronous cleints
-    connecting through websockets. 
+    This class holds all Server information. 
     """
-
     CLIENT_ID = 1
 
-    def __init__(self, hostname, portnumber):
-        self._ws = websocket_server.WebsocketServer(portnumber, hostname)
-        self._ws.set_fn_new_client(Server.new_client)
-        self._ws.set_fn_message_received(Server.recv_message)
-        self._client_keys = {}
+    def __init__(self):
+        self.client_keys = {}
 
-    @staticmethod
-    def new_client(client, server):
+    def next_id(self):
         """
-        This function will be run when a new client connects to the server. 
-        client - the new client object
-        server - the server object
+        Returns the next client id. 
         """
-        print("A new client {} has joined".format(client))
+        temp = Server.CLIENT_ID
+        Server.CLIENT_ID += 1 
+        return temp 
+
+s = Server()
+
     
+def new_client(client, server):
+    """
+    This function will be run when a new client connects to the server. 
+    client - the new client object
+    server - a reference to the WebSocket Server
+    """
+    print("A new client {} has joined".format(client))
 
-    @staticmethod
-    def recv_message(client, server, message):
-        """
-        This function will be run when a message is recieved from one of
-        the connected clients. 
-        """
-        print("Received: {}".format(message))
-        json_string = json.loads(message)
-        if json_string["type"] == "player_join":
-            self._client_keys[client] = json_string["key"]
-            type_ = "player_join_ack"
-            key = json_string["key"]
-            your_id = Server.CLIENT_ID
-            Server.CLIENT_ID += 1
-            current_player = len(self._client_keys)
-            expects = 4
-            game_start = False
 
-            response_json = {
-                "type": type_,
-                "key": key,
-                "your_id":your_id,
-                "current_player": current_player,
-                "expects":expects,
-                "game_start": game_start,
-            }
-            response_json_string = json.dumps(response_json)
-            self._ws.send_message_to_all(response_json_string.encode("utf-8"))
 
-    def start(self):
-        """
-        This starts the server running forever. 
-        """
-        server.run_forever()
+def recv_message(client, server, message):
+    """
+    This function will be run when a message is recieved from one of
+    the connected clients. 
+    client - the client object which the message came from
+    server - a reference to the WebSocket Server
+    message - the message which has been received
+    """
+    global s
+    print("Received: {}".format(message))
+    json_string = json.loads(message)
+
+    if json_string["type"] == "player_join":
+        s.client_keys[client["id"]] = json_string["key"]
+
+        response_json = {
+            "type" : "player_join_ack",
+            "key" : json_string["key"],
+            "your_id" : s.next_id(),
+            "current_player" : len(s.client_keys),
+            "expects" : 4,
+            "game_start" : False,
+        }
+
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+
+ws = websocket_server.WebsocketServer(4444, "127.0.0.1")
+ws.set_fn_new_client(new_client)
+ws.set_fn_message_received(recv_message)
+ws.run_forever()
