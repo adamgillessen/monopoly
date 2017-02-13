@@ -12,8 +12,8 @@ function Parser() {
     this.tree = {
         "player_join_ack": function (data) {
             // todo: remove -1 part
-            if (data["key"] === game.identification_number || data["key"] === -1) {
-                game.client_id = data['your_id'];
+            if (data["key"] === game.identificationNum || data["key"] == -1) {
+                game.clientID = data['your_id'];
             }
 
             updatePlayerNum(data["current_player"], data["expects"]);
@@ -25,13 +25,13 @@ function Parser() {
             //todo
         },
         "your_turn": function (data) {
-            if (data["source"] === game.client_id) {
+            if (data["source"] === game.clientID) {
                 game.viewController.yourTurn();
             }
         },
         "roll_result": function (data) {
             // todo: Show result
-            if (data["source"] === game.client_id) {
+            if (data["source"] === game.clientID) {
                 // todo: move player
             } else {
                 // todo: update player
@@ -87,6 +87,7 @@ function createWebSocket(ip, port) {
  * @param {string|object} msg
  */
 function sendMessage(msg) {
+    console.log(msg);
     if (typeof msg == "string") {
         game.socket.send(msg);
     } else {
@@ -112,10 +113,14 @@ function getMsgFunc(type) {
         var obj = {};
         obj.type = type;
 
+        if (include == null) {
+            return obj;
+        }
+
         for (var each in include) {
             switch (include[each]) {
                 case "source":
-                    obj.source = game.client_id;
+                    obj.source = game.clientID;
                     break;
                 default:
                     break;
@@ -126,11 +131,14 @@ function getMsgFunc(type) {
     };
 
     getMsgFunc.message = {
+        "start_game_now": function () {
+            return getMsgFunc.generateHeader("start_game_now", null);
+        },
         "player_join": function () {
-            game.identification_number = ranRange(10000);
+            game.identificationNum = ranRange(10000);
 
-            var ret = getMsgFunc.generateHeader("player_join", []);
-            ret.key = game.identification_number;
+            var ret = getMsgFunc.generateHeader("player_join", null);
+            ret.key = game.identificationNum;
 
             return ret;
         },
