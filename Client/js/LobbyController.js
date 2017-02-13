@@ -2,6 +2,11 @@
  * Created by jeff on 09/02/2017.
  */
 
+/**
+ * Used to update lobby display's info
+ * @param current
+ * @param expects
+ */
 function updatePlayerNum(current, expects) {
     $("#waiting").show();
     $("#connect-to").hide();
@@ -10,6 +15,9 @@ function updatePlayerNum(current, expects) {
     $("#expect").text(expects);
 }
 
+/**
+ * Simple hide and show components
+ */
 function startRound() {
     $("#lobby").hide();
     $("#game-area").show();
@@ -30,5 +38,9 @@ $(document).ready(function () {
         var port = $("#input-port").val();
 
         createWebSocket(ip, port);
+    });
+
+    $("#btnJumpstart").click(function () {
+        sendMessage(getMsgFunc("start_game_now")());
     });
 });

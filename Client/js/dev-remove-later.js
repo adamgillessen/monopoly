@@ -7,13 +7,12 @@ function simulateServerEvent(obj) {
 }
 
 $(document).ready(function () {
-    // todo: dev code, remove
     $("#btnCheat-pypassServer").click(function () {
         simulateServerEvent({
             type: "player_join_ack",
             key: -1,
             your_id: 1,
-            current_player: 3,
+            current_player: 1,
             expects: 4,
             game_start: true
         });

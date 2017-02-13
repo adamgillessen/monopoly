@@ -13,13 +13,13 @@ function Game() {
      * Used only during connecting phase for server to identify client
      * @type {int}
      */
-    this.identification_number = undefined;
+    this.identificationNum = undefined;
     /**
      * Unique ID for this player/client
      * Obtained from server
      * @type {int}
      */
-    this.client_id = undefined;
+    this.clientID = undefined;
 
     /**
      * Parser for message from server

@@ -7,6 +7,7 @@ ID is odd number
 |3  |roll|
 |5  |end_turn|
 |7|buy|
+|9|start\_game\_now|
 
 ------
 
