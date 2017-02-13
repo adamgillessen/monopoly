@@ -32,8 +32,3 @@ function ranRange(max) {
 function ranColor() {
     return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
 }
-
-// todo: remove later
-function simulateServerEvent(obj) {
-    game.parser.call(obj);
-}

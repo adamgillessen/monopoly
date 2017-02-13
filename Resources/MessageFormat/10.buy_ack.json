@@ -1,0 +1,7 @@
+{
+    "type": "buy_ack",
+    // ID of client who made this action
+    "source": 1,
+    // ID of property bought
+    "property": 1
+}

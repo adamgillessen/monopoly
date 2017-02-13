@@ -33,7 +33,7 @@ function GameController() {
         });
 
         $("#btnRoll").click(function () {
-            sendMessage(generateMsg("roll"));
+            sendMessage(getMsgFunc("roll"));
         });
     };
 
