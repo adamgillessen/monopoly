@@ -113,7 +113,6 @@ function Player(id) {
     };
 
     Player.prototype.move = function (step) {
-        console.log(this);
         var from = this.position;
 
         this.position = this.position + step;
@@ -126,38 +125,3 @@ function Player(id) {
     }
 }
 
-function BoardViewController() {
-    // Add circles that represents players to HTML
-    BoardViewController.prototype.createPlayers = function (num) {
-        var template = '<div id="player-%d" class="player">%d</div>';
-
-        for (var lop = 0; lop < num; lop++) {
-            $("#hideout").append($(sprintf(template, lop, lop)));
-        }
-
-        $(".player").each(function () {
-            $(this).css("background-color", function () {
-                return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
-            });
-        });
-    };
-
-    BoardViewController.prototype.initBoard = function () {
-        // Randomly set color for each cell
-        $(".cell").each(function () {
-            $(this).css("background-color", ranColor());
-            $(this).text("Hospital");
-        });
-    };
-
-    /**
-     * Layer: View
-     * Move circle that represents player to the given cell by id
-     * @param {int|undefined} from: id of cell from
-     * @param {int} to: id of cell to
-     * @param {int} player: player id
-     */
-    BoardViewController.prototype.movePlayer = function (player, to, from) {
-        selectPlayer(player).detach().appendTo(selectCell(to));
-    }
-}

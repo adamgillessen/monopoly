@@ -1,5 +1,5 @@
 /**
- * Control the whole game
+ * Codes that control the whole game
  */
 
 function Game() {
@@ -9,6 +9,10 @@ function Game() {
      */
     this.socket = undefined;
 
+    /**
+     * Used only during connecting phase for server to identify client
+     * @type {int}
+     */
     this.identification_number = undefined;
     /**
      * Unique ID for this player/client
@@ -23,7 +27,7 @@ function Game() {
      */
     this.parser = new Parser();
     this.model = new Board();
-    this.viewController = new BoardViewController();
+    this.viewController = new GameController();
 }
 
 /**
@@ -49,5 +53,4 @@ $(document).ready(function () {
     game.viewController.movePlayer(1, game.model.playerAtByID(1), 0);
     game.viewController.movePlayer(2, game.model.playerAtByID(2), 0);
     game.viewController.movePlayer(3, game.model.playerAtByID(3), 0);
-    // console.log(board.selectPlayer(1));
 });

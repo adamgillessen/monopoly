@@ -21,9 +21,9 @@ function selectPlayer(id) {
 }
 
 /**
- * Randomly generate a int in [0, max]
+ * Randomly generate a int from range [0, max]
  * @param {int} max: Max number allowed to be generated
- * @returns {Number}
+ * @returns {int}
  */
 function ranRange(max) {
     return parseInt(Math.random() * max);
@@ -33,3 +33,7 @@ function ranColor() {
     return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
 }
 
+// todo: remove later
+function simulateServerEvent(obj) {
+    game.parser.call(obj);
+}

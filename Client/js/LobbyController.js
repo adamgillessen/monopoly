@@ -2,7 +2,7 @@
  * Created by jeff on 09/02/2017.
  */
 
-function showPlayerNum(current, expects) {
+function updatePlayerNum(current, expects) {
     $("#waiting").show();
     $("#connect-to").hide();
 
@@ -15,28 +15,13 @@ function startRound() {
     $("#game-area").show();
 }
 
-function generatePlayerJoinMsg() {
-    // todo:Random this!
-    game.identification_number = 123456;
-
-    var msg = {};
-    msg["type"] = "player_join";
-    msg["key"] = game.identification_number;
-
-    return JSON.stringify(msg);
-}
-
 $(document).ready(function () {
     $("#game-area").hide();
+    $("#control-pane").hide();
     $("#waiting").hide();
 
-    // todo: dev code, remove
-    $("#btnCheat-pypassServer").click(function () {
-        startRound();
-    });
-
     $("#btnConnect").click(function () {
-        if (game.socket != undefined) {
+        if (game.socket !== undefined) {
             game.socket.close();
             game.socket = undefined;
         }
