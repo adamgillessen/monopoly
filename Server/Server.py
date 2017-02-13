@@ -2,9 +2,8 @@ import websocket_server
 import json
 
 """
-Run:
+Run to install the websocket_server:
     sudo pip3 install websocket-server
-to install the websocket_server
 """
 
 
@@ -25,9 +24,14 @@ class Server:
         Server.CLIENT_ID += 1 
         return temp 
 
+    def num_players(self):
+        """
+        Returns the number of players currently connected to the game. 
+        """
+        return len(self.client_keys)
+
 s = Server()
 
-    
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
@@ -57,9 +61,9 @@ def recv_message(client, server, message):
             "type" : "player_join_ack",
             "key" : json_string["key"],
             "your_id" : s.next_id(),
-            "current_player" : len(s.client_keys),
+            "current_player" : s.num_players(),
             "expects" : 4,
-            "game_start" : False,
+            "game_start" : True if s.num_players() == 4 else False,
         }
 
         response_json_string = json.dumps(response_json)
