@@ -72,7 +72,7 @@ function createWebSocket(ip, port) {
     };
 
     game.socket.onopen = function () {
-        game.socket.send(getMsgFunc("player_join"));
+        sendMessage(getMsgFunc("player_join")());
     };
 
     window.onbeforeunload = function () {
@@ -127,8 +127,7 @@ function getMsgFunc(type) {
 
     getMsgFunc.message = {
         "player_join": function () {
-            // todo: random this
-            game.identification_number = 1234;
+            game.identification_number = ranRange(10000);
 
             var ret = getMsgFunc.generateHeader("player_join", []);
             ret.key = game.identification_number;

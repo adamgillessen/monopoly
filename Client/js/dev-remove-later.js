@@ -23,5 +23,5 @@ $(document).ready(function () {
         game.viewController.yourTurn();
     });
 
-    console.log(getMsgFunc("player_join")());
+
 });

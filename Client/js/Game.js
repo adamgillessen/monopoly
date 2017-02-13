@@ -19,7 +19,7 @@ function Game() {
      * Obtained from server
      * @type {int}
      */
-    this.client_id = -1;
+    this.client_id = undefined;
 
     /**
      * Parser for message from server
