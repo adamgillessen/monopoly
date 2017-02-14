@@ -1,5 +1,6 @@
 import websocket_server
 import json
+import random
 
 """
 Run to install the websocket_server:
@@ -81,6 +82,73 @@ def recv_message(client, server, message):
 
         }
         
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+    elif json_string["type"] == "roll":
+        response_json = {
+            "type": "roll_result",
+            "source": json_string["source"],
+            "result": [random.randint(1,6), random.randint(1,6)],
+        }
+
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+
+    elif json_string["type"] == "end_turn":
+        turn = json_string["source"]
+        response_json = {
+            "type": "your_turn",
+            "source": 1 if turn == s.num_players() else turn + 1,
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+
+    elif json_string["type"] == "auction":
+        response_json = {
+            "type": "auction_start",
+            "property": json_string["property"],
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+
+    elif json_string["type"] == "bid":
+        response_json = {
+            "type": "bid_ack",
+            "source": json_string["source"],
+            "property": json_string["property"],
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+    elif json_string["type"] == "build_house":
+        response_json = {
+            "type": "build_house_ack",
+            "source": json_string["source"],
+            "property": json_string["property"],
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+    elif json_string["type"] == "sell_house":
+        response_json = {
+            "type": "sell_house_ack",
+            "source": json_string["source"],
+            "property": json_string["property"],
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+
+    elif json_string["type"] == "use_gooj":
+        pass
+
+    elif json_string["type"] == "pay_bail":
+        response_json = {
+            "type": "pay_bail_ack",
+            "source": json_string["source"],
+        }
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"))
 
