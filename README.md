@@ -4,7 +4,7 @@
 * Wu Zijie
 * Caoife Davis
 * Ultan Casey
-* Adam Gilessen
+* Adam Gillessen
 
 Meeting Minutes can be found [here](https://docs.google.com/document/d/15NweTtgGW-K3wx3XQwjjnxLpIuCDaAU5f4-fV1tkW5c/edit?usp=sharing)
 
