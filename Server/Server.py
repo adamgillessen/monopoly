@@ -13,7 +13,7 @@ class Server:
     """
 
     def __init__(self):
-        self._next_roll = 1
+        self._current_turn = 1
         self._board = None
         self._num_players = 0
 
@@ -36,10 +36,11 @@ class Server:
         """
         self._b = Board(self.num_players())
 
+
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
-    client - the new client object
+    client - the new client dictionary
     server - a reference to the WebSocket Server
     """
     print("A new client {} has joined".format(client))
@@ -50,7 +51,7 @@ def recv_message(client, server, message):
     """
     This function will be run when a message is recieved from one of
     the connected clients. 
-    client - the client object which the message came from
+    client - the client dictionary which the message came from
     server - a reference to the WebSocket Server
     message - the message which has been received
     """
@@ -69,6 +70,13 @@ def recv_message(client, server, message):
         }
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"))
+        if s.num_players() == 4:
+            response_json = {
+                "type": "your_turn",
+                "source": 1,
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"))
 
     elif json_string["type"] == "start_game_now":
         response_json = {
@@ -80,6 +88,12 @@ def recv_message(client, server, message):
             "game_start" : True,
 
         }
+        server.send_message_to_all(response_json_string.encode("utf-8"))
+        response_json = {
+            "type": "your_turn",
+            "source": 1,
+        }
+        response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"))
 
 
