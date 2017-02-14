@@ -1,18 +1,25 @@
+"""
+This is the server which will control the Monopoly game and interface 
+with the Clients. 
+"""
+
 import websocket_server
 import json
 
-"""
-Run to install the websocket_server:
-    sudo pip3 install websocket-server
-"""
+
+#Run to install the websocket_server:
+#    sudo pip3 install websocket-server
+
 s = None
 
 class Server:
     """
-    This class holds all Server information. 
+    This class holds all Server information and controls the board.
     """
-
     def __init__(self):
+        """
+        Instantiates a new Server object. 
+        """
         self._current_turn = 1
         self._board = None
         self._num_players = 0
@@ -40,8 +47,8 @@ class Server:
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
-    client - the new client dictionary
-    server - a reference to the WebSocket Server
+    :param client - the new client dictionary
+    :param server - a reference to the WebSocket Server
     """
     print("A new client {} has joined".format(client))
 
@@ -51,9 +58,9 @@ def recv_message(client, server, message):
     """
     This function will be run when a message is recieved from one of
     the connected clients. 
-    client - the client dictionary which the message came from
-    server - a reference to the WebSocket Server
-    message - the message which has been received
+    :param client - the client dictionary which the message came from
+    :param server - a reference to the WebSocket Server
+    :param message - the message which has been received
     """
     global s 
     print("Received: {}".format(message))
