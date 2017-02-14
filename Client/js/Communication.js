@@ -52,6 +52,9 @@ function Connector() {
 parseMessage = function (data) {
     parseMessage._parseTree = {
         "player_join_ack": function (data) {
+            // Add player to board's model
+            game.model.addPlayer(data["your_id"]);
+
             // todo: remove -2 part
             if (data["key"] === game.connector.key || data["key"] == -2) {
                 game.clientID = data['your_id'];
@@ -72,20 +75,38 @@ parseMessage = function (data) {
             }
         },
         "roll_result": function (data) {
-            // todo: Show result
-            console.log("Roll result: " + data["result"]);
+            // todo: show roll result
+            console.log(">>>>>\nRolled", (data["result"][0] + data["result"][1]));
 
-            game.model.movePlayer(data);
+            var landedOn = game.model.movePlayer(data);
+            game.viewController.movePlayer(data["source"], landedOn);
+
+            // todo
+            if (game.model.selectCell(landedOn).type == "property") {
+                game.viewController.promptBuyWindow(landedOn);
+            } else {
+                console.log(">>>>>\nLanded on action");
+            }
         },
         "buy_ack": function (data) {
-            // todo: Show result
+            // todo
+            // Change balance of player
+            game.model.selectPlayer(data["source"]).changeMoney(-game.model.selectCell(data["property"]).price);
+
+            // Change owner of property
+            game.model.selectCell(data["source"]).owner = data["source"];
+
+            //console
+            console.log(">>>>\nPlayer ", data["source"], " bought ", data["property"]);
         }
     };
 
     if (typeof data == "string") {
         data = JSON.parse(data);
     }
-    (parseMessage._parseTree[data.type])(data);
+    // console
+    console.log("Recv\n", data);
+    (parseMessage._parseTree[data["type"]])(data);
 };
 
 /**
@@ -94,7 +115,8 @@ parseMessage = function (data) {
  * @param {string|Object} msg
  */
 sendMessage = function (msg) {
-    console.log(msg);
+    // console
+    console.log("Sent\n", msg);
 
     if (typeof msg == "string") {
         game.connector.webSocket.send(msg);
@@ -134,7 +156,7 @@ _generateHeader = function (type, include) {
 /**
  *
  * @param {string} type
- * @param {Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
+ * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
  * @returns {*}
  */
 generateMessage = function (type, parameter) {

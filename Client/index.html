@@ -21,6 +21,8 @@
 <body>
 <!--Hide things here-->
 <div id="hideout" style="display: none">
+    <!--temporally store value-->
+    <div id="context-buy"></div>
 </div>
 
 <div id="lobby">
@@ -28,7 +30,6 @@
         <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
         <input type="text" id="input-port" placeholder="port" value="4444">
         <button id="btnConnect">Connect</button>
-        <button id="btnCheat-pypassServer" class="dev">[server]player join ack</button>
     </div>
     <div id="waiting">
         <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
@@ -133,17 +134,35 @@
             <button id="btnRoll" class="your_turn">
                 Roll
             </button>
+            <button id="btn-end-turn" class="your_turn">
+                End Turn
+            </button>
+            <div id="prompt-buy">
+                <button id="btn-buy-yes">
+                    Buy
+                </button>
+                <button id="btn-buy-no">
+                    Don't buy
+                </button>
+            </div>
         </div>
     </div>
 
 </div>
 
 <div id="dev-control-pane" class="dev">
+    To simulate message sent from server
+    <button id="btnCheat-pypassServer">
+        [server]player join ack
+    </button>
     <button id="btnYourTurn">
         [server]your turn
     </button>
     <button id="btnRollResult">
         [server]roll result
+    </button>
+    <button id="btn-buy-ack">
+        [server]buy ack
     </button>
 </div>
 </body>

@@ -14,7 +14,7 @@ ID is odd number
 ### Server -> Client
 ID is even number
 
-| ID | type | boardcast|
+| ID | type | broadcast|
 |:-:|:-:|:-:|
 |  2 |player\_join\_ack   | yes|
 |4  |board_sync| yes |

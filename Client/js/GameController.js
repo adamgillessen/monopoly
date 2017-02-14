@@ -12,7 +12,7 @@ function GameController() {
         var template = '<div id="player-%d" class="player">%d</div>';
 
         for (var lop = 0; lop < num; lop++) {
-            $("#hideout").append($(sprintf(template, lop, lop)));
+            $("#cell-0").append($(sprintf(template, lop, lop)));
         }
 
         $(".player").each(function () {
@@ -43,20 +43,55 @@ function GameController() {
 
         $("#btnRoll").click(function () {
             sendMessage(generateMessage("roll", null));
+
+            $(this).hide();
+        });
+
+        /**
+         * On click:
+         * 1. Get the index of property that player is going to buy
+         * 2. Call the canBuyProperty func on that player
+         * 3. Send this buy message to server
+         */
+        $("#btn-buy-yes").click(function () {
+            var propertyIndex = parseInt(getContextValue("buy"));
+
+            if (game.model.selectPlayer(game.clientID).canBuyProperty(propertyIndex)) {
+                sendMessage(generateMessage("buy", {
+                    "property": propertyIndex
+                }));
+            } else {
+                // todo: warn locally, no need to send message
+            }
+
+            $("#prompt-buy").hide();
+        });
+
+        $("#btn-buy-no").click(function () {
+            $("#prompt-buy").hide();
         });
     };
 
     /**
      * Move circle that represents player to the given cell by id
-     * @param {int|undefined} from: id of cell from
      * @param {int} to: id of cell to
      * @param {int} player: player id
      */
-    GameController.prototype.movePlayer = function (player, to, from) {
+    GameController.prototype.movePlayer = function (player, to) {
         selectPlayer(player).detach().appendTo(selectCell(to));
     };
 
     GameController.prototype.yourTurn = function () {
         $(".your_turn").show();
+    };
+
+    /**
+     * Show buy window to user
+     * @param propertyIndex: from range 0 - 39
+     */
+    GameController.prototype.promptBuyWindow = function (propertyIndex) {
+        console.log(">>>>>\n Buy", propertyIndex, "?");
+        $("#prompt-buy").show();
+        setContextValue("buy", propertyIndex);
     };
 }

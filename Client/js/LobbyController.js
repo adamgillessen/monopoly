@@ -27,11 +27,17 @@ function hideLobbyShowBoard() {
     $("#game-area").show();
 }
 
-$(document).ready(function () {
+function initUI() {
     $("#game-area").hide();
     $("#waiting").hide();
     $("#btnJumpstart").hide();
     $(".your_turn").hide();
+    $("#prompt-buy").hide();
+    $("#btn-end-turn").hide();
+}
+
+$(document).ready(function () {
+    initUI();
 
     $("#btnConnect").click(function () {
         var ip = $("#input-IP").val();

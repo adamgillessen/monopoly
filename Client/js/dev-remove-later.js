@@ -14,6 +14,14 @@ $(document).ready(function () {
             your_id: 0,
             current_player: 1,
             expects: 4,
+            game_start: false
+        });
+        simulateServerEvent({
+            type: "player_join_ack",
+            key: -3,
+            your_id: 1,
+            current_player: 2,
+            expects: 4,
             game_start: true
         });
     });
@@ -24,9 +32,17 @@ $(document).ready(function () {
 
     $("#btnRollResult").click(function () {
         simulateServerEvent({
-            "type": "roll_result",
-            "source": 0,
-            "result": [3, 4]
+            type: "roll_result",
+            source: 0,
+            result: [2, 4]
+        });
+    });
+
+    $("#btn-buy-ack").click(function () {
+        simulateServerEvent({
+            type: "buy_ack",
+            source: 0,
+            property: 6
         });
     });
 });

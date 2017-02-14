@@ -14,7 +14,11 @@ function Board() {
      * @type {{int:Property|Action}}
      */
     this.cells = {};
-    // A dict holds all players info
+
+    /**
+     * A dict holds all players info
+     * @type {{0: Player, 1: Player, 2: Player, 3: Player}}
+     */
     this.players = {};
 
     // Initialize model data
@@ -34,10 +38,15 @@ function Board() {
         }
     };
 
-    Board.prototype.createPlayers = function (num) {
-        for (var lop = 0; lop < num; lop++) {
-            this.players[lop] = new Player(lop);
+    /**
+     * Add player to model
+     * @param {int} id
+     */
+    Board.prototype.addPlayer = function (id) {
+        if (id in this.players) {
+            return;
         }
+        this.players[id] = new Player(id);
     };
 
     Board.prototype.selectCell = function (id) {
@@ -45,7 +54,7 @@ function Board() {
     };
 
     /**
-     * Return player by ID
+     * Return player by id
      * @param {int} id
      * @returns {Player}
      */
@@ -67,16 +76,7 @@ function Board() {
             return a + b;
         }, 0));
 
-        // Update view
-        game.viewController.movePlayer(jsonObj["source"], landedOn, 0);
-
-        // todo: remove console.log
-        console.log("Landed on: cell-" + landedOn);
-        if (this.cells[landedOn].type == "property") {
-            console.log("Do you want to buy: " + this.selectCell(landedOn).property_id);
-        } else {
-            console.log("Action_id: " + this.selectCell(landedOn).action_id);
-        }
+        return landedOn;
     };
 }
 
@@ -124,7 +124,7 @@ function Action(cell_id, action_id) {
 /**
  * Player Class
  * Model, stores data only
- * @param {int} id
+ * @param {int} id: should always starts from 0, or error might occur
  * @constructor
  */
 function Player(id) {
@@ -133,8 +133,16 @@ function Player(id) {
     this.money = 1500;
     this.is_in_jail = false;
 
-    this.moveTo = function (new_id) {
+    /**
+     * Does this player has enough money to buy the given property ?
+     * @param {int} propertyIndex: range from 0 - 39
+     */
+    this.canBuyProperty = function (propertyIndex) {
+        return this.money >= game.model.selectCell(propertyIndex).price;
+    };
 
+    this.changeMoney = function (amount) {
+        this.money += amount;
     };
 
     Player.prototype.move = function (step) {

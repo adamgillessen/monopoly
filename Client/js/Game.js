@@ -25,14 +25,9 @@ function Game() {
      */
     Game.prototype.initGame = function (num) {
         this.model.generateCells();
-        this.model.createPlayers(num);
 
         this.viewController.initBoard();
         this.viewController.createPlayers(num);
-
-        for (var lop = 0; lop < num; lop++) {
-            this.viewController.movePlayer(lop, this.model.playerAtByID(lop), 0);
-        }
     }
 }
 

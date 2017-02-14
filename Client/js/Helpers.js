@@ -4,7 +4,7 @@
 
 /**
  * Return jQuery object selected by given id
- * @param {int} id
+ * @param {int} id: No.0 to No.3
  * @returns {*|jQuery|HTMLElement}
  */
 function selectCell(id) {
@@ -18,6 +18,14 @@ function selectCell(id) {
  */
 function selectPlayer(id) {
     return $("#player-" + id);
+}
+
+function setContextValue(name, value) {
+    $("#context-" + name).text(value);
+}
+
+function getContextValue(name) {
+    return $("#context-" + name).text();
 }
 
 /**
