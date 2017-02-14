@@ -73,11 +73,9 @@ parseMessage = function (data) {
         },
         "roll_result": function (data) {
             // todo: Show result
-            if (data["source"] === game.clientID) {
-                // todo: move player
-            } else {
-                // todo: update player
-            }
+            console.log("Roll result: " + data["result"]);
+
+            game.model.movePlayer(data);
         },
         "buy_ack": function (data) {
             // todo: Show result

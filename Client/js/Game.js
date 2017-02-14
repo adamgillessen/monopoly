@@ -24,7 +24,7 @@ function Game() {
      * @param {int} num: number of players
      */
     Game.prototype.initGame = function (num) {
-        this.model.randomlyGenerateCells();
+        this.model.generateCells();
         this.model.createPlayers(num);
 
         this.viewController.initBoard();
@@ -46,8 +46,4 @@ var game = new Game();
 
 // Main
 $(document).ready(function () {
-    $("#btnRoll").click(function () {
-        game.model.selectPlayer(0).move(3);
-        game.viewController.movePlayer(0, game.model.playerAtByID(0), 0);
-    });
 });

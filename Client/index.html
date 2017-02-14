@@ -28,7 +28,7 @@
         <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
         <input type="text" id="input-port" placeholder="port" value="4444">
         <button id="btnConnect">Connect</button>
-        <button id="btnCheat-pypassServer" class="dev">[Dev]Skip connect phase</button>
+        <button id="btnCheat-pypassServer" class="dev">[server]player join ack</button>
     </div>
     <div id="waiting">
         <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
@@ -37,7 +37,7 @@
 </div>
 
 <div id="game-area">
-    <div id="main-board" class="">
+    <div id="main-board">
         <div id="top" class="float">
             <div id="cell-10" class="corner cell top_left_corner">
 
@@ -70,11 +70,6 @@
                 <div id="cell-1" class="cell"></div>
             </div>
             <div id="middle_middle" class="middle">
-                <div id="control-pane">
-                    <button id="btnRoll">
-                        Roll
-                    </button>
-                </div>
             </div>
             <div id="middle_right_container" class="v_container ">
                 <div id="cell-21" class="cell"></div>
@@ -109,35 +104,46 @@
         </div>
     </div>
 
-    <div id="detail-pane" class="border">
-        <div id="property">
-            <div id="property-id">
-                property-id
+    <div id="pane" class="border">
+        <div id="detail-pane">
+            <div id="property">
+                <div id="property-id">
+                    property-id
+                </div>
+                <div id="name">
+                    name
+                </div>
+                <div id="owner">
+                    owner
+                </div>
+                <div id="price">
+                    price
+                </div>
             </div>
-            <div id="name">
-                name
-            </div>
-            <div id="owner">
-                owner
-            </div>
-            <div id="price">
-                price
+            <div id="action">
+                <div id="action-id">
+                    Action-id
+                </div>
+                <div id="description">
+                    Description
+                </div>
             </div>
         </div>
-        <div id="action">
-            <div id="action-id">
-                Action-id
-            </div>
-            <div id="description">
-                Description
-            </div>
+        <div id="control-pane">
+            <button id="btnRoll" class="your_turn">
+                Roll
+            </button>
         </div>
     </div>
+
 </div>
 
-<div id="dev-control-pane" class="div">
-    <button id="btnMyTurn">
-        [Dev]My Turn
+<div id="dev-control-pane" class="dev">
+    <button id="btnYourTurn">
+        [server]your turn
+    </button>
+    <button id="btnRollResult">
+        [server]roll result
     </button>
 </div>
 </body>

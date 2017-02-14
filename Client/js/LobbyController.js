@@ -8,7 +8,7 @@
  * @param expects
  */
 function updatePlayerNum(current, expects) {
-    if (current == 2) {
+    if (current >= 2) {
         $("#btnJumpstart").show();
     }
 
@@ -29,9 +29,9 @@ function hideLobbyShowBoard() {
 
 $(document).ready(function () {
     $("#game-area").hide();
-    $("#control-pane").hide();
     $("#waiting").hide();
     $("#btnJumpstart").hide();
+    $(".your_turn").hide();
 
     $("#btnConnect").click(function () {
         var ip = $("#input-IP").val();

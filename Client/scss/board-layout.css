@@ -46,11 +46,20 @@
     #game-area #main-board .middle {
       width: 74%;
       height: 100%; }
-  #game-area #detail-pane {
-    width: 200px;
-    height: 300px;
-    margin-left: 20px;
-    float: left; }
+  #game-area #pane {
+    float: left;
+    margin-left: 20px; }
+    #game-area #pane #detail-pane {
+      width: 200px;
+      height: 300px; }
+    #game-area #pane #control-pane {
+      position: fixed;
+      left: 80px;
+      bottom: 30px;
+      height: 50px;
+      width: 80%;
+      min-width: 500px;
+      background-color: white; }
   #game-area .player {
     position: relative;
     margin: 0 auto 1px auto;

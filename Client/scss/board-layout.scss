@@ -84,13 +84,26 @@ $btnScale: 0.03;
     }
   }
 
-  #detail-pane {
-    width: 200px;
-    height: 300px;
-
+  #pane {
+    float: left;
     margin-left: 20px;
 
-    float: left;
+    #detail-pane {
+      width: 200px;
+      height: 300px;
+    }
+
+    #control-pane {
+      position: fixed;
+      left: 80px;
+      bottom: 30px;
+
+      height: 50px;
+      width: 80%;
+      min-width: 500px;
+
+      background-color: white;
+    }
   }
 
   .player {

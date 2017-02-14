@@ -29,8 +29,17 @@ function GameController() {
         // Randomly set color for each cell
         $(".cell").each(function () {
             $(this).css("background-color", ranColor());
-            $(this).text("Hospital");
         });
+
+        for (var lop = 0; lop < 40; lop++) {
+            if (game.model.cells[lop].type == "property") {
+                // Display property name and price
+                selectCell(lop).text("Hospital" + " - " + game.model.cells[lop].price);
+            } else {
+                // Display action name
+                selectCell(lop).text("Tax");
+            }
+        }
 
         $("#btnRoll").click(function () {
             sendMessage(generateMessage("roll", null));
@@ -48,6 +57,6 @@ function GameController() {
     };
 
     GameController.prototype.yourTurn = function () {
-        $("#control-pane").show();
+        $(".your_turn").show();
     };
 }

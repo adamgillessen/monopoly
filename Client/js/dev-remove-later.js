@@ -3,7 +3,7 @@
  */
 
 function simulateServerEvent(obj) {
-   parseMessage(obj);
+    parseMessage(obj);
 }
 
 $(document).ready(function () {
@@ -11,14 +11,22 @@ $(document).ready(function () {
         simulateServerEvent({
             type: "player_join_ack",
             key: -2,
-            your_id: 1,
+            your_id: 0,
             current_player: 1,
             expects: 4,
             game_start: true
         });
     });
 
-    $("#btnMyTurn").click(function () {
+    $("#btnYourTurn").click(function () {
         game.viewController.yourTurn();
+    });
+
+    $("#btnRollResult").click(function () {
+        simulateServerEvent({
+            "type": "roll_result",
+            "source": 0,
+            "result": [3, 4]
+        });
     });
 });
