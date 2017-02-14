@@ -3,14 +3,14 @@
  */
 
 function simulateServerEvent(obj) {
-    game.parser.receiveMsg(obj);
+   parseMessage(obj);
 }
 
 $(document).ready(function () {
     $("#btnCheat-pypassServer").click(function () {
         simulateServerEvent({
             type: "player_join_ack",
-            key: -1,
+            key: -2,
             your_id: 1,
             current_player: 1,
             expects: 4,
@@ -21,6 +21,4 @@ $(document).ready(function () {
     $("#btnMyTurn").click(function () {
         game.viewController.yourTurn();
     });
-
-
 });
