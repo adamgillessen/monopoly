@@ -88,7 +88,9 @@ def recv_message(client, server, message):
             "game_start" : True,
 
         }
+        response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"))
+        
         response_json = {
             "type": "your_turn",
             "source": 1,
