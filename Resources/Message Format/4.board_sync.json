@@ -1,5 +1,6 @@
 {
     "type": "board_sync",
+    "text": "human-readable explanation of what happened",
     "cells": {
         "0": {
             "action_id": 0,
