@@ -9,7 +9,7 @@
  */
 function updatePlayerNum(current, expects) {
     if (current >= 2) {
-        $("#btnJumpstart").show();
+        $("#btn-start-now").show();
     }
 
     $("#waiting").show();
@@ -30,7 +30,7 @@ function hideLobbyShowBoard() {
 function initUI() {
     $("#game-area").hide();
     $("#waiting").hide();
-    $("#btnJumpstart").hide();
+    $("#btn-start-now").hide();
     $(".your_turn").hide();
     $("#prompt-buy").hide();
     $("#btn-end-turn").hide();
@@ -39,14 +39,14 @@ function initUI() {
 $(document).ready(function () {
     initUI();
 
-    $("#btnConnect").click(function () {
+    $("#btn-connect").click(function () {
         var ip = $("#input-IP").val();
         var port = $("#input-port").val();
 
         game.connector.connect(ip, port);
     });
 
-    $("#btnJumpstart").click(function () {
+    $("#btn-start-now").click(function () {
         sendMessage(generateMessage("start_game_now", null));
     });
 });

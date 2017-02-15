@@ -6,9 +6,9 @@
  * Layer: View and Controller
  * @constructor
  */
-function GameController() {
+function ViewController() {
     // Add circles that represents players to HTML
-    GameController.prototype.createPlayers = function (num) {
+    ViewController.prototype.createPlayers = function (num) {
         var template = '<div id="player-%d" class="player">%d</div>';
 
         for (var lop = 0; lop < num; lop++) {
@@ -25,23 +25,13 @@ function GameController() {
     /**
      * Add all callback functions to button here
      */
-    GameController.prototype.initBoard = function () {
+    ViewController.prototype.addCallbacksToButtons = function () {
         // Randomly set color for each cell
         $(".cell").each(function () {
             $(this).css("background-color", ranColor());
         });
 
-        for (var lop = 0; lop < 40; lop++) {
-            if (game.model.cells[lop].type == "property") {
-                // Display property name and price
-                selectCell(lop).text("Hospital" + " - " + game.model.cells[lop].price);
-            } else {
-                // Display action name
-                selectCell(lop).text("Tax");
-            }
-        }
-
-        $("#btnRoll").click(function () {
+        $("#btn-roll").click(function () {
             sendMessage(generateMessage("roll", null));
 
             $(this).hide();
@@ -77,11 +67,11 @@ function GameController() {
      * @param {int} to: id of cell to
      * @param {int} player: player id
      */
-    GameController.prototype.movePlayer = function (player, to) {
+    ViewController.prototype.movePlayer = function (player, to) {
         selectPlayer(player).detach().appendTo(selectCell(to));
     };
 
-    GameController.prototype.yourTurn = function () {
+    ViewController.prototype.yourTurn = function () {
         $(".your_turn").show();
     };
 
@@ -89,7 +79,7 @@ function GameController() {
      * Show buy window to user
      * @param propertyIndex: from range 0 - 39
      */
-    GameController.prototype.promptBuyWindow = function (propertyIndex) {
+    ViewController.prototype.promptBuyWindow = function (propertyIndex) {
         console.log(">>>>>\n Buy", propertyIndex, "?");
         $("#prompt-buy").show();
         setContextValue("buy", propertyIndex);

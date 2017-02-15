@@ -7,7 +7,7 @@ function simulateServerEvent(obj) {
 }
 
 $(document).ready(function () {
-    $("#btnCheat-pypassServer").click(function () {
+    $("#btn-player-join-ack").click(function () {
         simulateServerEvent({
             type: "player_join_ack",
             key: -2,
@@ -26,11 +26,11 @@ $(document).ready(function () {
         });
     });
 
-    $("#btnYourTurn").click(function () {
+    $("#btn-your-turn").click(function () {
         game.viewController.yourTurn();
     });
 
-    $("#btnRollResult").click(function () {
+    $("#btn-roll-result").click(function () {
         simulateServerEvent({
             type: "roll_result",
             source: 0,

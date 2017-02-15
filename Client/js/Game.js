@@ -17,7 +17,7 @@ function Game() {
     this.connector = new Connector();
 
     this.model = new Board();
-    this.viewController = new GameController();
+    this.viewController = new ViewController();
 
     /**
      * Initialize game board
@@ -26,7 +26,7 @@ function Game() {
     Game.prototype.initGame = function (num) {
         this.model.generateCells();
 
-        this.viewController.initBoard();
+        this.viewController.addCallbacksToButtons();
         this.viewController.createPlayers(num);
     }
 }
