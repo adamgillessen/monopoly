@@ -41,7 +41,7 @@ function GameController() {
             }
         }
 
-        $("#btnRoll").click(function () {
+        $("#btn-roll").click(function () {
             sendMessage(generateMessage("roll", null));
 
             $(this).hide();
