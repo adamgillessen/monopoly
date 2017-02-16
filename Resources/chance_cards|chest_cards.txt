@@ -6,7 +6,7 @@ http://monopoly.wikia.com/wiki/Community_Chest
 + From sale of stock you get 50 
 + Get out of jail free
 + go to jail
-+ Grand opera opening night, collect 50 off of each player (if they have it?)
++ Grand opera opening night, collect 50
 + Holiday Fund Matures - get 100
 + INcome tax refund - get 20
 + it's your bithday - get 10 from each player (as above)
@@ -14,7 +14,6 @@ http://monopoly.wikia.com/wiki/Community_Chest
 + Pay hospital fees of $100
 + Pay school fees {tax} of $150
 + Receive $25 consultancy fee
-+ You are assessed for street repairs – $40 per house – $115 per hotel
 + You have won second prize in a beauty contest – Collect $10
 + You inherit $100
 
@@ -23,17 +22,12 @@ http://monopoly.wikia.com/wiki/Chance
 + Advance to Go 
 + Advance to Illinois Ave.
 + Advance to St. Charles Place
-+ Advance token to nearest Utility
-+ Advance token to the nearest Railroad and pay owner twice the rental to which he/she {he} is otherwise entitled. If Railroad is unowned, you may buy it from the Bank
 + Bank pays you dividend of $50
 + get out of jail free
-+ go back 3 spaces
 + go to jail
-+ Make general repairs on all your property – For each house pay $25 – For each hotel $100
 + Pay poor tax of $15
 + Take a trip to Reading Railroad
 + Take a walk on the Boardwalk – Advance token to Boardwalk
-+ You have been elected Chairman of the Board – Pay each player $50
 + Your building {and} loan matures – Collect $150 
 + You have won a crossword competition - Collect $100
 

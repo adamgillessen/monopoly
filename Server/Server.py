@@ -42,7 +42,15 @@ class Server:
         """
         Initialises a board with the current players. 
         """
-        self._b = Board(self.num_players())
+        self._board = Board(self.num_players())
+
+    def take_turn(self, player_id):
+        """
+        Has the board run the next turn. 
+
+        :param player_id the id of the player whose turn it is
+        """
+        self._board.take_turn(player_id)
 
 
 def new_client(client, server):

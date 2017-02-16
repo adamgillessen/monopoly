@@ -54,9 +54,63 @@ class Player:
     def jail(self, new_val):
         self._jail = new_val
 
-    def get_id(self):
-        """
-        Returns the id of self. 
-        """
-        return self._id 
+    @property
+    def id(self):
+        return self._id
 
+    @id.setter
+    def id(self, new_id):
+        self._id = new_id
+
+    @property
+    def double_roll(self):
+        return self._double_roll
+
+    @double_roll.setter
+    def double_roll(self, new_double_roll):
+        self._double_roll = new_double_roll
+
+    @property
+    def free(self):
+        return self._free
+
+    @free.setter
+    def free(self, new_free):
+        self._free = new_free
+
+    def add_property(self, property_square):
+        """
+        Adds the new property to the player's position.
+
+        :param property_square - the PropertySquare being added
+        """
+        self._properties.add(property_square)
+
+    def add_utility(self, utility_square):
+        """
+        Adds the new utility to the player's position.
+
+        :param utility_square - the UtilitySquare being added
+        """
+        self._utils.add(utility_square)
+
+    def add_transport(self, transport_square):
+        """
+        Adds the new transport to the player's position.
+
+        :param transport_square - the TransportSquare being added
+        """
+        self._transports.add(transport_square)
+
+    def num_transports(self):
+        """
+        :return the number of transports the player owns
+        """
+        return len(self._transports)
+
+    def num_utils(self):
+        """
+        The number of utilities which the player owns.
+        :return the number of utilities the player owns
+        """
+        return len(self._utils)
