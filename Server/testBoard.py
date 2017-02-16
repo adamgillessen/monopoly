@@ -159,6 +159,46 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
         self.assertTrue(board.get_pos(player1.id) == 12)
 
+    def test_take_turn_transport_square_not_owned_buy(self):
+        player = self.players[0]
+        old_money = player.money
+        board = self.board
+        trans_square = board.get_square(5)
+        self.assertFalse(trans_square.is_owned)
+
+        turn = board.take_turn(player.id, 2, 3)
+        try:
+            message1 = turn.send(None)
+            self.assertTrue(message1 == "buy_auction")
+            message2 = turn.send("buy") # message2 = "human readable string"
+        except StopIteration:
+            pass
+        self.assertTrue(board.get_pos(player.id) == 5)
+        self.assertTrue(trans_square.is_owned)
+        self.assertTrue(trans_square.owner == player.id)
+        self.assertTrue(trans_square.price + player.money == old_money)
+
+    def test_take_turn_transport_square_owned(self):
+        player1 = self.players[0]
+        player2 = self.players[1]
+        board = self.board
+        trans_square = board.get_square(5)
+        trans_square.is_owned = True 
+        trans_square.owner = player2.id
+        
+        p1_old_money = player1.money
+        p2_old_money = player2.money
+
+        try:
+            turn = board.take_turn(player1.id, 2, 3)
+            message1 = turn.send(None)
+        except StopIteration:
+            pass
+        # message1 will be human readable string"""
+        self.assertTrue(p1_old_money > player1.money)
+        self.assertTrue(p2_old_money < player2.money)
+        self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
+        self.assertTrue(board.get_pos(player1.id) == 5)
 
 
 if __name__ == "__main__":
