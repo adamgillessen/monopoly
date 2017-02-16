@@ -66,9 +66,17 @@ class Player:
     def double_roll(self):
         return self._double_roll
 
-    @id.setter
+    @double_roll.setter
     def double_roll(self, new_double_roll):
         self._double_roll = new_double_roll
+
+    @property
+    def free(self):
+        return self._free
+
+    @free.setter
+    def free(self, new_free):
+        self._free = new_free
 
     def add_property(self, property_square):
         """
