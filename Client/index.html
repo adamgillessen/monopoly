@@ -8,7 +8,7 @@
     <script src="lib/sprintf.js"></script>
     <script src="js/Helpers.js"></script>
     <script src="js/Models.js"></script>
-    <script src="js/GameController.js"></script>
+    <script src="js/ViewController.js"></script>
     <script src="js/Communication.js"></script>
     <script src="js/LobbyController.js"></script>
     <script src="js/Game.js"></script>
@@ -29,11 +29,11 @@
     <div id="connect-to">
         <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
         <input type="text" id="input-port" placeholder="port" value="4444">
-        <button id="btnConnect">Connect</button>
+        <button id="btn-connect">Connect</button>
     </div>
     <div id="waiting">
         <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
-        <button id="btnJumpstart">Start Game NOW</button>
+        <button id="btn-start-now">Start Game NOW</button>
     </div>
 </div>
 
@@ -131,7 +131,7 @@
             </div>
         </div>
         <div id="control-pane">
-            <button id="btnRoll" class="your_turn">
+            <button id="btn-roll" class="your_turn">
                 Roll
             </button>
             <button id="btn-end-turn" class="your_turn">
@@ -152,13 +152,13 @@
 
 <div id="dev-control-pane" class="dev">
     To simulate message sent from server
-    <button id="btnCheat-pypassServer">
+    <button id="btn-player-join-ack">
         [server]player join ack
     </button>
-    <button id="btnYourTurn">
+    <button id="btn-your-turn">
         [server]your turn
     </button>
-    <button id="btnRollResult">
+    <button id="btn-roll-result">
         [server]roll result
     </button>
     <button id="btn-buy-ack">

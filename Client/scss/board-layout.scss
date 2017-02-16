@@ -10,7 +10,7 @@
 $x: 13%;
 $y: 100% / 9;
 $span: 700px;
-$btnScale: 0.03;
+$scale: 0.03;
 
 #game-area {
   min-width: 1200px;
@@ -111,15 +111,15 @@ $btnScale: 0.03;
 
     margin: 0 auto 1px auto;
     background: red;
-    width: $span * $btnScale;
-    height: $span * $btnScale;
+    width: $span * $scale;
+    height: $span * $scale;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
     border-radius: 50%;
 
     text-align: center;
-    font-size: $span * $btnScale;
-    line-height: $span * $btnScale;
+    font-size: $span * $scale;
+    line-height: $span * $scale;
   }
 
   .cell {
