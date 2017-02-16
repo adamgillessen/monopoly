@@ -12,12 +12,22 @@ class Board:
     board state. 
     """
     NUM_SQUARES = 40
-    UTIL_POS = [12, 28]
-    TRANS_POS = [5, 15, 25, 35]
     CHEST_POS = [2, 17, 33]
     CHANCE_POS = [7, 22, 36]
     CORNER_POS = [0, 10, 20, 30]
     TAX_POS = [4, 38]
+    # UTIL_POS_INFO[position] = price
+    UTIL_POS_INFO = {
+        12 : 200,
+        28 : 200
+    }
+    # TRANS_POS_INFO[position] = price
+    TRANS_POS_INFO = {
+        5 : 150,
+        15 : 150,
+        25 : 150,
+        35 : 150
+    }
     # PROPERTY_POS_INFO[position] = [price, rent, estate, id]
     PROPERTY_POS_INFO = {
         1 : [60, 10, 0, 0],
@@ -44,7 +54,7 @@ class Board:
         39 : [400, 200, 7, 21],
     }
     JAIL_POS = 9
-    
+    GO_AMOUNT = 200
     def __init__(self, num_players):
         """
         Initialises the board with the relevant squares in the correct place
@@ -54,39 +64,37 @@ class Board:
         # Initialise Squares
         self._board = [None for _ in range(Board.NUM_SQUARES)]
 
-        for pos in Board.UTIL_POS:
-            self._board[pos] = UtilitySquare(pos)
-
-        for pos in Board.TRANS_POS:
-            self._board[pos] = TransportSquare(pos)
-
         for pos in Board.CHEST_POS:
-            self._board[pos] = ActionSquare(pos, action="chest")
+            self._board[pos] = ActionSquare(pos, action=ActionSquare.CHEST)
 
         for pos in Board.CHANCE_POS:
-            self._board[pos] = ActionSquare(pos, action="chance")
+            self._board[pos] = ActionSquare(pos, action=ActionSquare.CHANCE)
 
         for pos in Board.TAX_POS:
-            self._board[pos] = ActionSquare(pos, action="tax")
+            self._board[pos] = ActionSquare(pos, action=ActionSquare.TAX)
 
         for pos in Board.CORNER_POS:
-            if pos == Board.CORNER_POS[1] or pos == Board.CORNER_POS[2]:
-                self._board[pos] = ActionSquare(pos, action="stay")
-            elif pos == Board.CORNER_POS[0]:
-                self._board[pos] = ActionSquare(pos, action="go")
+            if pos in Board.CORNER_POS[:3]:
+                self._board[pos] = ActionSquare(pos, action=ActionSquare.STAY)
             elif pos == Board.CORNER_POS[3]:
-                self._board[pos] = ActionSquare(pos, action="jail")
+                self._board[pos] = ActionSquare(pos, action=ActionSquare.JAIL)
+
+        for pos, price in Board.UTIL_POS_INFO.items():
+            self._board[pos] = UtilitySquare(pos, price)
+
+        for pos, price in Board.TRANS_POS_INFO.items():
+            self._board[pos] = TransportSquare(pos, price)
 
         for pos, info in Board.PROPERTY_POS_INFO.items():
             price, rent, estate, prop_id = info 
             self._board[pos] = PropertySquare(pos, price, rent, estate, prop_id)
 
         # create players
-        self._players = [Player(i) for i in range(num_players)]
+        self._players = {i:Player(i) for i in range(1, num_players + 1)}
 
         # Initialise players at position 0 (Go)
         self._player_positions = {}
-        for p in self._players:
+        for p in self._players.values():
             self._player_positions[p] = 0 
             self._board[0].add_player(p)
 
@@ -208,3 +216,96 @@ class Board:
                     player_id, player_id))
         player.free = False 
         player.jail = False 
+
+    def add_house(self, pos):
+        """
+        Adds a house to the Square at position pos. 
+        :param pos - the position of the square the house is being added to
+        """
+        square = self.get_square(pos)
+        square.num_houses += 1 
+
+    def take_turn(self, player_id, dice1, dice2):
+        """
+        Runs the specified player's turn based on their dice roll result.
+
+        :param player_id - The id of the player whose turn it is
+        :param dice1 - the result of dice 1
+        :param dice2 - the result of dice 2
+
+        This is a generator which will yield the actions a user must address. 
+        The final value of the generator will be a human-readable string which
+        explains what happened in this turn. This return will also raise a 
+        StopIteration exception. 
+        """
+        print("Here")
+        player = self._players[player_id]
+
+        if dice1 == dice2:
+            player.double_roll = True 
+
+        new_pos = player.get_pos() + dice1 + dice2
+        if new_pos > 39:
+            self.give_money(player_id, Board.GO_AMOUNT)
+            new_pos %= 40
+        self.move_player(player_id, new_pos)
+
+        square = self.get_square(new_pos)
+
+        if square.square_type in (Square.PROPERTY, Square.UTILITY, Square.TRANSPORT):
+            # can be bought or may be bought already
+            if square.is_owned:
+                if square.square_type == Square.PROPERTY:
+                    rent = square.base_rent * (2**square.num_houses)
+                elif square.square_type == Square.UTILITY:
+                    dice_roll_sum = sum(self.roll_dice())
+                    owner = self._players[square.owner]
+                    if owner.num_utils() == 1:
+                        rent = dice_roll_sum * square.one_owned
+                    else:
+                        rent = dice_roll_sum * square.two_owned
+                elif square.square_type == Square.TRANSPORT:
+                    owner = self._players[square.owner]
+                    rent = square.base_rent * (2**owner.num_transports())
+
+                self.give_money(square.owner, rent)
+                self.take_money(player_id, rent)
+            else:
+                buy_auction = yield "buy_auction"
+                if buy_auction == "buy":
+                    cost = square.price
+                    square.owner = player_id
+                    self.take_money(player_id, cost)
+                    new_owner = self._players[player_id]
+                
+                elif buy_auction == "auction":
+                    highest_bidder = yield None 
+                    bid = yield None
+                    square.owner = highest_bidder
+                    self.take_money(highest_bidder, bid)
+                    new_owner = self._players[highest_bidder]
+
+                square.is_owned = True
+                if square.square_type == Square.PROPERTY:
+                    new_owner.add_property(square)
+                elif square.square_type == Square.UTILITY:
+                    new_owner.add_utility(square)
+                elif square.square_type == Square.TRANSPORT:
+                    new_owner.add_transport(Square)
+        elif square.square_type == Square.ACTION:
+            # could be [chest|chance|jail|stay|tax]
+            if square.action == ActionSquare.CHEST:
+                pass
+            elif square.action == ActionSquare.CHANCE:
+                pass
+            elif square.action == ActionSquare.JAIL:
+                self.move_player(player_id, Board.JAIL_POS)
+            elif square.action == ActionSquare.STAY:
+                pass
+            elif square.action == ActionSquare.TAX:
+                tax = 100 * (2**Board.TAX_POS.index(new_pos))
+
+if __name__ == "__main__":
+    b = Board(4)
+    b.take_turn(1, 1, 2).send(None)
+    print(b)
