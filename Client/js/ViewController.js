@@ -55,10 +55,19 @@ function ViewController() {
             }
 
             $("#prompt-buy").hide();
+            // End of turn reached
+            ViewController.prototype.showEndTurnButton();
         });
 
         $("#btn-buy-no").click(function () {
             $("#prompt-buy").hide();
+            // End of turn reached
+            ViewController.prototype.showEndTurnButton();
+        });
+
+        $("#btn-end-turn").click(function () {
+            sendMessage(generateMessage("end_turn", null));
+            $(this).hide();
         });
     };
 
@@ -73,6 +82,8 @@ function ViewController() {
 
     ViewController.prototype.yourTurn = function () {
         $(".your_turn").show();
+        $("#prompt-buy").hide();
+        $("#btn-end-turn").hide();
     };
 
     /**
@@ -83,5 +94,9 @@ function ViewController() {
         console.log(">>>>>\n Buy", propertyIndex, "?");
         $("#prompt-buy").show();
         setContextValue("buy", propertyIndex);
+    };
+
+    ViewController.prototype.showEndTurnButton = function () {
+        $("#btn-end-turn").show();
     };
 }
