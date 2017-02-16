@@ -202,17 +202,9 @@ class UtilitySquare(OwnableSquare):
     def one_owned(self):
         return self._one_owned
 
-    @one_owned.setter
-    def one_owned(self, new_one_owned):
-        self._one_owned = new_one_owned 
-
     @property
     def two_owned(self):
         return self._two_owned
-
-    @two_owned.setter
-    def two_owned(self, new_two_owned):
-        self._two_owned = new_two_owned 
 
 
 class TransportSquare(OwnableSquare):
