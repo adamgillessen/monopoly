@@ -126,7 +126,7 @@ class OwnableSquare(Square):
 
     @property
     def owner(self):
-        return self._price
+        return self._owner
 
     @owner.setter
     def owner(self, new_owner):
