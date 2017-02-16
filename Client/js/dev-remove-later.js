@@ -6,12 +6,16 @@ function simulateServerEvent(obj) {
     parseMessage(obj);
 }
 
+function getTargetID() {
+    return parseInt($("#input-id").val());
+}
+
 $(document).ready(function () {
     $("#btn-player-join-ack").click(function () {
         simulateServerEvent({
             type: "player_join_ack",
             key: -2,
-            your_id: 0,
+            your_id: getTargetID(),
             current_player: 1,
             expects: 4,
             game_start: false
@@ -19,7 +23,7 @@ $(document).ready(function () {
         simulateServerEvent({
             type: "player_join_ack",
             key: -3,
-            your_id: 1,
+            your_id: getTargetID() + 1,
             current_player: 2,
             expects: 4,
             game_start: true
@@ -27,13 +31,17 @@ $(document).ready(function () {
     });
 
     $("#btn-your-turn").click(function () {
-        game.viewController.yourTurn();
+        // game.viewController.yourTurn();
+        simulateServerEvent({
+            type: "your_turn",
+            source: getTargetID()
+        });
     });
 
     $("#btn-roll-result").click(function () {
         simulateServerEvent({
             type: "roll_result",
-            source: 0,
+            source: getTargetID(),
             result: [2, 4]
         });
     });
@@ -41,7 +49,7 @@ $(document).ready(function () {
     $("#btn-buy-ack").click(function () {
         simulateServerEvent({
             type: "buy_ack",
-            source: 0,
+            source: getTargetID(),
             property: 6
         });
     });
