@@ -4,6 +4,7 @@ This controls the Squares and Players and manages the whole game.
 
 from Squares import * 
 from Player import * 
+from Cards import * 
 import random
 
 class Board:
@@ -55,6 +56,7 @@ class Board:
     }
     JAIL_POS = 9
     GO_AMOUNT = 200
+    GO_POS = 0
     def __init__(self, num_players):
         """
         Initialises the board with the relevant squares in the correct place
@@ -97,6 +99,37 @@ class Board:
         for p in self._players.values():
             self._player_positions[p] = 0 
             self._board[0].add_player(p)
+
+        # initialise
+        self._action_cards = {
+            MoveCard(Board.GO_POS, "Advance to GO"),
+            GainMoneyCard(200, "Bank error in your favour; collect 200"),
+            LoseMoneyCard(50, "Doctor's fee; pay 50"),
+            GainMoneyCard(50, "From sale of stock, you get 50"),
+            GetOutOfJailFreeCard(),
+            MoveCard(Board.JAIL_POS, "Go to Jail"),
+            GainMoneyCard(50, "Grand Opera opening night; collect 50"),
+            GainMoneyCard(100, "Holiday Fund matures; collect 100"),
+            GainMoneyCard(20, "Income Tax Refund; collect 20"),
+            GainMoneyCard(10, "It's your birthday; collect 10"),
+            GainMoneyCard(100, "Life Insurance matures; collect 100"),
+            LoseMoneyCard(100, "Pay hospital fee; play 100"),
+            LoseMoneyCard(150, "Pay school fees; lose 150"),
+            GainMoneyCard(25, "Receive 25 in consultancy fees"),
+            GainMoneyCard(10, "You have won second place in a beauty contest; collect 10"),
+            GainMoneyCard(100, "You receive inheritance; collect 100"),
+            MoveCard(Board.GO_POS, "Advance to GO"),
+            GainMoneyCard(50, "Bank pays you a dividened; collect 50"),
+            GetOutOfJailFreeCard(),
+            GetOutOfJailFreeCard(),
+            MoveCard(Board.JAIL_POS, "Go to Jail"),
+            GainMoneyCard(15, "Pay 15 in poor tax"),
+            GainMoneyCard(150, "Your building and loan matures; collect 150"),
+            GainMoneyCard(100, "You have won 100 in a crossword competition"),
+            MoveCard(random.choice(Board.UTIL_POS_INFO), "Move to a utility"),
+        } | {
+            MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(Board.PROPERTY_POS_INFO.keys() for _ in range(3)))
+        }             
 
     def __str__(self):
         """
@@ -294,10 +327,25 @@ class Board:
                     new_owner.add_transport(Square)
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
-            if square.action == ActionSquare.CHEST:
-                pass
-            elif square.action == ActionSquare.CHANCE:
-                pass
+            if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
+                card = random.choice(self._action_cards)
+                if card.card_type == Card.MOVE:
+                    new_pos = card.move_to_pos
+                    self.move_player(player_id, new_pos)
+                    # TODO re-access whether or not you land on property, action, etc.
+                    # thought - might yield a value which signals the double-roll mechanism
+                    # without actually doing the double roll?
+                    yield "re-take_turn"
+
+                elif card.card_type == Card.GAIN_MONEY:
+                    amount = card.gain_amount
+                    self.give_money(player_id, amount)
+                elif card.card_type == Card.LOSE_MONEY:
+                    amount = card.lose_amount
+                    self.take_money(player_id, amount)
+                elif card.card_type == Card.GET_OUT_OF_JAIL:
+                    player = self._players[player_id]
+                    player.free = True
             elif square.action == ActionSquare.JAIL:
                 self.move_player(player_id, Board.JAIL_POS)
             elif square.action == ActionSquare.STAY:
