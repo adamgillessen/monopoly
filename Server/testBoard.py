@@ -1,5 +1,7 @@
 import unittest
 from Board import * 
+from Player import * 
+from Squares import * 
 class BoardTests(unittest.TestCase):
     """
     Unit tests for all classes in self.boardaords.py
@@ -22,8 +24,15 @@ class BoardTests(unittest.TestCase):
 
     def test_get_players(self):
         # assumes all players initialised to position 0 
-        print(len(self.board.get_players(0)))
         self.assertTrue(len(self.board.get_players(0)) == self.num_players)
+        self.assertTrue(isinstance(self.board.get_players(0)[0], Player))
+
+    def test_get_pos(self):
+        p = self.players[0]
+        self.assertTrue(self.board.get_pos(p.id) == 0)
+
+    def test_get_square(self):
+        self.assertTrue(isinstance(self.board.get_square(0), Square))
 
     def test_take_money(self):
         player = self.players[0]
@@ -61,3 +70,54 @@ class BoardTests(unittest.TestCase):
         self.board.use_get_out_jail_free(player.id)
         self.assertFalse(player.jail)
         self.assertFalse(player.free)
+
+    def test_add_house(self):
+        s = self.board.get_square(1)
+        self.assertTrue(s.num_houses == 0)
+        self.board.add_house(1)
+        self.assertTrue(s.num_houses == 1)
+
+    def test_take_turn_property_square_not_owned_buy(self):
+        player = self.players[0]
+        old_money = player.money
+        board = self.board
+        prop_square = board.get_square(3)
+        self.assertFalse(prop_square.is_owned)
+
+        turn = board.take_turn(player.id, 1, 2)
+        try:
+            message1 = turn.send(None)
+            self.assertTrue(message1 == "buy_auction")
+            message2 = turn.send("buy") # message2 = "human readable string"
+        except StopIteration:
+            pass
+        self.assertTrue(board.get_pos(player.id) == 3)
+        self.assertTrue(prop_square.is_owned)
+        self.assertTrue(prop_square.owner == player.id)
+        self.assertTrue(prop_square.price + player.money == old_money)
+
+    def test_take_turn_property_square_owned(self):
+        player1 = self.players[0]
+        player2 = self.players[1]
+        board = self.board
+        prop_square = board.get_square(3)
+        prop_square.is_owned = True 
+        prop_square.owner = player2.id
+        prop_rent = prop_square.base_rent 
+
+        p1_old_money = player1.money
+        p2_old_money = player2.money
+
+        try:
+            turn = board.take_turn(player1.id, 1, 2)
+            message1 = turn.send(None)
+        except StopIteration:
+            pass
+        # message1 will be human readable string"""
+        self.assertTrue(p1_old_money - prop_rent == player1.money)
+        self.assertTrue(p2_old_money + prop_rent == player2.money)
+        self.assertTrue(board.get_pos(player1.id) == 3)
+
+
+if __name__ == "__main__":
+    unittest.main()

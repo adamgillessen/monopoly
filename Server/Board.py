@@ -126,9 +126,9 @@ class Board:
             GainMoneyCard(15, "Pay 15 in poor tax"),
             GainMoneyCard(150, "Your building and loan matures; collect 150"),
             GainMoneyCard(100, "You have won 100 in a crossword competition"),
-            MoveCard(random.choice(Board.UTIL_POS_INFO), "Move to a utility"),
+            MoveCard(random.choice(list(Board.UTIL_POS_INFO)), "Move to a utility"),
         } | {
-            MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(Board.PROPERTY_POS_INFO.keys() for _ in range(3)))
+            MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board.PROPERTY_POS_INFO)) for _ in range(3))
         }             
 
     def __str__(self):
@@ -271,13 +271,15 @@ class Board:
         explains what happened in this turn. This return will also raise a 
         StopIteration exception. 
         """
-        print("Here")
         player = self._players[player_id]
 
         if dice1 == dice2:
             player.double_roll = True 
+            re_check_location = True
+        else:
+            re_check_location = False
 
-        new_pos = player.get_pos() + dice1 + dice2
+        new_pos = self.get_pos(player_id) + dice1 + dice2
         if new_pos > 39:
             self.give_money(player_id, Board.GO_AMOUNT)
             new_pos %= 40
@@ -319,6 +321,7 @@ class Board:
                     new_owner = self._players[highest_bidder]
 
                 square.is_owned = True
+
                 if square.square_type == Square.PROPERTY:
                     new_owner.add_property(square)
                 elif square.square_type == Square.UTILITY:
@@ -332,10 +335,7 @@ class Board:
                 if card.card_type == Card.MOVE:
                     new_pos = card.move_to_pos
                     self.move_player(player_id, new_pos)
-                    # TODO re-access whether or not you land on property, action, etc.
-                    # thought - might yield a value which signals the double-roll mechanism
-                    # without actually doing the double roll?
-                    yield "re-take_turn"
+                    re_check_location = True
 
                 elif card.card_type == Card.GAIN_MONEY:
                     amount = card.gain_amount
@@ -344,7 +344,6 @@ class Board:
                     amount = card.lose_amount
                     self.take_money(player_id, amount)
                 elif card.card_type == Card.GET_OUT_OF_JAIL:
-                    player = self._players[player_id]
                     player.free = True
             elif square.action == ActionSquare.JAIL:
                 self.move_player(player_id, Board.JAIL_POS)
@@ -353,7 +352,15 @@ class Board:
             elif square.action == ActionSquare.TAX:
                 tax = 100 * (2**Board.TAX_POS.index(new_pos))
 
+        if re_check_location:
+            if player.double_roll:
+                player.double_roll = False
+                dice1, dice2 = self.roll_dice()
+                self.take_turn(player_id, dice1, dice2)
+            else:
+                self.take_turn(player_id, 0, 0)
+        yield "human readable string"
+
 if __name__ == "__main__":
     b = Board(4)
     b.take_turn(1, 1, 2).send(None)
-    print(b)
