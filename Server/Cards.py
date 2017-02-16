@@ -51,7 +51,7 @@ class LoseMoneyCard(Card):
     def lose_amount(self):
         return self._lose_amount
 
-class GetOutJailFree(Card):
+class GetOutOfJailFreeCard(Card):
     """
     Represents a get out of jail free card. 
     """
