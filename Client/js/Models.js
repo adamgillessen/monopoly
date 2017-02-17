@@ -22,18 +22,19 @@ function Board() {
     this.players = {};
 
     // Initialize model data
-    Board.prototype.generateCells = function () {
+    Board.prototype.initCells = function () {
         // I had no choice but to put this long text here...
-        // Cant read it from a file
-        var cell_attr = '{"0":{"action_id":0,"id":0,"type":"action"},"1":{"id":1,"owner":-1,"price":100,"property_id":0,"type":"property"},"10":{"action_id":4,"id":10,"type":"action"},"11":{"id":11,"owner":-1,"price":100,"property_id":6,"type":"property"},"12":{"action_id":5,"id":12,"type":"action"},"13":{"id":13,"owner":-1,"price":100,"property_id":7,"type":"property"},"14":{"id":14,"owner":-1,"price":100,"property_id":8,"type":"property"},"15":{"id":15,"owner":-1,"price":100,"property_id":9,"type":"property"},"16":{"id":16,"owner":-1,"price":100,"property_id":10,"type":"property"},"17":{"action_id":6,"id":17,"type":"action"},"18":{"id":18,"owner":-1,"price":100,"property_id":11,"type":"property"},"19":{"id":19,"owner":-1,"price":100,"property_id":12,"type":"property"},"2":{"action_id":1,"id":2,"type":"action"},"20":{"action_id":7,"id":20,"type":"action"},"21":{"id":21,"owner":-1,"price":100,"property_id":13,"type":"property"},"22":{"action_id":8,"id":22,"type":"action"},"23":{"id":23,"owner":-1,"price":100,"property_id":14,"type":"property"},"24":{"id":24,"owner":-1,"price":100,"property_id":15,"type":"property"},"25":{"id":25,"owner":-1,"price":100,"property_id":16,"type":"property"},"26":{"id":26,"owner":-1,"price":100,"property_id":17,"type":"property"},"27":{"id":27,"owner":-1,"price":100,"property_id":18,"type":"property"},"28":{"action_id":9,"id":28,"type":"action"},"29":{"id":29,"owner":-1,"price":100,"property_id":19,"type":"property"},"3":{"id":3,"owner":-1,"price":100,"property_id":1,"type":"property"},"30":{"action_id":10,"id":30,"type":"action"},"31":{"id":31,"owner":-1,"price":100,"property_id":20,"type":"property"},"32":{"id":32,"owner":-1,"price":100,"property_id":21,"type":"property"},"33":{"action_id":11,"id":33,"type":"action"},"34":{"id":34,"owner":-1,"price":100,"property_id":22,"type":"property"},"35":{"id":35,"owner":-1,"price":100,"property_id":23,"type":"property"},"36":{"action_id":12,"id":36,"type":"action"},"37":{"id":37,"owner":-1,"price":100,"property_id":24,"type":"property"},"38":{"action_id":13,"id":38,"type":"action"},"39":{"id":39,"owner":-1,"price":100,"property_id":25,"type":"property"},"4":{"action_id":2,"id":4,"type":"action"},"5":{"id":5,"owner":-1,"price":100,"property_id":2,"type":"property"},"6":{"id":6,"owner":-1,"price":100,"property_id":3,"type":"property"},"7":{"action_id":3,"id":7,"type":"action"},"8":{"id":8,"owner":-1,"price":100,"property_id":4,"type":"property"},"9":{"id":9,"owner":-1,"price":100,"property_id":5,"type":"property"}}';
-        cell_attr = JSON.parse(cell_attr);
+        // Source: "Client/data/model.json"
+        var cellsData = '{"0":{"action_id":0,"id":0,"type":"action"},"1":{"id":1,"price":60,"property_id":0,"estate":0,"type":"property"},"10":{"action_id":5,"id":10,"type":"action"},"11":{"id":11,"price":140,"property_id":5,"estate":2,"type":"property"},"12":{"action_id":6,"id":12,"type":"action"},"13":{"id":13,"price":140,"property_id":6,"estate":2,"type":"property"},"14":{"id":14,"price":160,"property_id":7,"estate":2,"type":"property"},"15":{"action_id":7,"id":15,"type":"action"},"16":{"id":16,"price":180,"property_id":8,"estate":3,"type":"property"},"17":{"action_id":8,"id":17,"type":"action"},"18":{"id":18,"price":180,"property_id":9,"estate":3,"type":"property"},"19":{"id":19,"price":200,"property_id":10,"estate":3,"type":"property"},"2":{"action_id":1,"id":2,"type":"action"},"20":{"action_id":9,"id":20,"type":"action"},"21":{"id":21,"price":220,"property_id":11,"estate":4,"type":"property"},"22":{"action_id":10,"id":22,"type":"action"},"23":{"id":23,"price":220,"property_id":12,"estate":4,"type":"property"},"24":{"id":24,"price":240,"property_id":13,"estate":4,"type":"property"},"25":{"action_id":11,"id":25,"type":"action"},"26":{"id":26,"price":260,"property_id":14,"estate":5,"type":"property"},"27":{"id":27,"price":260,"property_id":15,"estate":5,"type":"property"},"28":{"action_id":12,"id":28,"type":"action"},"29":{"id":29,"price":280,"property_id":16,"estate":5,"type":"property"},"3":{"id":3,"price":60,"property_id":1,"estate":0,"type":"property"},"30":{"action_id":13,"id":30,"type":"action"},"31":{"id":31,"price":300,"property_id":17,"estate":6,"type":"property"},"32":{"id":32,"price":300,"property_id":18,"estate":6,"type":"property"},"33":{"action_id":14,"id":33,"type":"action"},"34":{"id":34,"price":320,"property_id":19,"estate":6,"type":"property"},"35":{"action_id":15,"id":35,"type":"action"},"36":{"action_id":16,"id":36,"type":"action"},"37":{"id":37,"price":350,"property_id":20,"estate":7,"type":"property"},"38":{"action_id":17,"id":38,"type":"action"},"39":{"id":39,"price":400,"property_id":21,"estate":7,"type":"property"},"4":{"action_id":2,"id":4,"type":"action"},"5":{"action_id":3,"id":5,"type":"action"},"6":{"id":6,"price":100,"property_id":2,"estate":1,"type":"property"},"7":{"action_id":4,"id":7,"type":"action"},"8":{"id":8,"price":100,"property_id":3,"estate":1,"type":"property"},"9":{"id":9,"price":120,"property_id":4,"estate":1,"type":"property"}}';
+
+        cellsData = JSON.parse(cellsData);
 
         for (var lop = 0; lop < 40; lop++) {
-            if (cell_attr[lop].type == "property") {
+            if (cellsData[lop].type == "property") {
                 // is a property
-                this.cells[lop] = new Property(lop, cell_attr[lop].property_id, cell_attr[lop].price);
+                this.cells[lop] = new Property(lop, cellsData[lop].property_id, cellsData[lop].estate, cellsData[lop].price);
             } else {
-                this.cells[lop] = new Action(lop, cell_attr[lop].action_id);
+                this.cells[lop] = new Action(lop, cellsData[lop].action_id);
             }
         }
     };
@@ -87,7 +88,7 @@ function Board() {
  * @param {int} property_id
  * @constructor
  */
-function Property(cell_id, property_id, price) {
+function Property(cell_id, property_id, estate, price) {
     // An unique ID for every cell
     // Also represents the position on board
     this.id = cell_id;
@@ -95,6 +96,7 @@ function Property(cell_id, property_id, price) {
 
     // Property specific fields
     this.property_id = property_id;
+    this.estate = estate;
     this.price = price;
     /*
      -1: Nobody

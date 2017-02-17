@@ -24,7 +24,7 @@ function Game() {
      * @param {int} num: number of players
      */
     Game.prototype.initGame = function (num) {
-        this.model.generateCells();
+        this.model.initCells();
 
         this.viewController.addCallbacksToButtons();
         this.viewController.createPlayers(num);
