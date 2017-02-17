@@ -1,3 +1,27 @@
+//summary
+{
+    "type": "board_sync",
+    "text": "human-readable explanation",
+    "cells": {
+        // action square
+        "0": {
+            "action_id" : 0,
+            "id": 0,
+            "type": "action",
+        },
+
+        // property square
+        "1": {
+            "id": 1,
+            "owner": -1,
+            "price": 100,
+            "property_id": 0,
+            "type": "property"
+        },
+    }
+}
+
+
 {
     "type": "board_sync",
     "text": "human-readable explanation of what happened",
