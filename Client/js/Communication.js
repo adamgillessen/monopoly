@@ -2,7 +2,7 @@
  * Created by jeff on 07/02/2017.
  * WebSocket demo
  */
-
+"use strict";
 
 function Connector() {
     this.webSocket = undefined;
@@ -49,12 +49,9 @@ function Connector() {
  * data could be JSON object or JSON string
  * @param {Object|string} data
  */
-parseMessage = function (data) {
+function parseMessage(data) {
     parseMessage._parseTree = {
         "player_join_ack": function (data) {
-            // Add player to board's model
-            game.model.addPlayer(data["your_id"]);
-
             // todo: remove -2 part
             if (data["key"] === game.connector.key || data["key"] == -2) {
                 game.clientID = data['your_id'];
@@ -70,7 +67,7 @@ parseMessage = function (data) {
             //todo
         },
         "your_turn": function (data) {
-            if (data["source"] === game.clientID) {
+            if (game.isMyTurn(data["source"])) {
                 game.viewController.yourTurn();
             }
         },
@@ -78,14 +75,20 @@ parseMessage = function (data) {
             // todo: show roll result
             console.log(">>>>>\nRolled", (data["result"][0] + data["result"][1]));
 
-            var landedOn = game.model.movePlayer(data);
+            // Update model
+            var landedOn = game.model.movePlayer(data["source"], data["result"]);
+            // Update view
             game.viewController.movePlayer(data["source"], landedOn);
 
-            // todo
+            if (!game.isMyTurn(data["source"])) {
+                return;
+            }
+            // If its my turn, show buy window
             if (game.model.selectCell(landedOn).type == "property") {
                 game.viewController.promptBuyWindow(landedOn);
             } else {
                 console.log(">>>>>\nLanded on action");
+                game.viewController.showEndTurnButton();
             }
         },
         "buy_ack": function (data) {
@@ -104,26 +107,21 @@ parseMessage = function (data) {
     if (typeof data == "string") {
         data = JSON.parse(data);
     }
-    // console
-    console.log("Recv\n", data);
     (parseMessage._parseTree[data["type"]])(data);
-};
+}
 
 /**
  * Send message to server
  * msg could be JSON string or JSON object
  * @param {string|Object} msg
  */
-sendMessage = function (msg) {
-    // console
-    console.log("Sent\n", msg);
-
+function sendMessage(msg) {
     if (typeof msg == "string") {
         game.connector.webSocket.send(msg);
     } else {
         game.connector.webSocket.send(JSON.stringify(msg));
     }
-};
+}
 
 /**
  * Generate some common field of a message
@@ -132,7 +130,7 @@ sendMessage = function (msg) {
  * @returns {{}}
  * @private
  */
-_generateHeader = function (type, include) {
+function _generateHeader(type, include) {
     var obj = {};
     obj.type = type;
 
@@ -151,7 +149,7 @@ _generateHeader = function (type, include) {
     }
 
     return obj;
-};
+}
 
 /**
  *
@@ -159,7 +157,7 @@ _generateHeader = function (type, include) {
  * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
  * @returns {*}
  */
-generateMessage = function (type, parameter) {
+function generateMessage(type, parameter) {
     generateMessage._messageTree = {
         "start_game_now": function () {
             return _generateHeader("start_game_now", null);
@@ -191,4 +189,4 @@ generateMessage = function (type, parameter) {
     };
 
     return generateMessage._messageTree[type](parameter);
-};
+}

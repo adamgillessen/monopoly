@@ -1,6 +1,7 @@
 /**
  * Created by jeff on 09/02/2017.
  */
+"use strict";
 
 /**
  * Used to update lobby display's info

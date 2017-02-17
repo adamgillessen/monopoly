@@ -1,6 +1,7 @@
 /**
  * Created by jeff on 13/02/2017.
  */
+"use strict";
 
 function simulateServerEvent(obj) {
     parseMessage(obj);
