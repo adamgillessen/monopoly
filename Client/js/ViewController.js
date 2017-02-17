@@ -1,6 +1,7 @@
 /**
  * Created by jeff on 13/02/2017.
  */
+"use strict";
 
 /**
  * Layer: View and Controller
@@ -11,7 +12,7 @@ function ViewController() {
     ViewController.prototype.createPlayers = function (num) {
         var template = '<div id="player-%d" class="player">%d</div>';
 
-        for (var lop = 0; lop < num; lop++) {
+        for (var lop = 1; lop <= num; lop++) {
             $("#cell-0").append($(sprintf(template, lop, lop)));
         }
 
@@ -80,6 +81,10 @@ function ViewController() {
         selectPlayer(player).detach().appendTo(selectCell(to));
     };
 
+    /**
+     * If its current client's turn
+     * Show control pane
+     */
     ViewController.prototype.yourTurn = function () {
         $(".your_turn").show();
         $("#prompt-buy").hide();

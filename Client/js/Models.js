@@ -1,6 +1,7 @@
 /**
  * Created by nooje on 2/8/2017.
  */
+"use strict";
 
 /**
  * Layer: Model
@@ -50,6 +51,12 @@ function Board() {
         this.players[id] = new Player(id);
     };
 
+    Board.prototype.initPlayer = function (num) {
+        for (var lop = 1; lop <= num; lop++) {
+            this.addPlayer(lop);
+        }
+    };
+
     Board.prototype.selectCell = function (id) {
         return this.cells[id];
     };
@@ -71,13 +78,16 @@ function Board() {
         return this.players[id].position;
     };
 
-    Board.prototype.movePlayer = function (jsonObj) {
+    /**
+     *
+     * @param {int} source
+     * @param {[int, int]} result
+     */
+    Board.prototype.movePlayer = function (source, result) {
         // Update model
-        var landedOn = this.selectPlayer(jsonObj["source"]).move(jsonObj["result"].reduce(function (a, b) {
+        return this.selectPlayer(source).move(result.reduce(function (a, b) {
             return a + b;
         }, 0));
-
-        return landedOn;
     };
 }
 

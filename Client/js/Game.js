@@ -1,6 +1,7 @@
 /**
  * Codes that control the whole game
  */
+"use strict";
 
 function Game() {
     /**
@@ -25,9 +26,21 @@ function Game() {
      */
     Game.prototype.initGame = function (num) {
         this.model.initCells();
+        this.model.initPlayer(num);
 
         this.viewController.addCallbacksToButtons();
         this.viewController.createPlayers(num);
+
+        console.log(this.model);
+    };
+
+    /**
+     * Is current turn my turn?
+     * @param {int} ID
+     * @returns {boolean}
+     */
+    Game.prototype.isMyTurn = function (ID) {
+        return this.clientID == ID;
     }
 }
 
