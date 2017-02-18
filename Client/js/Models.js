@@ -31,7 +31,7 @@ function Board() {
         cellsData = JSON.parse(cellsData);
 
         for (var lop = 0; lop < 40; lop++) {
-            if (cellsData[lop].type == "property") {
+            if (cellsData[lop].type === "property") {
                 // is a property
                 this.cells[lop] = new Property(lop, cellsData[lop].property_id, cellsData[lop].estate, cellsData[lop].price);
             } else {
@@ -130,6 +130,7 @@ function Action(cell_id, action_id) {
 
     // Action specific fields
     this.action_id = action_id;
+    this.info = undefined;
 }
 
 
