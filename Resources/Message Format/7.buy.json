@@ -3,5 +3,6 @@
     // ID of client who bought
     "source": 1,
     // ID of property bought
+    // This is not property id, just board ID (range from [0, 39])
     "property": 1
 }
