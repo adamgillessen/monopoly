@@ -18,7 +18,7 @@ function Connector() {
      * @param {string} port
      */
     Connector.prototype.connect = function (ip, port) {
-        if (this.webSocket != undefined) {
+        if (this.webSocket !== undefined) {
             this.webSocket.close();
             this.webSocket = undefined;
         }
