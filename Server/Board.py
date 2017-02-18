@@ -129,7 +129,9 @@ class Board:
             MoveCard(random.choice(list(Board.UTIL_POS_INFO)), "Move to a utility"),
         } | {
             MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board.PROPERTY_POS_INFO)) for _ in range(3))
-        }             
+        }
+
+        self._current_player = None           
 
     def __str__(self):
         """
@@ -149,7 +151,7 @@ class Board:
         on each dice. 
         :return a tuple of ints of length 2
         """
-        d1, d2 = (random.randint(1, 7) for _ in range(2))
+        d1, d2 = (random.randint(1, 6) for _ in range(2))
         return d1, d2 
 
     def move_player(self, player_id, new_pos):
@@ -271,9 +273,15 @@ class Board:
         explains what happened in this turn. This return will also raise a 
         StopIteration exception. 
         """
+        if not self._current_player:
+            self._current_player = player_id
+            self._human_string = []
+        
+        self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
         if dice1 == dice2:
+            self._human_string.append("Player {} rolled a double.".format(player_id))
             player.double_roll = True 
             re_check_location = True
         else:
@@ -283,6 +291,8 @@ class Board:
         if new_pos > 39:
             self.give_money(player_id, Board.GO_AMOUNT)
             new_pos %= 40
+            self._human_string.append("Player {} passed go and got $200.".format(player_id))
+        self._human_string.append("Player {} landed on position {}.".format(player_id, new_pos))
         self.move_player(player_id, new_pos)
 
         square = self.get_square(new_pos)
@@ -303,6 +313,9 @@ class Board:
                     owner = self._players[square.owner]
                     rent = square.base_rent * (2**owner.num_transports())
 
+                self._human_string.append("Player {} paid ${} to {} in rent.".format(
+                    player_id, rent, square.owner))
+
                 self.give_money(square.owner, rent)
                 self.take_money(player_id, rent)
             else:
@@ -312,6 +325,9 @@ class Board:
                     square.owner = player_id
                     self.take_money(player_id, cost)
                     new_owner = self._players[player_id]
+                    self._human_string.append("Player {} bought square {}.".format(
+                        player_id, new_pos))
+                    yield new_pos
                 
                 elif buy_auction == "auction":
                     highest_bidder = yield None 
@@ -319,6 +335,8 @@ class Board:
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
+                else:
+                    print("buy_auction:", buy_auction)
 
                 square.is_owned = True
 
@@ -331,12 +349,18 @@ class Board:
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
-                card = random.choice(self._action_cards)
+                if square.action == ActionSquare.CHEST:
+                    self._human_string.append("Player {} drew a Chest card".format(
+                        player_id))
+                elif square.action == ActionSquare.CHANCE:
+                    self._human_string.append("Player {} drew a Chance card".format(
+                        player_id))
+
+                card = random.choice(list(self._action_cards))
                 if card.card_type == Card.MOVE:
                     new_pos = card.move_to_pos
                     self.move_player(player_id, new_pos)
                     re_check_location = True
-
                 elif card.card_type == Card.GAIN_MONEY:
                     amount = card.gain_amount
                     self.give_money(player_id, amount)
@@ -345,21 +369,33 @@ class Board:
                     self.take_money(player_id, amount)
                 elif card.card_type == Card.GET_OUT_OF_JAIL:
                     player.free = True
+
+                self._human_string.append(card.text)
+
             elif square.action == ActionSquare.JAIL:
                 self.move_player(player_id, Board.JAIL_POS)
+                self._human_string.append("Player {} went to jail".format(
+                        player_id))
             elif square.action == ActionSquare.STAY:
-                pass
+                self._human_string.append("Player {} got free parking".format(
+                        player_id))
             elif square.action == ActionSquare.TAX:
                 tax = 100 * (2**Board.TAX_POS.index(new_pos))
+                self.take_money(player_id, tax)
+                self._human_string.append("Player {} paid {} in tax".format(
+                        player_id, tax))
 
         if re_check_location:
             if player.double_roll:
                 player.double_roll = False
                 dice1, dice2 = self.roll_dice()
-                self.take_turn(player_id, dice1, dice2)
+                re_check_turn = self.take_turn(player_id, dice1, dice2)
             else:
-                self.take_turn(player_id, 0, 0)
-        yield "human readable string"
+                re_check_turn = self.take_turn(player_id, 0, 0)
+            yield from re_check_turn
+        self._human_string = ["--TURN REPORT--"] + self._human_string + ["--END TURN REPORT--"]
+        self._current_player = None
+        yield "\n".join(self._human_string)
 
 if __name__ == "__main__":
     b = Board(4)

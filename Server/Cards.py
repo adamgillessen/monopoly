@@ -14,6 +14,10 @@ class Card:
     def card_type(self):
         return self._card_type
 
+    @property
+    def text(self):
+        return self._text
+
 class MoveCard(Card):
     """
     Represents a card which moves a player to a new position
