@@ -26,7 +26,39 @@ function setContextValue(name, value) {
 }
 
 function getContextValue(name) {
-    return $("#context-" + name).text();
+    var DOM = $("#context-" + name);
+    var tmp = DOM.text();
+    DOM.text("");
+    return tmp;
+}
+
+/**
+ * Show details of a given cell to the detail-pane section in HTML
+ * @param {int} id
+ */
+function showCellDetail(id) {
+    var cell = game.model.selectCell(id);
+    if (cell.type === "property") {
+        $("#property").show();
+        $("#action").hide();
+
+        $("#pane-property-id").text(cell.id);
+        $("#pane-property-name").text("TBD: Property");
+        $("#pane-property-estate").text(cell.estate);
+        $("#pane-property-price").text(cell.price);
+        var owner = cell.owner;
+        if (owner === -1) {
+            $("#pane-property-owner").text("No owner");
+        } else {
+            $("#pane-property-owner").text(owner);
+        }
+    } else {
+        $("#action").show();
+        $("#property").hide();
+
+        $("#pane-action-id").text(cell.id);
+        $("#pane-action-decrip").text("Still empty");
+    }
 }
 
 /**

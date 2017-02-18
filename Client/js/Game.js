@@ -30,8 +30,6 @@ function Game() {
 
         this.viewController.addCallbacksToButtons();
         this.viewController.createPlayers(num);
-
-        console.log(this.model);
     };
 
     /**
@@ -40,7 +38,7 @@ function Game() {
      * @returns {boolean}
      */
     Game.prototype.isMyTurn = function (ID) {
-        return this.clientID == ID;
+        return this.clientID === ID;
     }
 }
 
