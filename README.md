@@ -7,6 +7,7 @@
 * Adam Gillessen
 
 Meeting Minutes can be found [here](https://docs.google.com/document/d/15NweTtgGW-K3wx3XQwjjnxLpIuCDaAU5f4-fV1tkW5c/edit?usp=sharing)
+Team Charter can be found <a href="https://docs.google.com/document/d/1iONwklPpaQ7gQrXMIx4_vbfAziljX--6DvxdsBI8YaI/edit?usp=sharing">here</a>
 
 ## Table of content
 Client - the client which will run in a user's web-browser  
