@@ -215,7 +215,10 @@ class Board:
         on each dice. 
         :return a tuple of ints of length 2
         """
-        d1, d2 = (random.randint(1, 6) for _ in range(2))
+        while True:
+            d1, d2 = (random.randint(1, 6) for _ in range(2))
+            if d1 != d2:
+                break
         return d1, d2 
 
     def move_player(self, player_id, new_pos):
@@ -362,11 +365,15 @@ class Board:
         square = self.get_square(new_pos)
 
         if square.square_type in (Square.PROPERTY, Square.UTILITY, Square.TRANSPORT):
+            print(">>Square is ownable square")
             # can be bought or may be bought already
             if square.is_owned:
+                print(">>Square is owned")
                 if square.square_type == Square.PROPERTY:
+                    print(">>Square is a property square")
                     rent = square.base_rent * (2**square.num_houses)
                 elif square.square_type == Square.UTILITY:
+                    print(">>Square is a utility square")
                     dice_roll_sum = sum(self.roll_dice())
                     owner = self._players[square.owner]
                     if owner.num_utils() == 1:
@@ -374,6 +381,7 @@ class Board:
                     else:
                         rent = dice_roll_sum * square.two_owned
                 elif square.square_type == Square.TRANSPORT:
+                    print(">>Square is a transport square")
                     owner = self._players[square.owner]
                     rent = square.base_rent * (2**owner.num_transports())
 
@@ -383,8 +391,10 @@ class Board:
                 self.give_money(square.owner, rent)
                 self.take_money(player_id, rent)
             else:
+                print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
                 if buy_auction == "buy":
+                    print(">>User will buy")
                     cost = square.price
                     square.owner = player_id
                     self.take_money(player_id, cost)
@@ -394,13 +404,15 @@ class Board:
                     yield new_pos
                 
                 elif buy_auction == "auction":
+                    print(">>User will auction")
                     highest_bidder = yield None 
                     bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
                 else:
-                    print("buy_auction:", buy_auction)
+                    print(">>Expecting buy or auction but got '%s'"%(str(buy_auction)))
+                    raise Exception("Out of turn message")
 
                 square.is_owned = True
 
@@ -412,7 +424,9 @@ class Board:
                     new_owner.add_transport(Square)
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
+            print(">>Square is action square")
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
+                print(">>Square is chest | chance")
                 if square.action == ActionSquare.CHEST:
                     self._human_string.append("Player {} drew a Chest card".format(
                         player_id))
@@ -437,22 +451,29 @@ class Board:
                 self._human_string.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
+                print(">>Sqaure is Go to Jail square")
                 self.move_player(player_id, Board.JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
             elif square.action == ActionSquare.STAY:
+                print(">>Sqaure is free parking")
                 self._human_string.append("Player {} got free parking".format(
                         player_id))
             elif square.action == ActionSquare.TAX:
+                print(">>Sqaure is get taxed square")
                 tax = 100 * (2**Board.TAX_POS.index(new_pos))
                 self.take_money(player_id, tax)
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
+            yield "action_square" # pauses generator to be in sync with server
 
+        re_check_location = False # TODO double roll mechanism
         if re_check_location:
             if player.double_roll:
                 player.double_roll = False
                 dice1, dice2 = self.roll_dice()
+                self._human_string.append("Player {} rolled again and got {} and {}".format(
+                    player_id, dice1, dice2))
                 re_check_turn = self.take_turn(player_id, dice1, dice2)
             else:
                 re_check_turn = self.take_turn(player_id, 0, 0)
