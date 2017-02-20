@@ -117,6 +117,12 @@ def recv_message(client, server, message):
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         if s.num_players() == 4:
             s.start_game()
+
+            #board_sync_json = s.game_state()
+            #board_sync_string = json.dumps(board_sync_json)
+            #server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
+
             response_json = {
                 "type": "your_turn",
                 "source": 1,
@@ -139,6 +145,10 @@ def recv_message(client, server, message):
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         
+        #board_sync_json = s.game_state()
+        #board_sync_string = json.dumps(board_sync_json)
+        #server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
         response_json = {
             "type": "your_turn",
             "source": 1,
@@ -149,10 +159,9 @@ def recv_message(client, server, message):
     elif json_string["type"] == "roll":
         player_id = json_string["source"]
         dice1, dice2 = s.roll_dice()
-        turn = s.take_turn(player_id, dice1, dice2)
-        result = turn.send(None)
         
-        s.current_turn_generator = turn
+        s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
+        s.current_turn_generator.send(None)
         
         response_json = {
             "type": "roll_result",

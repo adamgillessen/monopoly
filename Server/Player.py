@@ -37,6 +37,8 @@ class Player:
     @money.setter
     def money(self, new_amount):
         self._money = new_amount
+        if self._money <= 0:
+            raise PlayerLostError
 
     @property
     def free(self):
@@ -114,3 +116,10 @@ class Player:
         :return the number of utilities the player owns
         """
         return len(self._utils)
+
+class PlayerLostError(Exception):
+    """
+    An exception class which will be raised if a player's money goes below 0
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
