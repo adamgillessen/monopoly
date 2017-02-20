@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>Monopoly</title>
 
+    <!--Libraries-->
     <script src="lib/jquery-3.1.1.js"></script>
     <script src="lib/sprintf.js"></script>
+
+    <!--Codes-->
     <script src="js/Helpers.js"></script>
     <script src="js/Models.js"></script>
     <script src="js/ViewController.js"></script>
@@ -49,80 +52,86 @@
     <div id="main-board">
         <div id="top" class="float">
             <div id="cell-10" class="corner cell top_left_corner">
-              Jail
+                <span>Jail</span>
             </div>
             <div id="top_middle_container" class="h_container float">
-                <div id="cell-11" class="cell">The Spire</div>
-                <div id="cell-12" class="cell">Telecom</div>
-                <div id="cell-13" class="cell">Phoenix Park</div>
-                <div id="cell-14" class="cell">IFSC</div>
-                <div id="cell-15" class="cell">Dublin Airport</div>
-                <div id="cell-16" class="cell">The Gaiety Theatre</div>
-                <div id="cell-17" class="cell">Community Chest</div>
-                <div id="cell-18" class="cell">The Olympia Theatre</div>
-                <div id="cell-19" class="cell">The Abbey Theatre</div>
+                <div id="cell-11" class="cell"><span>The Spire</span></div>
+                <div id="cell-12" class="cell"><span>Telecom</span></div>
+                <div id="cell-13" class="cell"><span>Phoenix Park</span></div>
+                <div id="cell-14" class="cell"><span>IFSC</span></div>
+                <div id="cell-15" class="cell"><span>Dublin Airport</span></div>
+                <div id="cell-16" class="cell"><span>The Gaiety Theatre</span></div>
+                <div id="cell-17" class="cell"><span>Community Chest</span></div>
+                <div id="cell-18" class="cell"><span>The Olympia Theatre</span></div>
+                <div id="cell-19" class="cell"><span>The Abbey Theatre</span></div>
             </div>
             <div id="cell-20" class="corner cell top_right_corner">
-              Free Parking
+                <span>Free Parking</span>
             </div>
         </div>
         <div id="middle" class="float">
             <div id="middle_left_container" class="v_container">
-                <div id="cell-9" class="cell">Rathgar Road</div>
-                <div id="cell-8" class="cell">Clontarf Road</div>
-                <div id="cell-7" class="cell">Chance</div>
-                <div id="cell-6" class="cell">Rathmines Road</div>
-                <div id="cell-5" class="cell">The Luas</div>
-                <div id="cell-4" class="cell">Income Tax</div>
-                <div id="cell-3" class="cell">Raheny</div>
-                <div id="cell-2" class="cell">Community Chest</div>
-                <div id="cell-1" class="cell">Rathfarnam</div>
+                <div id="cell-9" class="cell"><span>Rathgar Road</span></div>
+                <div id="cell-8" class="cell"><span>Clontarf Road</span></div>
+                <div id="cell-7" class="cell"><span>Chance</span></div>
+                <div id="cell-6" class="cell"><span>Rathmines Road</span></div>
+                <div id="cell-5" class="cell"><span>The Luas</span></div>
+                <div id="cell-4" class="cell"><span>Income Tax</span></div>
+                <div id="cell-3" class="cell"><span>Raheny</span></div>
+                <div id="cell-2" class="cell"><span>Community Chest</span></div>
+                <div id="cell-1" class="cell"><span>Rathfarnam</span></div>
             </div>
             <div id="middle_middle" class="middle">
             </div>
             <div id="middle_right_container" class="v_container ">
-                <div id="cell-21" class="cell">Croke Park</div>
-                <div id="cell-22" class="cell">Chance</div>
-                <div id="cell-23" class="cell">The Point Depot</div>
-                <div id="cell-24" class="cell">St. Stephen's Green</div>
-                <div id="cell-25" class="cell">Dublin Bus</div>
-                <div id="cell-26" class="cell">Jervis Street S.C</div>
-                <div id="cell-27" class="cell">Liffey Valley S.C</div>
-                <div id="cell-28" class="cell">Internet</div>
-                <div id="cell-29" class="cell">Dundrum S.C</div>
+                <div id="cell-21" class="cell"><span>Croke Park</span></div>
+                <div id="cell-22" class="cell"><span>Chance</span></div>
+                <div id="cell-23" class="cell"><span>The Point Depot</span></div>
+                <div id="cell-24" class="cell"><span>St. Stephen's Green</span></div>
+                <div id="cell-25" class="cell"><span>Dublin Bus</span></div>
+                <div id="cell-26" class="cell"><span>Jervis Street S.C</span></div>
+                <div id="cell-27" class="cell"><span>Liffey Valley S.C</span></div>
+                <div id="cell-28" class="cell"><span>Internet</span></div>
+                <div id="cell-29" class="cell"><span>Dundrum S.C</span></div>
             </div>
         </div>
         <div id="bottom" class="float">
             <div id="cell-0" class="corner cell bottom_left_corner">
-              GO
+                <span>GO</span>
             </div>
             <div id="bottom_middle_container" class="h_container float">
-                <div id="cell-39" class="cell">Shrewsbury Road</div>
-                <div id="cell-38" class="cell">Stamp Duty</div>
-                <div id="cell-37" class="cell">Ailesbury Road</div>
-                <div id="cell-36" class="cell">Chance</div>
-                <div id="cell-35" class="cell">The Dart</div>
-                <div id="cell-34" class="cell">Grafton Street</div>
-                <div id="cell-33" class="cell">Community Chest</div>
-                <div id="cell-32" class="cell">O'Connell Street</div>
-                <div id="cell-31" class="cell">Henry Street</div>
+                <div id="cell-39" class="cell"><span>Shrewsbury Road</span></div>
+                <div id="cell-38" class="cell"><span>Stamp Duty</span></div>
+                <div id="cell-37" class="cell"><span>Ailesbury Road</span></div>
+                <div id="cell-36" class="cell"><span>Chance</span></div>
+                <div id="cell-35" class="cell"><span>The Dart</span></div>
+                <div id="cell-34" class="cell"><span>Grafton Street</span></div>
+                <div id="cell-33" class="cell"><span>Community Chest</span></div>
+                <div id="cell-32" class="cell"><span>O'Connell Street</span></div>
+                <div id="cell-31" class="cell"><span>Henry Street</span></div>
             </div>
             <div id="cell-30" class="corner cell bottom_right_corner">
-              Go to Jail
+                <span>Go to Jail</span>
             </div>
         </div>
     </div>
 
-    <div id="pane" class="border">
+    <div id="pane">
         <div id="detail-pane">
             <div id="property">
-                <div id="name">
+                <div id="property-id">
+                    ID
+                </div>
+                <div id="property-name">
                     name
                 </div>
-                <div id="owner">
+                <div id="property-estate">
+                    Estate
+                </div>
+                <div id="property-owner">
                     owner
                 </div>
-                <div id="price">
+                <div id="property-price">
                     price
                 </div>
             </div>
@@ -130,7 +139,7 @@
                 <div id="action-id">
                     Action ID
                 </div>
-                <div id="description">
+                <div id="action-description">
                     Description
                 </div>
             </div>

@@ -51,6 +51,6 @@ $(document).ready(function () {
     });
 
     $("#btn-start-now").click(function () {
-        sendMessage(generateMessage("start_game_now", null));
+        game.connector.sendMessage(generateMessage("start_game_now", null));
     });
 });

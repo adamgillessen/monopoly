@@ -47,27 +47,37 @@ function getContextValue(name) {
  * @param {int} id
  */
 function showCellDetail(id) {
+    var name = $("#cell-" + id + " span").text();
     var cell = game.model.selectCell(id);
+
     if (cell.type === "property") {
         $("#property").show();
         $("#action").hide();
 
-        $("#pane-property-id").text(cell.id);
-        $("#pane-property-name").text("TBD: Property");
-        $("#pane-property-estate").text(cell.estate);
-        $("#pane-property-price").text(cell.price);
+        $("#property-id").text(cell.id);
+
+        $("#property-name").text(name);
+
+        if (cell.estate === -1) {
+            $("#property-estate").text(" --- ");
+        } else {
+            $("#property-estate").text(cell.estate);
+        }
+
+        $("#property-price").text(cell.price);
+
         var owner = cell.owner;
         if (owner === -1) {
-            $("#pane-property-owner").text("No owner");
+            $("#property-owner").text("No owner");
         } else {
-            $("#pane-property-owner").text(owner);
+            $("#property-owner").text(owner);
         }
     } else {
         $("#action").show();
         $("#property").hide();
 
-        $("#pane-action-id").text(cell.id);
-        $("#pane-action-decrip").text("Still empty");
+        $("#action-id").text(cell.id);
+        $("#action-description").text(name);
     }
 }
 
