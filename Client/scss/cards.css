@@ -1,0 +1,21 @@
+#game-area #pane {
+  float: right;
+  margin-right: 2em;
+  position: relative;
+  margin-top: -44.3em;
+  background: #ffffff;
+  border: 1px solid #000000;
+  padding: 1em;
+}
+
+#game-area #pane div {
+  border: 0;
+}
+
+#game-area #pane #name {
+  background-color: red;
+  padding: 0.5em;
+  text-align: center;
+  color: #ffffff;
+  border: 1px solid #000000;
+}

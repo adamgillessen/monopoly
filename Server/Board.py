@@ -6,6 +6,7 @@ from Squares import *
 from Player import * 
 from Cards import * 
 import random
+import itertools 
 
 class Board:
     """
@@ -144,6 +145,69 @@ class Board:
                 s += "\n"
             s += str(square) + " "
         return s 
+
+    def game_state(self):
+        """
+        Returns a dictionary of a the game state in the "baord_sync" format.
+        """
+        msg = {
+            "type":"board_sync",
+            "cells": {},
+            "players": {},
+        }
+        for pos, info in Board.PROPERTY_POS_INFO.items():
+            price, rent, estate, property_id = info 
+            property_square = self.get_square(pos)
+            msg["cells"][str(property_id)] = {}
+            msg["cells"][str(property_id)]["type"] = "property"
+            msg["cells"][str(property_id)]["id"] = pos  
+            msg["cells"][str(property_id)]["owner"] = property_square.owner 
+            msg["cells"][str(property_id)]["price"] =  price 
+            msg["cells"][str(property_id)]["property_id"] = property_id
+
+        for pos, price in Board.TRANS_POS_INFO.items():
+            transport_square = self.get_square(pos)
+            msg["cells"][str(property_id)] = {}
+            transport_id = transport_square.square_id 
+            msg["cells"][str(property_id)]["type"] = "property"
+            msg["cells"][str(property_id)]["id"] = pos  
+            msg["cells"][str(property_id)]["owner"] = transport_square.owner 
+            msg["cells"][str(property_id)]["price"] = price 
+            msg["cells"][str(property_id)]["property_id"] = property_id
+
+        for pos, price in Board.UTIL_POS_INFO.items():
+            transport_square = self.get_square(pos)
+            msg["cells"][str(property_id)] = {}
+            transport_id = transport_square.square_id 
+            msg["cells"][str(property_id)]["type"] = "property"
+            msg["cells"][str(property_id)]["id"] = pos  
+            msg["cells"][str(property_id)]["owner"] = transport_square.owner 
+            msg["cells"][str(property_id)]["price"] = price 
+            msg["cells"][str(property_id)]["property_id"] = property_id
+
+
+        all_actions = sorted(itertools.chain(
+            Board.CHEST_POS, 
+            Board.CHANCE_POS, 
+            Board.CORNER_POS, 
+            Board.TAX_POS))
+        
+        for action_id, pos in enumerate(all_actions):
+            msg["cells"][str(action_id)] = {}
+            msg["cells"][str(action_id)]["type"] = "action"
+            msg["cells"][str(action_id)]["id"] = pos  
+            msg["cells"][str(action_id)]["action_id"] = action_id
+
+        for player_id, player in self._players.items():
+            pos = self._player_positions[player]
+            msg["players"][str(player_id)] = {}
+            msg["players"][str(player_id)]["id"] = player_id
+            msg["players"][str(player_id)]["is_in_jail"] = player.jail 
+            msg["players"][str(player_id)]["money"] = player.money 
+            msg["players"][str(player_id)]["position"] = pos 
+
+        return msg 
+
 
     def roll_dice(self):
         """
@@ -396,6 +460,7 @@ class Board:
         self._human_string = ["--TURN REPORT--"] + self._human_string + ["--END TURN REPORT--"]
         self._current_player = None
         yield "\n".join(self._human_string)
+
 
 if __name__ == "__main__":
     b = Board(4)

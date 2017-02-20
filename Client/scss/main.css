@@ -1,0 +1,9 @@
+body {
+  background: url(../images/wood.jpg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  background-height: 100%;
+  font-family: 'Roboto', sans-serif;
+}

@@ -1,0 +1,31 @@
+#control-pane {
+  position: fixed;
+  height: 5em;
+  width: 50em;
+  margin: 0 auto;
+  right: calc(50% - 25em);
+  background-color: rgba(39,39,39, 0.95);
+  bottom: 0.4em;
+  border-radius: 3px;
+  border: 1px solid #3C3C3C;
+}
+
+#control-pane button {
+  background-color: #e75a56;
+  width: 10em;
+  height: 2.2em;
+  font-size: 1.45em;
+  border: 1px solid #b73531;
+  box-shadow: 0 3px 0 0 #bd4846;
+  text-shadow: 0 1px 1px #000000;
+  color: #ffffff;
+  border-radius: 0.1em;
+  font-weight: 100;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin: 0.5em 0em 0.5em 0.6em;
+}
+
+#control-pane #prompt-buy {
+  border: 0;
+}

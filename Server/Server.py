@@ -78,6 +78,9 @@ class Server:
     def current_turn_generator(self, new_current_turn_generator):
         self._current_turn_generator = new_current_turn_generator
 
+    def game_state(self):
+        return self._board.game_state()
+
 
 def new_client(client, server):
     """
@@ -111,7 +114,7 @@ def recv_message(client, server, message):
             "game_start" : False if s.num_players() < 4 else True,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         if s.num_players() == 4:
             s.start_game()
             response_json = {
@@ -119,7 +122,7 @@ def recv_message(client, server, message):
                 "source": 1,
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
 
     elif json_string["type"] == "start_game_now":
@@ -134,14 +137,14 @@ def recv_message(client, server, message):
 
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         
         response_json = {
             "type": "your_turn",
             "source": 1,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
     
     elif json_string["type"] == "roll":
         player_id = json_string["source"]
@@ -160,7 +163,7 @@ def recv_message(client, server, message):
         }
 
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
     elif json_string["type"] == "buy":
         property_id = s.current_turn_generator.send("buy")
@@ -171,11 +174,17 @@ def recv_message(client, server, message):
         }
 
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
     
     elif json_string["type"] == "end_turn":
+        board_sync_json = s.game_state()
         human_string = s.current_turn_generator.send(None)
+        board_sync_json["text"] = human_string
+
+        board_sync_string = json.dumps(board_sync_json)
+        server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
         print(human_string)
         # TODO Build up board_sync message and send it to all
         s.next_player()
@@ -185,7 +194,7 @@ def recv_message(client, server, message):
             "source": new_current_player_id,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print(response_json_string)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
 if __name__ == "__main__":
     s = Server()
