@@ -185,7 +185,7 @@ class Board:
             msg["cells"][str(property_id)]["price"] = price 
             msg["cells"][str(property_id)]["property_id"] = property_id
 
-
+        """
         all_actions = sorted(itertools.chain(
             Board.CHEST_POS, 
             Board.CHANCE_POS, 
@@ -196,7 +196,7 @@ class Board:
             msg["cells"][str(action_id)] = {}
             msg["cells"][str(action_id)]["type"] = "action"
             msg["cells"][str(action_id)]["id"] = pos  
-            msg["cells"][str(action_id)]["action_id"] = action_id
+            msg["cells"][str(action_id)]["action_id"] = action_id"""
 
         for player_id, player in self._players.items():
             pos = self._player_positions[player]
