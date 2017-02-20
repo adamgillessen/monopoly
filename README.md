@@ -27,5 +27,5 @@ Resources - assorted development information
 4. ...
 
 ## Presentation 1
-* <href="https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1"> Slides </a>
-* <href="https://docs.google.com/document/d/1rljt7p8KCkek8ENmtErJBlQZPxW9u_-9shjUD6qOVSg/edit">Write-up</a>		
+* [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
+* [Write-up](https://docs.google.com/document/d/1rljt7p8KCkek8ENmtErJBlQZPxW9u_-9shjUD6qOVSg/edit)

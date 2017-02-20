@@ -414,9 +414,11 @@ class Board:
                     new_owner = self._players[highest_bidder]
 
                 elif buy_auction == "no_buy":
+                    print(">>User will not buy")
                     selling_square = False
                     self._human_string.append("Player {} didn't buy square {}.".format(
                         player_id, new_pos))
+                    yield None
 
                 else:
                     print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
