@@ -24,7 +24,7 @@ Resources - assorted development information
 	> }  
 3. Update the login screen background due to issues with sizing of the browser window.
 
-4. ...
+4. Bug: the client gives the option to buy a property even though another player has bought it already
 
 ## Presentation 1
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
