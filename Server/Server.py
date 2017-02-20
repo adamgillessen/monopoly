@@ -6,9 +6,9 @@ with the Clients.
 import websocket_server
 import json
 import random
+from Board import * 
 
-
-#Run to install the websocket_server:
+#Run to install the websocket server:
 #    sudo pip3 install websocket-server
 
 s = None
@@ -44,13 +44,42 @@ class Server:
         """
         self._board = Board(self.num_players())
 
-    def take_turn(self, player_id):
+    def take_turn(self, player_id, dice1, dice2):
         """
         Has the board run the next turn. 
 
         :param player_id the id of the player whose turn it is
         """
-        self._board.take_turn(player_id)
+       
+        print("D1, D2 : {}, {}".format(dice1, dice2))
+        turn = self._board.take_turn(player_id, dice1, dice2)
+        yield from turn
+
+    def current_player(self):
+        """
+        Returns the player whose turn it currently is.
+        :return the id of the current player
+        """
+        return self._current_turn
+
+    def roll_dice(self):
+        return self._board.roll_dice()
+
+    def next_player(self):
+        self._current_turn += 1
+        if self._current_turn == self.num_players() + 1:
+            self._current_turn = 1
+
+    @property
+    def current_turn_generator(self):
+        return self._current_turn_generator
+
+    @current_turn_generator.setter
+    def current_turn_generator(self, new_current_turn_generator):
+        self._current_turn_generator = new_current_turn_generator
+
+    def game_state(self):
+        return self._board.game_state()
 
 
 def new_client(client, server):
@@ -59,7 +88,7 @@ def new_client(client, server):
     :param client - the new client dictionary
     :param server - a reference to the WebSocket Server
     """
-    print("A new client {} has joined".format(client))
+    pass # print("A new client {} has joined".format(client))
 
 
 
@@ -85,16 +114,19 @@ def recv_message(client, server, message):
             "game_start" : False if s.num_players() < 4 else True,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         if s.num_players() == 4:
+            s.start_game()
             response_json = {
                 "type": "your_turn",
                 "source": 1,
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"))
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
 
     elif json_string["type"] == "start_game_now":
+        s.start_game()
         response_json = {
             "type": "player_join_ack",
             "key" : -1,
@@ -105,82 +137,64 @@ def recv_message(client, server, message):
 
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         
         response_json = {
             "type": "your_turn",
             "source": 1,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+    
     elif json_string["type"] == "roll":
+        player_id = json_string["source"]
+        dice1, dice2 = s.roll_dice()
+        turn = s.take_turn(player_id, dice1, dice2)
+        result = turn.send(None)
+        if result == "buy_auction":
+            s.current_turn_generator = turn
+        else:
+            print("String:", result)
+
         response_json = {
             "type": "roll_result",
-            "source": json_string["source"],
-            "result": [random.randint(1,6), random.randint(1,6)],
+            "source": player_id,
+            "result": [dice1, dice2],
         }
 
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
+    elif json_string["type"] == "buy":
+        property_id = s.current_turn_generator.send("buy")
+        response_json = {
+            "type": "buy_ack",
+            "source": s.current_player(),
+            "property": property_id,
+        }
 
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+    
     elif json_string["type"] == "end_turn":
-        turn = json_string["source"]
+        board_sync_json = s.game_state()
+        human_string = s.current_turn_generator.send(None)
+        board_sync_json["text"] = human_string
+
+        board_sync_string = json.dumps(board_sync_json)
+        server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
+        print(human_string)
+        # TODO Build up board_sync message and send it to all
+        s.next_player()
+        new_current_player_id = s.current_player()
         response_json = {
             "type": "your_turn",
-            "source": 1 if turn == s.num_players() else turn + 1,
+            "source": new_current_player_id,
         }
         response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
-
-    elif json_string["type"] == "auction":
-        response_json = {
-            "type": "auction_start",
-            "property": json_string["property"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
-
-    elif json_string["type"] == "bid":
-        response_json = {
-            "type": "bid_ack",
-            "source": json_string["source"],
-            "property": json_string["property"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
-    elif json_string["type"] == "build_house":
-        response_json = {
-            "type": "build_house_ack",
-            "source": json_string["source"],
-            "property": json_string["property"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
-    elif json_string["type"] == "sell_house":
-        response_json = {
-            "type": "sell_house_ack",
-            "source": json_string["source"],
-            "property": json_string["property"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
-    elif json_string["type"] == "use_gooj":
-        pass
-
-    elif json_string["type"] == "pay_bail":
-        response_json = {
-            "type": "pay_bail_ack",
-            "source": json_string["source"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"))
-
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
 if __name__ == "__main__":
     s = Server()

@@ -11,7 +11,7 @@ class Square:
         id - the id of the square in relation to the baord [0-39]
         players - The players which are on the Square at any given moment
         """
-        self._id = square_id
+        self._square_id = square_id
         self._players = []
         self._square_type = None 
 
@@ -28,7 +28,7 @@ class Square:
         """
         return "Square {}: [{}]".format(self._id, " ".join(str(p) for p in self._players))
 
-    
+
     @property
     def square_type(self):
         return self._square_type
@@ -36,6 +36,14 @@ class Square:
     @square_type.setter
     def square_type(self, new_square_type):
         self._square_type = new_square_type
+
+    @property
+    def square_id(self):
+        return self._square_id
+
+    @square_id.setter
+    def square_id(self, new_square_id):
+        self._square_id = new_square_id
 
     def add_player(self, player):
         """
@@ -126,8 +134,10 @@ class OwnableSquare(Square):
 
     @property
     def owner(self):
-        return self._owner
-
+        if self._is_owned:
+            return self._owner
+        else:
+            return -1 
     @owner.setter
     def owner(self, new_owner):
         self._owner = new_owner 

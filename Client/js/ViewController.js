@@ -52,7 +52,8 @@ function ViewController() {
                     "property": propertyIndex
                 }));
             } else {
-                // todo: warn locally, no need to send message
+                // todo: show buy failed
+                console.log("You dont have enough money!");
             }
 
             $("#prompt-buy").hide();
@@ -68,7 +69,12 @@ function ViewController() {
 
         $("#btn-end-turn").click(function () {
             sendMessage(generateMessage("end_turn", null));
-            $(this).hide();
+            game.viewController.endTurn();
+        });
+
+        // Show detail pane of a selected cell
+        $(".cell").click(function () {
+            showCellDetail(parseInt($(this)[0].id.replace("cell-", "")));
         });
     };
 
@@ -103,5 +109,11 @@ function ViewController() {
 
     ViewController.prototype.showEndTurnButton = function () {
         $("#btn-end-turn").show();
+    };
+
+    ViewController.prototype.endTurn = function () {
+        $(".your_turn").hide();
+        $("#btn-roll").show();
+        $("#btn-end-turn").hide();
     };
 }

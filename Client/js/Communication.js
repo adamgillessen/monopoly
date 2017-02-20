@@ -18,7 +18,7 @@ function Connector() {
      * @param {string} port
      */
     Connector.prototype.connect = function (ip, port) {
-        if (this.webSocket != undefined) {
+        if (this.webSocket !== undefined) {
             this.webSocket.close();
             this.webSocket = undefined;
         }
@@ -53,7 +53,7 @@ function parseMessage(data) {
     parseMessage._parseTree = {
         "player_join_ack": function (data) {
             // todo: remove -2 part
-            if (data["key"] === game.connector.key || data["key"] == -2) {
+            if (data["key"] === game.connector.key || data["key"] === -2) {
                 game.clientID = data['your_id'];
             }
 
@@ -64,7 +64,25 @@ function parseMessage(data) {
             }
         },
         "board_sync": function (data) {
-            //todo
+            // todo: show board sync text
+            console.log(data["text"]);
+
+            var listProperties = data["cells"];
+
+            for (var lop in listProperties) {
+                // Skip un-necessary property of object
+                if (!listProperties.hasOwnProperty(lop)) {
+                    continue;
+                }
+
+                // This is not a property
+                if (game.model.selectCell(lop).type !== "property") {
+                    continue;
+                }
+
+                // Update owner
+                game.model.selectCell(lop).owner = listProperties[lop].owner;
+            }
         },
         "your_turn": function (data) {
             if (game.isMyTurn(data["source"])) {
@@ -84,7 +102,7 @@ function parseMessage(data) {
                 return;
             }
             // If its my turn, show buy window
-            if (game.model.selectCell(landedOn).type == "property") {
+            if (game.model.selectCell(landedOn).type === "property") {
                 game.viewController.promptBuyWindow(landedOn);
             } else {
                 console.log(">>>>>\nLanded on action");
@@ -92,7 +110,6 @@ function parseMessage(data) {
             }
         },
         "buy_ack": function (data) {
-            // todo
             // Change balance of player
             game.model.selectPlayer(data["source"]).changeMoney(-game.model.selectCell(data["property"]).price);
 
@@ -100,11 +117,12 @@ function parseMessage(data) {
             game.model.selectCell(data["source"]).owner = data["source"];
 
             //console
+            // todo: show buy ack
             console.log(">>>>\nPlayer ", data["source"], " bought ", data["property"]);
         }
     };
 
-    if (typeof data == "string") {
+    if (typeof data === "string") {
         data = JSON.parse(data);
     }
     (parseMessage._parseTree[data["type"]])(data);
@@ -116,7 +134,7 @@ function parseMessage(data) {
  * @param {string|Object} msg
  */
 function sendMessage(msg) {
-    if (typeof msg == "string") {
+    if (typeof msg === "string") {
         game.connector.webSocket.send(msg);
     } else {
         game.connector.webSocket.send(JSON.stringify(msg));
@@ -134,7 +152,7 @@ function _generateHeader(type, include) {
     var obj = {};
     obj.type = type;
 
-    if (include == null) {
+    if (include === null) {
         return obj;
     }
 
