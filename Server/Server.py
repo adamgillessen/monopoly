@@ -173,17 +173,22 @@ def recv_message(client, server, message):
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
     elif json_string["type"] == "buy":
-        property_id = s.current_turn_generator.send("buy")
-        response_json = {
-            "type": "buy_ack",
-            "source": s.current_player(),
-            "property": property_id,
-        }
+        if json_string["property"] == -1:
+            s.current_turn_generator.send("no_buy")
+        
+        else:
+            property_id = s.current_turn_generator.send("buy")
+            response_json = {
+                "type": "buy_ack",
+                "source": s.current_player(),
+                "property": property_id,
+            }
 
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
-    
+        
+
     elif json_string["type"] == "end_turn":
         board_sync_json = s.game_state()
         human_string = s.current_turn_generator.send(None)

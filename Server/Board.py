@@ -185,7 +185,7 @@ class Board:
             msg["cells"][str(property_id)]["price"] = price 
             msg["cells"][str(property_id)]["property_id"] = property_id
 
-
+        """
         all_actions = sorted(itertools.chain(
             Board.CHEST_POS, 
             Board.CHANCE_POS, 
@@ -196,7 +196,7 @@ class Board:
             msg["cells"][str(action_id)] = {}
             msg["cells"][str(action_id)]["type"] = "action"
             msg["cells"][str(action_id)]["id"] = pos  
-            msg["cells"][str(action_id)]["action_id"] = action_id
+            msg["cells"][str(action_id)]["action_id"] = action_id"""
 
         for player_id, player in self._players.items():
             pos = self._player_positions[player]
@@ -394,6 +394,7 @@ class Board:
                 print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
                 if buy_auction == "buy":
+                    selling_square = True
                     print(">>User will buy")
                     cost = square.price
                     square.owner = player_id
@@ -404,24 +405,32 @@ class Board:
                     yield new_pos
                 
                 elif buy_auction == "auction":
+                    selling_square = True
                     print(">>User will auction")
                     highest_bidder = yield None 
                     bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
+
+                elif buy_auction == "no_buy":
+                    selling_square = False
+                    self._human_string.append("Player {} didn't buy square {}.".format(
+                        player_id, new_pos))
+
                 else:
-                    print(">>Expecting buy or auction but got '%s'"%(str(buy_auction)))
+                    print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
 
-                square.is_owned = True
+                if selling_square:
+                    square.is_owned = True
 
-                if square.square_type == Square.PROPERTY:
-                    new_owner.add_property(square)
-                elif square.square_type == Square.UTILITY:
-                    new_owner.add_utility(square)
-                elif square.square_type == Square.TRANSPORT:
-                    new_owner.add_transport(Square)
+                    if square.square_type == Square.PROPERTY:
+                        new_owner.add_property(square)
+                    elif square.square_type == Square.UTILITY:
+                        new_owner.add_utility(square)
+                    elif square.square_type == Square.TRANSPORT:
+                        new_owner.add_transport(Square)
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             print(">>Square is action square")
