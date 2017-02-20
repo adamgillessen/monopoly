@@ -4,5 +4,6 @@
     "source": 1,
     // ID of property bought
     // This is not property id, just board ID (range from [0, 39])
-    "property": 1
+    // If player choose not to buy, send -1
+    "property": -1
 }
