@@ -21,10 +21,20 @@ function selectPlayer(id) {
     return $("#player-" + id);
 }
 
+/**
+ * Set value in HTML
+ * @param {string} name
+ * @param {string | Number} value
+ */
 function setContextValue(name, value) {
     $("#context-" + name).text(value);
 }
 
+/**
+ * Get value from HTML, and clear the HTML
+ * @param {string} name
+ * @returns {string}
+ */
 function getContextValue(name) {
     var DOM = $("#context-" + name);
     var tmp = DOM.text();
@@ -58,6 +68,37 @@ function showCellDetail(id) {
 
         $("#pane-action-id").text(cell.id);
         $("#pane-action-decrip").text("Still empty");
+    }
+}
+
+var BUTTONS = {
+    connect: "#btn-connect",
+    start_game_now: "#btn-start-now",
+    roll: "#btn-roll",
+    end_turn: "#btn-end-turn",
+    buy_options: "#prompt-buy"
+};
+
+/**
+ * Show given button
+ * @param {[BUTTONS]} buttons
+ */
+function showButtons(buttons) {
+    // Hide all buttons first
+    for (var key in BUTTONS) {
+        if (BUTTONS.hasOwnProperty(key)) {
+            $(BUTTONS[key]).hide();
+        }
+    }
+
+    if (buttons === null || buttons === undefined) {
+        return;
+    }
+
+    // Show given ones
+    var lop = 0;
+    for (; lop < buttons.length; lop++) {
+        $(buttons[lop]).show();
     }
 }
 

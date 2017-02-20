@@ -1,5 +1,5 @@
 /**
- * Codes that control the whole game
+ * Global variables
  */
 "use strict";
 
@@ -17,7 +17,16 @@ function Game() {
      */
     this.connector = new Connector();
 
+    /**
+     * Instance of Board class
+     * @type {Board}
+     */
     this.model = new Board();
+
+    /**
+     * Instance of ViewController class
+     * @type {ViewController}
+     */
     this.viewController = new ViewController();
 
     /**
