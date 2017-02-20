@@ -15,7 +15,12 @@
     <!--remove this later!-->
     <script src="js/dev-remove-later.js"></script>
 
+
+    <link rel="stylesheet" type="text/css" href="scss/main.css">
     <link rel="stylesheet" type="text/css" href="scss/board-layout.css">
+    <link rel="stylesheet" type="text/css" href="scss/lobby.css">
+    <link rel="stylesheet" type="text/css" href="scss/controlpanels.css">
+    <link rel="stylesheet" type="text/css" href="scss/cards.css">
 </head>
 
 <body>
@@ -26,6 +31,8 @@
 </div>
 
 <div id="lobby">
+  <div id="main">
+    <img src="images/logo.png">
     <div id="connect-to">
         <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
         <input type="text" id="input-port" placeholder="port" value="4444">
@@ -35,72 +42,73 @@
         <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
         <button id="btn-start-now">Start Game NOW</button>
     </div>
+  </div>
 </div>
 
 <div id="game-area">
     <div id="main-board">
         <div id="top" class="float">
             <div id="cell-10" class="corner cell top_left_corner">
-
+              Jail
             </div>
             <div id="top_middle_container" class="h_container float">
-                <div id="cell-11" class="cell"></div>
-                <div id="cell-12" class="cell"></div>
-                <div id="cell-13" class="cell"></div>
-                <div id="cell-14" class="cell"></div>
-                <div id="cell-15" class="cell"></div>
-                <div id="cell-16" class="cell"></div>
-                <div id="cell-17" class="cell"></div>
-                <div id="cell-18" class="cell"></div>
-                <div id="cell-19" class="cell"></div>
+                <div id="cell-11" class="cell">The Spire</div>
+                <div id="cell-12" class="cell">Telecom</div>
+                <div id="cell-13" class="cell">Phoenix Park</div>
+                <div id="cell-14" class="cell">IFSC</div>
+                <div id="cell-15" class="cell">Dublin Airport</div>
+                <div id="cell-16" class="cell">The Gaiety Theatre</div>
+                <div id="cell-17" class="cell">Community Chest</div>
+                <div id="cell-18" class="cell">The Olympia Theatre</div>
+                <div id="cell-19" class="cell">The Abbey Theatre</div>
             </div>
             <div id="cell-20" class="corner cell top_right_corner">
-
+              Free Parking
             </div>
         </div>
         <div id="middle" class="float">
             <div id="middle_left_container" class="v_container">
-                <div id="cell-9" class="cell"></div>
-                <div id="cell-8" class="cell"></div>
-                <div id="cell-7" class="cell"></div>
-                <div id="cell-6" class="cell"></div>
-                <div id="cell-5" class="cell"></div>
-                <div id="cell-4" class="cell"></div>
-                <div id="cell-3" class="cell"></div>
-                <div id="cell-2" class="cell"></div>
-                <div id="cell-1" class="cell"></div>
+                <div id="cell-9" class="cell">Rathgar Road</div>
+                <div id="cell-8" class="cell">Clontarf Road</div>
+                <div id="cell-7" class="cell">Chance</div>
+                <div id="cell-6" class="cell">Rathmines Road</div>
+                <div id="cell-5" class="cell">The Luas</div>
+                <div id="cell-4" class="cell">Income Tax</div>
+                <div id="cell-3" class="cell">Raheny</div>
+                <div id="cell-2" class="cell">Community Chest</div>
+                <div id="cell-1" class="cell">Rathfarnam</div>
             </div>
             <div id="middle_middle" class="middle">
             </div>
             <div id="middle_right_container" class="v_container ">
-                <div id="cell-21" class="cell"></div>
-                <div id="cell-22" class="cell"></div>
-                <div id="cell-23" class="cell"></div>
-                <div id="cell-24" class="cell"></div>
-                <div id="cell-25" class="cell"></div>
-                <div id="cell-26" class="cell"></div>
-                <div id="cell-27" class="cell"></div>
-                <div id="cell-28" class="cell"></div>
-                <div id="cell-29" class="cell"></div>
+                <div id="cell-21" class="cell">Croke Park</div>
+                <div id="cell-22" class="cell">Chance</div>
+                <div id="cell-23" class="cell">The Point Depot</div>
+                <div id="cell-24" class="cell">St. Stephen's Green</div>
+                <div id="cell-25" class="cell">Dublin Bus</div>
+                <div id="cell-26" class="cell">Jervis Street S.C</div>
+                <div id="cell-27" class="cell">Liffey Valley S.C</div>
+                <div id="cell-28" class="cell">Internet</div>
+                <div id="cell-29" class="cell">Dundrum S.C</div>
             </div>
         </div>
         <div id="bottom" class="float">
             <div id="cell-0" class="corner cell bottom_left_corner">
-
+              GO
             </div>
             <div id="bottom_middle_container" class="h_container float">
-                <div id="cell-39" class="cell"></div>
-                <div id="cell-38" class="cell"></div>
-                <div id="cell-37" class="cell"></div>
-                <div id="cell-36" class="cell"></div>
-                <div id="cell-35" class="cell"></div>
-                <div id="cell-34" class="cell"></div>
-                <div id="cell-33" class="cell"></div>
-                <div id="cell-32" class="cell"></div>
-                <div id="cell-31" class="cell"></div>
+                <div id="cell-39" class="cell">Shrewsbury Road</div>
+                <div id="cell-38" class="cell">Stamp Duty</div>
+                <div id="cell-37" class="cell">Ailesbury Road</div>
+                <div id="cell-36" class="cell">Chance</div>
+                <div id="cell-35" class="cell">The Dart</div>
+                <div id="cell-34" class="cell">Grafton Street</div>
+                <div id="cell-33" class="cell">Community Chest</div>
+                <div id="cell-32" class="cell">O'Connell Street</div>
+                <div id="cell-31" class="cell">Henry Street</div>
             </div>
             <div id="cell-30" class="corner cell bottom_right_corner">
-
+              Go to Jail
             </div>
         </div>
     </div>
@@ -108,9 +116,6 @@
     <div id="pane" class="border">
         <div id="detail-pane">
             <div id="property">
-                <div id="property-id">
-                    property-id
-                </div>
                 <div id="name">
                     name
                 </div>
@@ -150,7 +155,7 @@
 
 </div>
 
-<div id="dev-control-pane" class="dev" style="width: 200px">
+<!--<div id="dev-control-pane" class="dev" style="width: 200px">
     <span>To simulate message sent from server, Target ID:</span>
     <input type="text" id="input-id" placeholder="target ID" value="0">
     <button id="btn-player-join-ack">
@@ -165,6 +170,6 @@
     <button id="btn-buy-ack">
         [server]buy ack
     </button>
-</div>
+</div>-->
 </body>
 </html>
