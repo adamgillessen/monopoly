@@ -70,20 +70,36 @@ function parseMessage(data) {
             console.log(data["text"]);
 
             var listProperties = data["cells"];
-
-            for (var lop in listProperties) {
+            var lop = 0;
+            // Update property's owner
+            for (lop in listProperties) {
                 // Skip un-necessary property of object
                 if (!listProperties.hasOwnProperty(lop)) {
                     continue;
                 }
 
+                var current = listProperties[lop];
+
                 // This is not a property
-                if (game.model.selectCell(lop).type !== "property") {
+                if (game.model.selectCell(current["id"]).type !== "property") {
                     continue;
                 }
 
                 // Update owner
-                game.model.selectCell(lop).owner = listProperties[lop].owner;
+                game.model.selectCell(current["id"]).owner = current.owner;
+            }
+
+            var listPlayers = data["players"];
+
+            // Update player's money
+            // todo
+            for (lop in listPlayers) {
+                if (!listPlayers.hasOwnProperty(lop)) {
+                    continue;
+                }
+
+                var current = listPlayers[lop];
+                game.model.selectPlayer(current["id"]).setMoney(current["money"]);
             }
         },
         "your_turn": function (data) {
@@ -111,12 +127,6 @@ function parseMessage(data) {
             }
         },
         "buy_ack": function (data) {
-            // Change balance of player
-            game.model.selectPlayer(data["source"]).changeMoney(-game.model.selectCell(data["property"]).price);
-
-            // Change owner of property
-            game.model.selectCell(data["source"]).owner = data["source"];
-
             // todo: show buy ack
         }
     };

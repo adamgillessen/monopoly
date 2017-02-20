@@ -61,6 +61,11 @@ function ViewController() {
         });
 
         $("#btn-buy-no").click(function () {
+            // Dont buy
+            sendMessage(generateMessage("buy", {
+                property: -1
+            }));
+
             // End of turn reached
             ViewController.prototype.preEndTurn();
         });
