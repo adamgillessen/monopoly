@@ -33,7 +33,7 @@ function ViewController() {
         // });
 
         $("#btn-roll").click(function () {
-            sendMessage(generateMessage("roll", null));
+            game.connector.sendMessage(generateMessage("roll", null));
 
             showButtons(null);
         });
@@ -48,7 +48,7 @@ function ViewController() {
             var propertyIndex = parseInt(getContextValue("buy"));
 
             if (game.model.selectPlayer(game.clientID).canBuyProperty(propertyIndex)) {
-                sendMessage(generateMessage("buy", {
+                game.connector.sendMessage(generateMessage("buy", {
                     "property": propertyIndex
                 }));
             } else {
@@ -62,7 +62,7 @@ function ViewController() {
 
         $("#btn-buy-no").click(function () {
             // Dont buy
-            sendMessage(generateMessage("buy", {
+            game.connector.sendMessage(generateMessage("buy", {
                 property: -1
             }));
 
@@ -71,7 +71,7 @@ function ViewController() {
         });
 
         $("#btn-end-turn").click(function () {
-            sendMessage(generateMessage("end_turn", null));
+            game.connector.sendMessage(generateMessage("end_turn", null));
             game.viewController.endTurn();
         });
 

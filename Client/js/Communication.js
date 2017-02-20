@@ -29,9 +29,11 @@ function Connector() {
             parseMessage(e.data);
         };
 
-        this.webSocket.onopen = function () {
-            sendMessage(generateMessage("player_join", null));
-        };
+        this.webSocket.onopen = function (me) {
+            return function () {
+                me.sendMessage(generateMessage("player_join", null));
+            }
+        }(this);
 
         window.onbeforeunload = function (me) {
             return function () {
@@ -42,6 +44,19 @@ function Connector() {
             };
         }(this);
     };
+
+    /**
+     * Send message to server
+     * msg could be JSON string or JSON object
+     * @param {string|Object} msg
+     */
+    Connector.prototype.sendMessage = function (msg) {
+        if (typeof msg === "string") {
+            this.webSocket.send(msg);
+        } else {
+            this.webSocket.send(JSON.stringify(msg));
+        }
+    }
 }
 
 /**
@@ -67,10 +82,11 @@ function parseMessage(data) {
         },
         "board_sync": function (data) {
             // todo: show board sync text
-            console.log(data["text"]);
+            console.log(data);
 
             var listProperties = data["cells"];
             var lop = 0;
+            var current = undefined;
             // Update property's owner
             for (lop in listProperties) {
                 // Skip un-necessary property of object
@@ -78,7 +94,7 @@ function parseMessage(data) {
                     continue;
                 }
 
-                var current = listProperties[lop];
+                current = listProperties[lop];
 
                 // This is not a property
                 if (game.model.selectCell(current["id"]).type !== "property") {
@@ -98,7 +114,7 @@ function parseMessage(data) {
                     continue;
                 }
 
-                var current = listPlayers[lop];
+                current = listPlayers[lop];
                 game.model.selectPlayer(current["id"]).setMoney(current["money"]);
             }
         },
@@ -115,15 +131,37 @@ function parseMessage(data) {
             // Update view
             game.viewController.movePlayer(data["source"], landedOn);
 
-            if (!game.isMyTurn(data["source"])) {
+            if (!game.isMyTurn(game.clientID)) {
                 return;
             }
-            // If its my turn, show buy window
-            // Only if this cell is property and nobody owns it
-            if (game.model.selectCell(landedOn).type === "property" && game.model.selectCell(landedOn).owner === -1) {
-                game.viewController.promptBuyWindow(landedOn);
-            } else {
+
+            // What type of square player lands on?
+            if (game.model.selectCell(landedOn).type === "action") {
+                // Lands on Action square
+                // todo: lands on Action square
+
                 game.viewController.preEndTurn();
+            } else {
+                // Lands on Property square
+
+                // Who owns this property?
+                switch (game.model.selectCell(landedOn).owner) {
+                    case -1:
+                        // Nobody
+                        // Prompt buy options
+                        game.viewController.promptBuyWindow(landedOn);
+                        break;
+                    case game.clientID:
+                        // Me
+                        // Do nothing, Proceed to EOT
+                        game.viewController.preEndTurn();
+                        break;
+                    default:
+                        // Others
+                        // Do nothing, Proceed to EOT
+                        game.viewController.preEndTurn();
+                        break;
+                }
             }
         },
         "buy_ack": function (data) {
@@ -135,19 +173,6 @@ function parseMessage(data) {
         data = JSON.parse(data);
     }
     (parseMessage._parseTree[data["type"]])(data);
-}
-
-/**
- * Send message to server
- * msg could be JSON string or JSON object
- * @param {string|Object} msg
- */
-function sendMessage(msg) {
-    if (typeof msg === "string") {
-        game.connector.webSocket.send(msg);
-    } else {
-        game.connector.webSocket.send(JSON.stringify(msg));
-    }
 }
 
 /**

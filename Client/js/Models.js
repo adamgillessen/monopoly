@@ -96,6 +96,8 @@ function Board() {
  * Property Class
  * @param {int} cell_id
  * @param {int} property_id
+ * @param {int} estate,
+ * @param {int} price
  * @constructor
  */
 function Property(cell_id, property_id, estate, price) {
