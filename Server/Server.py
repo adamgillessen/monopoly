@@ -151,11 +151,9 @@ def recv_message(client, server, message):
         dice1, dice2 = s.roll_dice()
         turn = s.take_turn(player_id, dice1, dice2)
         result = turn.send(None)
-        if result == "buy_auction":
-            s.current_turn_generator = turn
-        else:
-            print("String:", result)
-
+        
+        s.current_turn_generator = turn
+        
         response_json = {
             "type": "roll_result",
             "source": player_id,
