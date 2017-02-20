@@ -28,14 +28,14 @@ function ViewController() {
      */
     ViewController.prototype.addCallbacksToButtons = function () {
         // Randomly set color for each cell
-        $(".cell").each(function () {
-            $(this).css("background-color", ranColor());
-        });
+        // $(".cell").each(function () {
+        //     $(this).css("background-color", ranColor());
+        // });
 
         $("#btn-roll").click(function () {
             sendMessage(generateMessage("roll", null));
 
-            $(this).hide();
+            showButtons(null);
         });
 
         /**
@@ -56,15 +56,13 @@ function ViewController() {
                 console.log("You dont have enough money!");
             }
 
-            $("#prompt-buy").hide();
             // End of turn reached
-            ViewController.prototype.showEndTurnButton();
+            ViewController.prototype.preEndTurn();
         });
 
         $("#btn-buy-no").click(function () {
-            $("#prompt-buy").hide();
             // End of turn reached
-            ViewController.prototype.showEndTurnButton();
+            ViewController.prototype.preEndTurn();
         });
 
         $("#btn-end-turn").click(function () {
@@ -92,9 +90,7 @@ function ViewController() {
      * Show control pane
      */
     ViewController.prototype.yourTurn = function () {
-        $(".your_turn").show();
-        $("#prompt-buy").hide();
-        $("#btn-end-turn").hide();
+        showButtons([BUTTONS.roll]);
     };
 
     /**
@@ -102,18 +98,21 @@ function ViewController() {
      * @param propertyIndex: from range 0 - 39
      */
     ViewController.prototype.promptBuyWindow = function (propertyIndex) {
-        console.log(">>>>>\n Buy", propertyIndex, "?");
-        $("#prompt-buy").show();
+        showButtons([BUTTONS.buy_options]);
         setContextValue("buy", propertyIndex);
     };
 
-    ViewController.prototype.showEndTurnButton = function () {
-        $("#btn-end-turn").show();
+    /**
+     * Reachs end of turn, show end turn button to players and more
+     */
+    ViewController.prototype.preEndTurn = function () {
+        showButtons([BUTTONS.end_turn]);
     };
 
+    /**
+     * Call this after end turn button pressed
+     */
     ViewController.prototype.endTurn = function () {
-        $(".your_turn").hide();
-        $("#btn-roll").show();
-        $("#btn-end-turn").hide();
+        showButtons(null);
     };
 }

@@ -10,7 +10,7 @@
  */
 function updatePlayerNum(current, expects) {
     if (current >= 2) {
-        $("#btn-start-now").show();
+        showButtons([BUTTONS.start_game_now]);
     }
 
     $("#waiting").show();
@@ -26,15 +26,18 @@ function updatePlayerNum(current, expects) {
 function hideLobbyShowBoard() {
     $("#lobby").hide();
     $("#game-area").show();
+
+    // Show GO
+    showCellDetail(0);
+    // Show buttons
+    showButtons([]);
 }
 
 function initUI() {
     $("#game-area").hide();
+    $("#lobby").show();
     $("#waiting").hide();
-    $("#btn-start-now").hide();
-    $(".your_turn").hide();
-    $("#prompt-buy").hide();
-    $("#btn-end-turn").hide();
+    showButtons([BUTTONS.connect]);
 }
 
 $(document).ready(function () {

@@ -52,15 +52,17 @@ function Connector() {
 function parseMessage(data) {
     parseMessage._parseTree = {
         "player_join_ack": function (data) {
-            // todo: remove -2 part
-            if (data["key"] === game.connector.key || data["key"] === -2) {
+            if (data["key"] === game.connector.key) {
                 game.clientID = data['your_id'];
             }
 
             updatePlayerNum(data["current_player"], data["expects"]);
             if (data["game_start"]) {
-                hideLobbyShowBoard();
+                // Init first !
                 game.initGame(parseInt(data["current_player"]));
+                // Then change View
+                // Because we are using data from game.model
+                hideLobbyShowBoard();
             }
         },
         "board_sync": function (data) {
@@ -91,7 +93,6 @@ function parseMessage(data) {
         },
         "roll_result": function (data) {
             // todo: show roll result
-            console.log(">>>>>\nRolled", (data["result"][0] + data["result"][1]));
 
             // Update model
             var landedOn = game.model.movePlayer(data["source"], data["result"]);
@@ -102,11 +103,11 @@ function parseMessage(data) {
                 return;
             }
             // If its my turn, show buy window
-            if (game.model.selectCell(landedOn).type === "property") {
+            // Only if this cell is property and nobody owns it
+            if (game.model.selectCell(landedOn).type === "property" && game.model.selectCell(landedOn).owner === -1) {
                 game.viewController.promptBuyWindow(landedOn);
             } else {
-                console.log(">>>>>\nLanded on action");
-                game.viewController.showEndTurnButton();
+                game.viewController.preEndTurn();
             }
         },
         "buy_ack": function (data) {
@@ -116,9 +117,7 @@ function parseMessage(data) {
             // Change owner of property
             game.model.selectCell(data["source"]).owner = data["source"];
 
-            //console
             // todo: show buy ack
-            console.log(">>>>\nPlayer ", data["source"], " bought ", data["property"]);
         }
     };
 
