@@ -150,7 +150,7 @@ function Player(id) {
      * Does this player has enough money to buy the given property ?
      * @param {int} propertyIndex: range from 0 - 39
      */
-    this.canBuyProperty = function (propertyIndex) {
+    Player.prototype.canBuyProperty = function (propertyIndex) {
         return (this.money >= game.model.selectCell(propertyIndex).price)
             && (game.model.selectCell(propertyIndex).owner === -1);
     };
@@ -160,8 +160,16 @@ function Player(id) {
      * Can be negative or positive value
      * @param {int} amount
      */
-    this.changeMoney = function (amount) {
+    Player.prototype.changeMoney = function (amount) {
         this.money += amount;
+    };
+
+    /**
+     * Set Money
+     * @param {int} money
+     */
+    Player.prototype.setMoney = function (money) {
+        this.money = money;
     };
 
     Player.prototype.move = function (step) {
