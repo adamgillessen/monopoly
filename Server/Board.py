@@ -395,6 +395,10 @@ class Board:
                 self.give_money(square.owner, rent)
                 self.take_money(player_id, rent)
                 yield None
+
+            elif self._players[player_id].money < square.price:
+                print(">>Square not owned but player doesn't have enough money")
+                yield "not_enough_money"
             else:
                 print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
