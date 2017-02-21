@@ -159,30 +159,30 @@ class Board:
             price, rent, estate = info 
             property_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
-            msg["cells"][str(pos)]["type"] = "property"
+            #msg["cells"][str(pos)]["type"] = "property"
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = property_square.owner 
-            msg["cells"][str(pos)]["price"] =  price 
+            #msg["cells"][str(pos)]["price"] =  price 
 
         for pos, info in Board.TRANS_POS_INFO.items():
             price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             transport_id = transport_square.square_id 
-            msg["cells"][str(pos)]["type"] = "property"
+            #msg["cells"][str(pos)]["type"] = "property"
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            msg["cells"][str(pos)]["price"] = price 
+            #msg["cells"][str(pos)]["price"] = price 
 
         for pos, info in Board.UTIL_POS_INFO.items():
             price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             transport_id = transport_square.square_id 
-            msg["cells"][str(pos)]["type"] = "property"
+            #msg["cells"][str(pos)]["type"] = "property"
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            msg["cells"][str(pos)]["price"] = price 
+            #msg["cells"][str(pos)]["price"] = price 
 
         for player_id, player in self._players.items():
             pos = self._player_positions[player]
