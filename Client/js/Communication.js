@@ -11,58 +11,58 @@ function Connector() {
      * @type {int}
      */
     this.key = undefined;
-
-    /**
-     * Connect to server by creating new WebSocket
-     * @param {string} ip
-     * @param {string} port
-     */
-    Connector.prototype.connect = function (ip, port) {
-        if (this.webSocket !== undefined) {
-            this.webSocket.close();
-            this.webSocket = undefined;
-        }
-
-        this.webSocket = new WebSocket(sprintf("ws://%s:%s", ip, port));
-
-        this.webSocket.onmessage = function (e) {
-            parseMessage(e.data);
-        };
-
-        this.webSocket.onopen = function (me) {
-            return function () {
-                me.sendMessage(generateMessage("player_join", null));
-            }
-        }(this);
-
-        window.onbeforeunload = function (me) {
-            return function () {
-                // Clear onclose function
-                me.webSocket.onclose = function () {
-                };
-                me.webSocket.close();
-            };
-        }(this);
-    };
-
-    /**
-     * Send message to server
-     * msg could be JSON string or JSON object
-     * @param {string|Object} msg
-     */
-    Connector.prototype.sendMessage = function (msg) {
-        if (typeof msg === "string") {
-            this.webSocket.send(msg);
-        } else {
-            this.webSocket.send(JSON.stringify(msg));
-        }
-    }
 }
 
 /**
- * Parse message that received from server
- * data could be JSON object or JSON string
- * @param {Object|string} data
+ * Connect to server by creating new WebSocket
+ * @param {string} ip
+ * @param {string} port
+ */
+Connector.prototype.connect = function (ip, port) {
+    if (this.webSocket !== undefined) {
+        this.webSocket.close();
+        this.webSocket = undefined;
+    }
+
+    this.webSocket = new WebSocket(sprintf("ws://%s:%s", ip, port));
+
+    this.webSocket.onmessage = function (e) {
+        parseMessage(e.data);
+    };
+
+    this.webSocket.onopen = function (me) {
+        return function () {
+            me.sendMessage(generateMessage("player_join", null));
+        }
+    }(this);
+
+    window.onbeforeunload = function (me) {
+        return function () {
+            // Clear onclose function
+            me.webSocket.onclose = function () {
+            };
+            me.webSocket.close();
+        };
+    }(this);
+};
+
+/**
+ * Send message to server
+ * msg could be JSON string or JSON object
+ * @param {string|Object} msg
+ */
+Connector.prototype.sendMessage = function (msg) {
+    if (typeof msg === "string") {
+        this.webSocket.send(msg);
+    } else {
+        this.webSocket.send(JSON.stringify(msg));
+    }
+};
+
+
+/**
+ * Parse message that received from server and excute codes accordingly
+ * @param {Object|string} data: could be JSON object or JSON string
  */
 function parseMessage(data) {
     parseMessage._parseTree = {
@@ -177,17 +177,18 @@ function parseMessage(data) {
 }
 
 /**
- * Generate some common field of a message
+ * Generate some common fields of a message
+ * Like "type" and "source"
  * @param {string} type
  * @param {Array|null} include
  * @returns {{}}
- * @private
  */
 function _generateHeader(type, include) {
-    var obj = {};
-    obj.type = type;
+    var obj = {
+        type: type
+    };
 
-    if (include === null) {
+    if (include === null || include === undefined) {
         return obj;
     }
 
@@ -205,10 +206,10 @@ function _generateHeader(type, include) {
 }
 
 /**
- *
+ * Generate messages, given type and parameter to be included in the message
  * @param {string} type
  * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
- * @returns {*}
+ * @returns {*} message object
  */
 function generateMessage(type, parameter) {
     generateMessage._messageTree = {
