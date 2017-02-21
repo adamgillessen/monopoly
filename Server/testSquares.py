@@ -19,7 +19,7 @@ class SquareUnitTests(unittest.TestCase):
         self.assertFalse(s.has_player(p))
 
     def test_property_square(self):
-        s = PropertySquare(2, 200, 20, 0, 0)
+        s = PropertySquare(2, 200, 20, 0)
         self.assertTrue(s.num_houses == 0)
         s.num_houses += 1
         self.assertTrue(s.num_houses == 1)

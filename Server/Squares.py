@@ -151,7 +151,7 @@ class PropertySquare(OwnableSquare):
     This class represents a property square.
     """
 
-    def __init__(self, square_id, price, base_rent, estate, property_id):
+    def __init__(self, square_id, price, base_rent, estate):
         """
         price - the price to buy the property
         base_rent - the base rent price*
@@ -163,7 +163,6 @@ class PropertySquare(OwnableSquare):
         super().__init__(square_id, price)
         self._base_rent = base_rent 
         self._estate = estate
-        self._property_id = property_id
         self._square_type = Square.PROPERTY
         self._num_houses = 0
 

@@ -18,42 +18,42 @@ class Board:
     CHANCE_POS = [7, 22, 36]
     CORNER_POS = [0, 10, 20, 30]
     TAX_POS = [4, 38]
-    # UTIL_POS_INFO[position] = price, property_id
+    # UTIL_POS_INFO[position] = price
     UTIL_POS_INFO = {
-        12 : [200, 7],
-        28 : [200, 20],
+        12 : 200,
+        28 : 200,
     }
-    # TRANS_POS_INFO[position] = price, property_id
+    # TRANS_POS_INFO[position] = price
     TRANS_POS_INFO = {
-        5 : [150, 2],
-        15 : [150, 10],
-        25 : [150, 17],
-        35 : [150, 25],
+        5 : 150,
+        15 : 150,
+        25 : 150,
+        35 : 150,
     }
-    # PROPERTY_POS_INFO[position] = [price, rent, estate, id]
+    # PROPERTY_POS_INFO[position] = [price, rent, estate]
     PROPERTY_POS_INFO = {
-        1 : [60, 10, 0, 0],
-        3 : [60, 20, 0, 1],
-        6 : [100, 30, 1, 3],
-        8 : [100, 30, 1, 4],
-        9 : [120, 40, 1, 5],
-        11 : [140, 50, 2, 6],
-        13 : [140, 50, 2, 8],
-        14 : [160, 60, 2, 9],
-        16 : [180, 70, 3, 11],
-        18 : [180, 70, 3, 12],
-        19 : [200, 80, 3, 13],
-        21 : [220, 90, 4, 14],
-        23 : [220, 90, 4, 15],
-        24 : [240, 100, 4, 16],
-        26 : [260, 110, 5, 18],
-        27 : [260, 110, 5, 19],
-        29 : [280, 120, 5, 21],
-        31 : [300, 130, 6, 22],
-        32 : [300, 130, 6, 23],
-        34 : [320, 150, 6, 24],
-        37 : [350, 175, 7, 26],
-        39 : [400, 200, 7, 27],
+        1 : [60, 10, 0],
+        3 : [60, 20, 0],
+        6 : [100, 30, 1],
+        8 : [100, 30, 1],
+        9 : [120, 40, 1],
+        11 : [140, 50, 2],
+        13 : [140, 50, 2],
+        14 : [160, 60, 2],
+        16 : [180, 70, 3],
+        18 : [180, 70, 3],
+        19 : [200, 80, 3],
+        21 : [220, 90, 4],
+        23 : [220, 90, 4],
+        24 : [240, 100, 4],
+        26 : [260, 110, 5],
+        27 : [260, 110, 5],
+        29 : [280, 120, 5],
+        31 : [300, 130, 6],
+        32 : [300, 130, 6],
+        34 : [320, 150, 6],
+        37 : [350, 175, 7],
+        39 : [400, 200, 7],
     }
     JAIL_POS = 10
     GO_AMOUNT = 200
@@ -82,17 +82,15 @@ class Board:
             elif pos == Board.CORNER_POS[3]:
                 self._board[pos] = ActionSquare(pos, action=ActionSquare.JAIL)
 
-        for pos, info in Board.UTIL_POS_INFO.items():
-            price, _ = info 
+        for pos, price in Board.UTIL_POS_INFO.items():
             self._board[pos] = UtilitySquare(pos, price)
 
-        for pos, info in Board.TRANS_POS_INFO.items():
-            price, _ = info 
+        for pos, price in Board.TRANS_POS_INFO.items():
             self._board[pos] = TransportSquare(pos, price)
 
         for pos, info in Board.PROPERTY_POS_INFO.items():
-            price, rent, estate, prop_id = info 
-            self._board[pos] = PropertySquare(pos, price, rent, estate, prop_id)
+            price, rent, estate = info 
+            self._board[pos] = PropertySquare(pos, price, rent, estate)
 
         # create players
         self._players = {i:Player(i) for i in range(1, num_players + 1)}
@@ -158,17 +156,16 @@ class Board:
             "players": {},
         }
         for pos, info in Board.PROPERTY_POS_INFO.items():
-            price, rent, estate, property_id = info 
+            price, rent, estate = info 
             property_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             msg["cells"][str(pos)]["type"] = "property"
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = property_square.owner 
             msg["cells"][str(pos)]["price"] =  price 
-            msg["cells"][str(pos)]["property_id"] = property_id
 
         for pos, info in Board.TRANS_POS_INFO.items():
-            price, property_id = info 
+            price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             transport_id = transport_square.square_id 
@@ -176,10 +173,9 @@ class Board:
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = transport_square.owner 
             msg["cells"][str(pos)]["price"] = price 
-            msg["cells"][str(pos)]["property_id"] = property_id
 
         for pos, info in Board.UTIL_POS_INFO.items():
-            price, property_id = info 
+            price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             transport_id = transport_square.square_id 
@@ -187,20 +183,6 @@ class Board:
             msg["cells"][str(pos)]["id"] = pos  
             msg["cells"][str(pos)]["owner"] = transport_square.owner 
             msg["cells"][str(pos)]["price"] = price 
-            msg["cells"][str(pos)]["property_id"] = property_id
-
-        """
-        all_actions = sorted(itertools.chain(
-            Board.CHEST_POS, 
-            Board.CHANCE_POS, 
-            Board.CORNER_POS, 
-            Board.TAX_POS))
-        
-        for action_id, pos in enumerate(all_actions):
-            msg["cells"][str(action_id)] = {}
-            msg["cells"][str(action_id)]["type"] = "action"
-            msg["cells"][str(action_id)]["id"] = pos  
-            msg["cells"][str(action_id)]["action_id"] = action_id"""
 
         for player_id, player in self._players.items():
             pos = self._player_positions[player]
