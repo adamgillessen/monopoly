@@ -198,7 +198,7 @@ def recv_message(client, server, message):
         server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
 
         print(human_string)
-        # TODO Build up board_sync message and send it to all
+        
         s.next_player()
         new_current_player_id = s.current_player()
         response_json = {

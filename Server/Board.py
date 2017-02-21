@@ -407,16 +407,25 @@ class Board:
                     new_owner = self._players[player_id]
                     self._human_string.append("Player {} bought square {}.".format(
                         player_id, new_pos))
+                    square.is_owned = True
+
+                    if square.square_type == Square.PROPERTY:
+                        new_owner.add_property(square)
+                    elif square.square_type == Square.UTILITY:
+                        new_owner.add_utility(square)
+                    elif square.square_type == Square.TRANSPORT:
+                        new_owner.add_transport(Square)
                     yield new_pos
                 
                 elif buy_auction == "auction":
+                    """
                     selling_square = True
                     print(">>User will auction")
                     highest_bidder = yield None 
                     bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
-                    new_owner = self._players[highest_bidder]
+                    new_owner = self._players[highest_bidder]"""
 
                 elif buy_auction == "no_buy":
                     print(">>User will not buy")
@@ -428,16 +437,7 @@ class Board:
                 else:
                     print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
-
-                if selling_square:
-                    square.is_owned = True
-
-                    if square.square_type == Square.PROPERTY:
-                        new_owner.add_property(square)
-                    elif square.square_type == Square.UTILITY:
-                        new_owner.add_utility(square)
-                    elif square.square_type == Square.TRANSPORT:
-                        new_owner.add_transport(Square)
+                    
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             print(">>Square is action square")
