@@ -33,7 +33,7 @@ Connector.prototype.connect = function (ip, port) {
     this.webSocket.onopen = function (me) {
         return function () {
             me.sendMessage(generateMessage("player_join", null));
-        }
+        };
     }(this);
 
     window.onbeforeunload = function (me) {
@@ -82,7 +82,7 @@ function parseMessage(data) {
         },
         "board_sync": function (data) {
             // todo: show board sync text
-            console.log(data);
+            log(data["text"]);
 
             var listProperties = data["cells"];
             var lop = 0;
@@ -127,12 +127,19 @@ function parseMessage(data) {
             }
         },
         "roll_result": function (data) {
-            // todo: show roll result
+            var source = data["source"];
+
+            // Log to log-area
+            if (game.isMyTurn(source)) {
+                log("You just rolled " + data["result"]);
+            } else {
+                log(sprintf("Player %d rolled ", source) + data["result"]);
+            }
 
             // Update model
-            var landedOn = game.model.movePlayer(data["source"], data["result"]);
+            var landedOn = game.model.movePlayer(source, data["result"]);
 
-            if (!game.isMyTurn(data["source"])) {
+            if (!game.isMyTurn(source)) {
                 return;
             }
 

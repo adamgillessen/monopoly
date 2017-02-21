@@ -33,6 +33,7 @@ Game.prototype.initGame = function (num) {
     this.model.initPlayer(num);
 
     ViewController.addCallbacksToButtons();
+    ViewController.addCallbacksToEvents();
     ViewController.createPlayers(num);
 };
 

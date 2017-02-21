@@ -43,6 +43,26 @@ function getContextValue(name) {
 }
 
 /**
+ * Log things to log-area in HTML
+ * @param {string} obj
+ */
+function log(obj) {
+    if ($(".log").length > 5) {
+        $(".log:last").remove();
+    }
+
+    var arrStrings = obj.split(/\n/);
+    var divCurrentLog = $('<div class="log"></div>');
+
+    var lop = 0;
+    for (; lop < arrStrings.length; lop++) {
+        $(sprintf('<div class="each-line">%s</div>', arrStrings[lop])).appendTo(divCurrentLog);
+    }
+
+    divCurrentLog.prependTo("#log-area");
+}
+
+/**
  * Show details of a given cell to the detail-pane section in HTML
  * @param {int} id
  */
