@@ -29,11 +29,6 @@ ViewController.createPlayers = function (num) {
  * Add all callback functions to button here
  */
 ViewController.addCallbacksToButtons = function () {
-    // Randomly set color for each cell
-    // $(".cell").each(function () {
-    //     $(this).css("background-color", ranColor());
-    // });
-
     $("#btn-roll").click(function () {
         game.connector.sendMessage(generateMessage("roll", null));
 
@@ -66,6 +61,9 @@ ViewController.addCallbacksToButtons = function () {
         ViewController.preEndTurn();
     });
 
+    /**
+     * Auction
+     */
     $("#btn-buy-no").click(function () {
         // Dont buy
         game.connector.sendMessage(generateMessage("buy", {
@@ -97,7 +95,7 @@ ViewController.movePlayer = function (player, to) {
 };
 
 /**
- * If its current client's turn
+ * Call this if its current client's turn
  * Show control pane
  */
 ViewController.yourTurn = function () {

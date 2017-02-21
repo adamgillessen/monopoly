@@ -115,12 +115,16 @@ function showButtons(buttons) {
 /**
  * Randomly generate a int from range [0, max]
  * @param {int} max: Max number allowed to be generated
- * @returns {int}
+ * @returns {int} integer in range [0, max)
  */
 function ranRange(max) {
     return parseInt(Math.random() * max);
 }
 
+/**
+ * Random color
+ * @return {string} "rgb(x, y, z)"
+ */
 function ranColor() {
     return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
 }
