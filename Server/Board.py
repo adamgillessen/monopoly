@@ -373,32 +373,36 @@ class Board:
             # can be bought or may be bought already
             if square.is_owned:
                 print(">>Square is owned")
-                if square.square_type == Square.PROPERTY:
-                    print(">>Square is a property square")
-                    rent = square.base_rent * (2**square.num_houses)
-                elif square.square_type == Square.UTILITY:
-                    print(">>Square is a utility square")
-                    dice_roll_sum = sum(self.roll_dice())
-                    owner = self._players[square.owner]
-                    if owner.num_utils() == 1:
-                        rent = dice_roll_sum * square.one_owned
-                    else:
-                        rent = dice_roll_sum * square.two_owned
-                elif square.square_type == Square.TRANSPORT:
-                    print(">>Square is a transport square")
-                    owner = self._players[square.owner]
-                    rent = square.base_rent * (2**owner.num_transports())
+                if square.owner != player_id:
+                    if square.square_type == Square.PROPERTY:
+                        print(">>Square is a property square")
+                        rent = square.base_rent * (2**square.num_houses)
+                    elif square.square_type == Square.UTILITY:
+                        print(">>Square is a utility square")
+                        dice_roll_sum = sum(self.roll_dice())
+                        owner = self._players[square.owner]
+                        if owner.num_utils() == 1:
+                            rent = dice_roll_sum * square.one_owned
+                        else:
+                            rent = dice_roll_sum * square.two_owned
+                    elif square.square_type == Square.TRANSPORT:
+                        print(">>Square is a transport square")
+                        owner = self._players[square.owner]
+                        rent = square.base_rent * (2**owner.num_transports())
 
-                self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                    player_id, rent, square.owner))
+                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
+                        player_id, rent, square.owner))
 
-                self.give_money(square.owner, rent)
-                self.take_money(player_id, rent)
+                    self.give_money(square.owner, rent)
+                    self.take_money(player_id, rent)
+                else:
+                    self._human_string.append("Player {} already owns square".format(player_id))
                 yield None
 
             elif self._players[player_id].money < square.price:
                 print(">>Square not owned but player doesn't have enough money")
                 yield "not_enough_money"
+            
             else:
                 print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
