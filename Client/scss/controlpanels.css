@@ -1,13 +1,12 @@
 #control-pane {
   position: fixed;
   height: 5em;
-  width: 50em;
-  margin: 0 auto;
-  right: calc(50% - 25em);
+  width: 43.75em;
   background-color: rgba(39,39,39, 0.95);
-  bottom: 0.4em;
+  bottom: 1em;
   border-radius: 3px;
   border: 1px solid #3C3C3C;
+  left: 3.3em;
 }
 
 #control-pane button {
@@ -28,15 +27,6 @@
 
 #control-pane #prompt-buy {
   border: 0;
-}
-
-#moneylabel {
-  float: right;
-  color: #ffffff;
-  font-weight: 100;
-  font-size: 2em;
-  margin-top: 0.6em;
-  margin-right: 0.6em;
 }
 
 #money {
