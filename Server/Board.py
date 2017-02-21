@@ -394,6 +394,7 @@ class Board:
 
                 self.give_money(square.owner, rent)
                 self.take_money(player_id, rent)
+                yield None
             else:
                 print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
