@@ -502,7 +502,6 @@ class Board:
             else:
                 re_check_turn = self.take_turn(player_id, 0, 0)
             yield from re_check_turn
-        self._human_string = ["--TURN REPORT--"] + self._human_string + ["--END TURN REPORT--"]
         self._current_player = None
         yield "\n".join(self._human_string)
 
