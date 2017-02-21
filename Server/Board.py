@@ -55,7 +55,7 @@ class Board:
         37 : [350, 175, 7, 26],
         39 : [400, 200, 7, 27],
     }
-    JAIL_POS = 9
+    JAIL_POS = 10
     GO_AMOUNT = 200
     GO_POS = 0
     def __init__(self, num_players):

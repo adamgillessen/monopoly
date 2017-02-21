@@ -5,7 +5,6 @@
 
 /**
  * Layer: View and Controller
- * @constructor
  */
 function ViewController() {
     // Contains static methods only
