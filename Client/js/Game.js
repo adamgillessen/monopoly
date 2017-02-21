@@ -24,12 +24,6 @@ function Game() {
     this.model = new Board();
 
     /**
-     * Instance of ViewController class
-     * @type {ViewController}
-     */
-    this.viewController = new ViewController();
-
-    /**
      * Initialize game board
      * @param {int} num: number of players
      */
@@ -37,8 +31,8 @@ function Game() {
         this.model.initCells();
         this.model.initPlayer(num);
 
-        this.viewController.addCallbacksToButtons();
-        this.viewController.createPlayers(num);
+        ViewController.addCallbacksToButtons();
+        ViewController.createPlayers(num);
     };
 
     /**
@@ -48,7 +42,7 @@ function Game() {
      */
     Game.prototype.isMyTurn = function (ID) {
         return this.clientID === ID;
-    }
+    };
 }
 
 /**

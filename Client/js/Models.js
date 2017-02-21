@@ -54,6 +54,7 @@ function Board() {
     Board.prototype.initPlayer = function (num) {
         for (var lop = 1; lop <= num; lop++) {
             this.addPlayer(lop);
+            this.selectPlayer(lop).setMoney(2000);
         }
     };
 
@@ -85,7 +86,7 @@ function Board() {
      */
     Board.prototype.movePlayer = function (source, result) {
         // Update model
-        return this.selectPlayer(source).move(result.reduce(function (a, b) {
+        return this.selectPlayer(source).moveByStep(result.reduce(function (a, b) {
             return a + b;
         }, 0));
     };
@@ -145,7 +146,7 @@ function Action(cell_id, action_id) {
 function Player(id) {
     this.id = id;
     this.position = 0;
-    this.money = 1500;
+    this.money = undefined;
     this.is_in_jail = false;
 
     /**
@@ -157,6 +158,17 @@ function Player(id) {
             && (game.model.selectCell(propertyIndex).owner === -1);
     };
 
+    /*
+     Call back function
+     */
+    this.onMoneyChange = function (money) {
+        $("#money").text(money);
+    };
+
+    this.onPositionChange = function (from, to) {
+        ViewController.movePlayer(this.id, to);
+    };
+
     /**
      * Modify this player's balance by given amount of money
      * Can be negative or positive value
@@ -164,6 +176,11 @@ function Player(id) {
      */
     Player.prototype.changeMoney = function (amount) {
         this.money += amount;
+
+        // Only call if its THIS player
+        if (this.id === game.clientID) {
+            this.onMoneyChange(this.money);
+        }
     };
 
     /**
@@ -172,9 +189,22 @@ function Player(id) {
      */
     Player.prototype.setMoney = function (money) {
         this.money = money;
+
+        // Only call if its THIS player
+        if (this.id === game.clientID) {
+            this.onMoneyChange(money);
+        }
     };
 
-    Player.prototype.move = function (step) {
+    Player.prototype.moveTo = function (destination) {
+        this.onPositionChange(this.position, destination);
+
+        this.position = destination;
+
+        return this.position;
+    };
+
+    Player.prototype.moveByStep = function (step) {
         var from = this.position;
 
         this.position = this.position + step;
@@ -182,6 +212,7 @@ function Player(id) {
             this.position -= 40;
         }
 
+        this.onPositionChange(from, this.position);
         return this.position;
     }
 }

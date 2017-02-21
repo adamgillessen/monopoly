@@ -20,11 +20,12 @@ Resources - assorted development information
 2. Only include update info in board\_sync? Say if player 1 bought property 2, then in the message, inside the "cells" section, only contians: _(Since this is the only value that could change)_  
 
 	> "2": {  
+	>     "id": 2  
 	>     "owner": 1  
 	> }  
 3. Update the login screen background due to issues with sizing of the browser window.
 
-4. The client is not updating a player's position based on the board\_sync message when it receives the message. Example - an action card makes a player go to jail. This is not being reflected in the client.
+4. ...
 
 ## Presentation 1
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
