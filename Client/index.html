@@ -34,18 +34,18 @@
 </div>
 
 <div id="lobby">
-  <div id="main">
-    <img src="images/logo.png">
-    <div id="connect-to">
-        <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
-        <input type="text" id="input-port" placeholder="port" value="4444">
-        <button id="btn-connect">Connect</button>
+    <div id="main">
+        <img src="images/logo.png">
+        <div id="connect-to">
+            <input type="text" id="input-IP" placeholder="Server IP" value="localhost">
+            <input type="text" id="input-port" placeholder="port" value="4444">
+            <button id="btn-connect">Connect</button>
+        </div>
+        <div id="waiting">
+            <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
+            <button id="btn-start-now">Start Game NOW</button>
+        </div>
     </div>
-    <div id="waiting">
-        <div id="display"><span id="current"></span> / <span id="expect"></span> player(s) connected</div>
-        <button id="btn-start-now">Start Game NOW</button>
-    </div>
-  </div>
 </div>
 
 <div id="game-area">
@@ -159,6 +159,7 @@
                     Don't buy
                 </button>
             </div>
+            <div id="money">2000</div>
         </div>
     </div>
 

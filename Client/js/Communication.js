@@ -107,20 +107,23 @@ function parseMessage(data) {
 
             var listPlayers = data["players"];
 
-            // Update player's money
-            // todo
+            // Update player's money and position
             for (lop in listPlayers) {
                 if (!listPlayers.hasOwnProperty(lop)) {
                     continue;
                 }
 
                 current = listPlayers[lop];
+                // Update money
                 game.model.selectPlayer(current["id"]).setMoney(current["money"]);
+
+                // Update position
+                game.model.selectPlayer(current["id"]).moveTo(current["position"]);
             }
         },
         "your_turn": function (data) {
             if (game.isMyTurn(data["source"])) {
-                game.viewController.yourTurn();
+                ViewController.yourTurn();
             }
         },
         "roll_result": function (data) {
@@ -128,8 +131,6 @@ function parseMessage(data) {
 
             // Update model
             var landedOn = game.model.movePlayer(data["source"], data["result"]);
-            // Update view
-            game.viewController.movePlayer(data["source"], landedOn);
 
             if (!game.isMyTurn(game.clientID)) {
                 return;
@@ -140,7 +141,7 @@ function parseMessage(data) {
                 // Lands on Action square
                 // todo: lands on Action square
 
-                game.viewController.preEndTurn();
+                ViewController.preEndTurn();
             } else {
                 // Lands on Property square
 
@@ -149,17 +150,17 @@ function parseMessage(data) {
                     case -1:
                         // Nobody
                         // Prompt buy options
-                        game.viewController.promptBuyWindow(landedOn);
+                        ViewController.promptBuyWindow(landedOn);
                         break;
                     case game.clientID:
                         // Me
                         // Do nothing, Proceed to EOT
-                        game.viewController.preEndTurn();
+                        ViewController.preEndTurn();
                         break;
                     default:
                         // Others
                         // Do nothing, Proceed to EOT
-                        game.viewController.preEndTurn();
+                        ViewController.preEndTurn();
                         break;
                 }
             }

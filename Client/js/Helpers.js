@@ -61,16 +61,16 @@ function showCellDetail(id) {
         if (cell.estate === -1) {
             $("#property-estate").text(" --- ");
         } else {
-            $("#property-estate").text(cell.estate);
+            $("#property-estate").text("Estate: " + cell.estate);
         }
 
         $("#property-price").text(cell.price);
 
         var owner = cell.owner;
         if (owner === -1) {
-            $("#property-owner").text("No owner");
+            $("#property-owner").text("ON SALE");
         } else {
-            $("#property-owner").text(owner);
+            $("#property-owner").text("Owner: Player " + owner);
         }
     } else {
         $("#action").show();
