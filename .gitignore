@@ -4,7 +4,7 @@
 
 # Client part
 Client/.idea
-Client/test/*
+Client/test
 
 # General
 /*/.DS_Store
