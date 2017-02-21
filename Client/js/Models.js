@@ -173,6 +173,7 @@ function Player(id) {
      * Modify this player's balance by given amount of money
      * Can be negative or positive value
      * @param {int} amount
+     * @return {int} money left
      */
     Player.prototype.changeMoney = function (amount) {
         this.money += amount;
@@ -181,11 +182,14 @@ function Player(id) {
         if (this.id === game.clientID) {
             this.onMoneyChange(this.money);
         }
+
+        return this.money;
     };
 
     /**
      * Set Money
      * @param {int} money
+     * @return {int} money left
      */
     Player.prototype.setMoney = function (money) {
         this.money = money;
@@ -194,6 +198,8 @@ function Player(id) {
         if (this.id === game.clientID) {
             this.onMoneyChange(money);
         }
+
+        return this.money;
     };
 
     Player.prototype.moveTo = function (destination) {

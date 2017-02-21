@@ -132,7 +132,7 @@ function parseMessage(data) {
             // Update model
             var landedOn = game.model.movePlayer(data["source"], data["result"]);
 
-            if (!game.isMyTurn(game.clientID)) {
+            if (!game.isMyTurn(data["source"])) {
                 return;
             }
 
