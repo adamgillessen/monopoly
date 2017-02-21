@@ -7,8 +7,14 @@
  * Layer: View and Controller
  */
 function ViewController() {
-    // Contains static methods only
+
 }
+
+/**
+ * Which square is being displayed in the detail pane
+ * @type {int}
+ */
+ViewController.currentSelectedSquare = undefined;
 
 // Add circles that represents players to HTML
 ViewController.createPlayers = function (num) {
@@ -19,10 +25,24 @@ ViewController.createPlayers = function (num) {
     }
 
     $(".player").each(function () {
-        $(this).css("background-color", function () {
-            return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";
-        });
+        $(this).css("background-color", ranColor());
     });
+};
+
+ViewController.addCallbacksToEvents = function () {
+    Player.onMoneyChange = function (id, money) {
+        $("#money").text(money);
+    };
+
+    Player.onPositionChange = function (id, from, to) {
+        ViewController.movePlayer(id, to);
+    };
+
+    Property.onOwnerChange = function (id, owner) {
+        if (id === ViewController.currentSelectedSquare) {
+            showCellDetail(id);
+        }
+    };
 };
 
 /**
@@ -48,12 +68,15 @@ ViewController.addCallbacksToButtons = function () {
             // Change money value first
             game.model.selectPlayer(game.clientID).changeMoney(-game.model.selectCell(propertyIndex).price);
 
+            // Change property owner, too
+            game.model.selectCell(propertyIndex).changeOwner(game.clientID);
+
             // Send buy message to server
             game.connector.sendMessage(generateMessage("buy", {
                 "property": propertyIndex
             }));
         } else {
-            // todo: show buy failed
+            // todo: auction
             console.log("You dont have enough money!");
         }
 
@@ -62,6 +85,7 @@ ViewController.addCallbacksToButtons = function () {
     });
 
     /**
+     * todo
      * Auction
      */
     $("#btn-buy-no").click(function () {
@@ -81,7 +105,9 @@ ViewController.addCallbacksToButtons = function () {
 
     // Show detail pane of a selected cell
     $(".cell").click(function () {
-        showCellDetail(parseInt($(this)[0].id.replace("cell-", "")));
+        var id = parseInt($(this)[0].id.replace("cell-", ""));
+        showCellDetail(id);
+        ViewController.currentSelectedSquare = id;
     });
 };
 

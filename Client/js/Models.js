@@ -69,7 +69,7 @@ Board.prototype.initPlayer = function (num) {
 /**
  * Return square by id
  * @param {int} id
- * @return {*}
+ * @return {Property | Action}
  */
 Board.prototype.selectCell = function (id) {
     return this.cells[id];
@@ -120,7 +120,6 @@ function Property(cell_id, property_id, estate, price) {
     this.type = "property";
 
     // Property specific fields
-    this.property_id = property_id;
     this.estate = estate;
     this.price = price;
     /*
@@ -129,6 +128,18 @@ function Property(cell_id, property_id, estate, price) {
      */
     this.owner = -1;
 }
+/**
+ * Call back to on owner change event
+ * @param {int} owner
+ */
+Property.onOwnerChange = function (id, owner) {
+};
+
+Property.prototype.changeOwner = function (owner) {
+    this.owner = owner;
+
+    Property.onOwnerChange(this.id, owner);
+};
 
 /**
  * Layer: Model
@@ -142,10 +153,6 @@ function Action(cell_id, action_id) {
     // Also represents the position on board
     this.id = cell_id;
     this.type = "action";
-
-    // Action specific fields
-    this.action_id = action_id;
-    this.info = undefined;
 }
 
 
@@ -160,28 +167,30 @@ function Player(id) {
     this.position = 0;
     this.money = undefined;
     this.is_in_jail = false;
-
-
-    /*
-     Call back function
-     */
-    this.onMoneyChange = function (money) {
-        $("#money").text(money);
-    };
-
-    this.onPositionChange = function (from, to) {
-        ViewController.movePlayer(this.id, to);
-    };
 }
 
+/**
+ * Call backs
+ * @param {int} money
+ */
+Player.onMoneyChange = function (id, money) {
+};
+
+/**
+ * Call backs
+ * @param {int} from
+ * @param {int} to
+ */
+Player.onPositionChange = function (id, from, to) {
+};
 
 /**
  * Does this player has enough money to buy the given property ?
  * @param {int} propertyIndex: range from 0 - 39
  */
 Player.prototype.canBuyProperty = function (propertyIndex) {
-    return (this.money >= game.model.selectCell(propertyIndex).price)
-        && (game.model.selectCell(propertyIndex).owner === -1);
+    return (this.money >= game.model.selectCell(propertyIndex).price) &&
+        (game.model.selectCell(propertyIndex).owner === -1);
 };
 
 /**
@@ -195,7 +204,7 @@ Player.prototype.changeMoney = function (amount) {
 
     // Only call if its THIS player
     if (this.id === game.clientID) {
-        this.onMoneyChange(this.money);
+        Player.onMoneyChange(this.id, this.money);
     }
 
     return this.money;
@@ -211,14 +220,14 @@ Player.prototype.setMoney = function (money) {
 
     // Only call if its THIS player
     if (this.id === game.clientID) {
-        this.onMoneyChange(money);
+        Player.onMoneyChange(this.id, money);
     }
 
     return this.money;
 };
 
 Player.prototype.moveTo = function (destination) {
-    this.onPositionChange(this.position, destination);
+    Player.onPositionChange(this.id, this.position, destination);
 
     this.position = destination;
 
@@ -233,7 +242,7 @@ Player.prototype.moveByStep = function (step) {
         this.position -= 40;
     }
 
-    this.onPositionChange(from, this.position);
+    Player.onPositionChange(this.id, from, this.position);
     return this.position;
 };
 
