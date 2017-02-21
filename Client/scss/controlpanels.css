@@ -29,3 +29,21 @@
 #control-pane #prompt-buy {
   border: 0;
 }
+
+#moneylabel {
+  float: right;
+  color: #ffffff;
+  font-weight: 100;
+  font-size: 2em;
+  margin-top: 0.6em;
+  margin-right: 0.6em;
+}
+
+#money {
+  float: right;
+  color: #ffffff;
+  font-weight: 100;
+  font-size: 2em;
+  margin-top: 0.6em;
+  margin-right: 0.6em;
+}
