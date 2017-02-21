@@ -16,13 +16,7 @@ Server - the server which will run the game for all clients
 Resources - assorted development information
 
 ## Todos:  
-2. Only include update info in board\_sync? Say if player 1 bought property 2, then in the message, inside the "cells" section, only contians: _(Since this is the only value that could change)_  
-
-	> "2": {  
-	>     "id": 2  
-	>     "owner": 1  
-	> }  
-3. Update the login screen background due to issues with sizing of the browser window.
+1. Update the login screen background due to issues with sizing of the browser window.
 
 
 ## Presentation 1
