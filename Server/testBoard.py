@@ -53,7 +53,7 @@ class BoardTests(unittest.TestCase):
         self.assertFalse(player.jail)
         self.board.go_to_jail(player.id)
         self.assertTrue(player.jail)
-        self.assertTrue(self.board.get_pos(player.id) == Board.JAIL_POS)
+        self.assertTrue(self.board.get_pos(player.id) == Board._JAIL_POS)
 
     def test_obtain_get_out_jail_free(self):
         player = self.players[0]

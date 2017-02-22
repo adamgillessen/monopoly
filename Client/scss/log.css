@@ -1,0 +1,46 @@
+#log-area {
+  position: fixed;
+  height: calc(100% - 4.55em);
+  width: 21em;
+  box-sizing: border-box;
+  background-color: rgba(39,39,39, 0.95);
+  padding: 1em;
+  border-left: 1px solid #3C3C3C;
+  right: 0em;
+  overflow: scroll;
+  color: #ffffff;
+}
+
+#textfield {
+  position: fixed;
+  bottom: 0em;
+  right: 0em;
+  width: 21em;
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+
+#textfield input[type="text"] {
+  width: 12.52em;
+  padding: 0.5em;
+  padding-left: 1em;
+  font-size: 1.1em;
+  height: 3em;
+  background-color: #494949;
+  color: #ffffff;
+}
+
+#submit {
+  background-color: #e75a56;
+  border: 1px solid #b73531;
+  box-shadow: 0 3px 0 0 #bd4846;
+  text-shadow: 0 1px 1px #000000;
+  color: #ffffff;
+  width: 4.87em;
+  font-size: 1.1em;
+  height: 4.1em;
+  float: right;
+  margin: 0;
+  cursor: pointer;
+}

@@ -1,11 +1,14 @@
 #game-area #pane {
-  float: right;
-  margin-right: 2em;
+  float: left;
+  margin-left: 3em;
   position: relative;
-  margin-top: 3em;
+  margin-top: 2.65em;
   background: #ffffff;
   border: 1px solid #000000;
   padding: 1em;
+  -webkit-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
+  box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
 }
 
 #game-area #pane div {

@@ -27,7 +27,9 @@ class Server:
 
     def next_id(self):
         """
-        Returns the next client id. 
+        Returns the next id which can be used by a joining player
+
+        :returns: the next client id 
         """
         self._num_players += 1
         return self._num_players 
@@ -35,6 +37,8 @@ class Server:
     def num_players(self):
         """
         Returns the number of players currently connected to the game. 
+
+        :returns: the number of players in the game
         """
         return self._num_players
 
@@ -46,32 +50,46 @@ class Server:
 
     def take_turn(self, player_id, dice1, dice2):
         """
-        Has the board run the next turn. 
+        Has the board run the next turn. This is a proxy-method to the board's
+        take_turn co-routine.
 
-        :param player_id the id of the player whose turn it is
+        :param player_id: the id of the player whose turn it is
+        :param dice1: the value which dice1 is 
+        :param dice2: the value which dice2 is         
+        :yields: the results of the board's turn generator
         """
-       
-        print("D1, D2 : {}, {}".format(dice1, dice2))
         turn = self._board.take_turn(player_id, dice1, dice2)
         yield from turn
 
     def current_player(self):
         """
         Returns the player whose turn it currently is.
-        :return the id of the current player
+
+        :returns: the id of the current player
         """
         return self._current_turn
 
     def roll_dice(self):
+        """
+        A proxy method to the board's roll_dice method.
+
+        :returns: the result of the dice roll as a tuple of ints
+        """
         return self._board.roll_dice()
 
     def next_player(self):
+        """
+        Changes the player whose turn it is from the last, to the next.
+        """
         self._current_turn += 1
         if self._current_turn == self.num_players() + 1:
             self._current_turn = 1
 
     @property
     def current_turn_generator(self):
+        """
+        This is the generator which is handling the current turn on the board.
+        """
         return self._current_turn_generator
 
     @current_turn_generator.setter
@@ -79,26 +97,33 @@ class Server:
         self._current_turn_generator = new_current_turn_generator
 
     def game_state(self):
+        """
+        This gets the current game state from the baord.
+
+        :returns: a dictionary in the form of the board_sync message
+        """
         return self._board.game_state()
 
 
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
-    :param client - the new client dictionary
-    :param server - a reference to the WebSocket Server
+
+    :param client: the new client dictionary
+    :param server: a reference to the WebSocket Server
     """
-    pass # print("A new client {} has joined".format(client))
+    pass # print(">> Client {} has joined".format(client))
 
 
 
 def recv_message(client, server, message):
     """
     This function will be run when a message is recieved from one of
-    the connected clients. 
-    :param client - the client dictionary which the message came from
-    :param server - a reference to the WebSocket Server
-    :param message - the message which has been received
+    the connected clients.
+
+    :param client: the client dictionary which the message came from
+    :param server: a reference to the WebSocket Server
+    :param message: the message which has been received
     """
     global s 
     print("Received: {}".format(message))
@@ -118,9 +143,9 @@ def recv_message(client, server, message):
         if s.num_players() == 4:
             s.start_game()
 
-            #board_sync_json = s.game_state()
-            #board_sync_string = json.dumps(board_sync_json)
-            #server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+            board_sync_json = s.game_state()
+            board_sync_string = json.dumps(board_sync_json)
+            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
 
 
             response_json = {
@@ -145,9 +170,9 @@ def recv_message(client, server, message):
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         
-        #board_sync_json = s.game_state()
-        #board_sync_string = json.dumps(board_sync_json)
-        #server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+        board_sync_json = s.game_state()
+        board_sync_string = json.dumps(board_sync_json)
+        server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
 
         response_json = {
             "type": "your_turn",

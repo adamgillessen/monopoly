@@ -8,8 +8,7 @@ class Square:
     TRANSPORT = 3
     def __init__(self, square_id):
         """
-        id - the id of the square in relation to the baord [0-39]
-        players - The players which are on the Square at any given moment
+        :param square_id: the id of the square in relation to the baord [0-39]
         """
         self._square_id = square_id
         self._players = []
@@ -31,6 +30,9 @@ class Square:
 
     @property
     def square_type(self):
+        """
+        The type of the square which must be one of the Square class variabls.
+        """
         return self._square_type
 
     @square_type.setter
@@ -39,6 +41,9 @@ class Square:
 
     @property
     def square_id(self):
+        """
+        The unique identifier of the square.
+        """
         return self._square_id
 
     @square_id.setter
@@ -48,21 +53,24 @@ class Square:
     def add_player(self, player):
         """
         Adds the player to this square
+
+        :param player: the player object to be added
         """
         self._players.append(player)
 
     def remove_player(self, player):
         """
-        Removes the player from the current square
+        Removes the player from the current square.
+
+        :param player: ther player object to be removed
         """
-        try:
-            self._players.remove(player)
-        except ValueError:
-            raise ValueError("Square.remove_player(p): p not on square")
+        self._players.remove(player)
 
     def has_player(self, player):
         """
         Returns true if player is on this square, false otherwise. 
+
+        :returns: a boolean
         """
         return player in self._players
 
@@ -85,7 +93,8 @@ class ActionSquare(Square):
 
     def __init__(self, square_id, action):
         """
-        action - the action which results in landing on this square
+        :param square_id: the id of the square
+        :param action: the action which results in landing on this square
             [chest|chance|jail|stay|tax]
         """
         super().__init__(square_id)
@@ -100,6 +109,10 @@ class ActionSquare(Square):
 
     @property
     def action(self):
+        """
+        The action whcih the square could represent. Must be one
+        of the ActionSquare class variables.
+        """
         return self._action
 
     @action.setter
@@ -111,6 +124,10 @@ class OwnableSquare(Square):
     Represents a square which can be bought. 
     """
     def __init__(self, square_id, price):
+        """
+        :param square_id: the id of the square
+        :param price: the price which must be paid to own the square
+        """
         super().__init__(square_id)
         self._price = price
         self._is_owned = False
@@ -118,6 +135,11 @@ class OwnableSquare(Square):
 
     @property
     def is_owned(self):
+        """
+        Whether or not the square is owned by someone
+
+        :returns: True if the square is owned by a player, False otherwise
+        """
         return self._is_owned
 
     @is_owned.setter
@@ -126,6 +148,11 @@ class OwnableSquare(Square):
 
     @property
     def price(self):
+        """
+        The price a player must pay to own the square.
+
+        :returns: an integer representing the price
+        """
         return self._price
 
     @price.setter
@@ -134,6 +161,11 @@ class OwnableSquare(Square):
 
     @property
     def owner(self):
+        """
+        Information on the current owner. If there is no owner, -1 is returned.
+
+        :returns: the owner id of the current owner
+        """
         if self._is_owned:
             return self._owner
         else:
@@ -151,11 +183,11 @@ class PropertySquare(OwnableSquare):
     This class represents a property square.
     """
 
-    def __init__(self, square_id, price, base_rent, estate, property_id):
+    def __init__(self, square_id, price, base_rent, estate):
         """
-        price - the price to buy the property
-        base_rent - the base rent price*
-        estate - the estate id of the property
+        :param price: the price to buy the property
+        :param base_rent: the base rent price*
+        :param estate: the estate id of the property
 
         *The base rent well double for each house built on the property. A hotel
         equates to 5 houses. So  rent = base_rent * (2^num_houses_on_square)
@@ -163,7 +195,6 @@ class PropertySquare(OwnableSquare):
         super().__init__(square_id, price)
         self._base_rent = base_rent 
         self._estate = estate
-        self._property_id = property_id
         self._square_type = Square.PROPERTY
         self._num_houses = 0
 
@@ -192,10 +223,9 @@ class UtilitySquare(OwnableSquare):
 
     def __init__(self, square_id, price, one_owned = 4, two_owned = 10):
         """
-        one_owned - the number which will be multiplied by the diceroll to
-                    decide the rent if a player lands here when only one
-                    utility os owned.
-        two_owned - same as one_owned but for when both utilities are owned.
+        :param one_owned: the number which will be multiplied by the diceroll to
+            decide the rent if a player lands here when only one utility os owned.
+        :param two_owned: same as one_owned but for when both utilities are owned.
         """
         super().__init__(square_id, price)
         self._square_type = Square.UTILITY
@@ -210,10 +240,22 @@ class UtilitySquare(OwnableSquare):
 
     @property
     def one_owned(self):
+        """
+        This is the multiplier which the dice is multiplied by when one utility
+        is owned and the rent is being calculated. 
+
+        :returns: an integer
+        """
         return self._one_owned
 
     @property
     def two_owned(self):
+        """
+        This is the multiplier which the dice is multiplied by when two utilities
+        are owned and the rent is being calculated. 
+
+        :returns: an integer
+        """
         return self._two_owned
 
 
@@ -225,7 +267,9 @@ class TransportSquare(OwnableSquare):
 
     def __init__(self, square_id, price, base_rent = 500):
         """
-        rent - this is the base_rent of the square*
+        :param square_id: the id of the square
+        :param price: the price someone mustpay to buy the property
+        :param base_rent: this is the base_rent of the square*
 
         *The base rent will double for each utility owned equating to the actual rent
         """
@@ -241,4 +285,9 @@ class TransportSquare(OwnableSquare):
 
     @property
     def base_rent(self):
+        """
+        The rent someone must pay when there are no houses on the square.
+
+        :returns: the integer base rent
+        """
         return self._base_rent
