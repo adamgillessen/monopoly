@@ -11,13 +11,11 @@
     <!--Codes-->
     <script src="js/Helpers.js"></script>
     <script src="js/Models.js"></script>
+    <script src="js/Auction.js"></script>
     <script src="js/ViewController.js"></script>
     <script src="js/Communication.js"></script>
     <script src="js/LobbyController.js"></script>
     <script src="js/Game.js"></script>
-    <!--remove this later!-->
-    <script src="js/dev-remove-later.js"></script>
-
 
     <link rel="stylesheet" type="text/css" href="scss/main.css">
     <link rel="stylesheet" type="text/css" href="scss/board-layout.css">
@@ -135,11 +133,8 @@
                 </div>
             </div>
             <div id="action">
-                <div id="action-id">
-                    Action ID
-                </div>
-                <div id="action-description">
-                    Description
+                <div id="action-banner">
+                    <span id="action-id">ID</span>.&nbsp;<span id="action-description">Desc</span>
                 </div>
             </div>
         </div>
@@ -163,16 +158,8 @@
         </div>
     </div>
 
-    <!--Delete CSS here-->
+    <!--Chat window-->
     <div id="log-area">
-        <!--<div class="log">-->
-        <!--<div class="each-line">-->
-        <!--This is one line-->
-        <!--</div>-->
-        <!--<div class="each-line">-->
-        <!--This is another line-->
-        <!--</div>-->
-        <!--</div>-->
     </div>
     <div id="textfield">
         <input type='text' placeholder="Type Message/Bid Here...">
@@ -180,22 +167,5 @@
     </div>
 
 </div>
-
-<!--<div id="dev-control-pane" class="dev" style="width: 200px">
-    <span>To simulate message sent from server, Target ID:</span>
-    <input type="text" id="input-id" placeholder="target ID" value="0">
-    <button id="btn-player-join-ack">
-        [server]player join ack
-    </button>
-    <button id="btn-your-turn">
-        [server]your turn
-    </button>
-    <button id="btn-roll-result">
-        [server]roll result
-    </button>
-    <button id="btn-buy-ack">
-        [server]buy ack
-    </button>
-</div>-->
 </body>
 </html>

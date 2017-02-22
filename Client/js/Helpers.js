@@ -42,7 +42,7 @@ function getContextValue(name) {
     return tmp;
 }
 
-function updateScroll(){
+function updateScroll() {
     var element = document.getElementById("log-area");
     element.scrollTop = element.scrollHeight;
 }
@@ -53,9 +53,10 @@ function updateScroll(){
  * @param {int} source: Who generated this message ?
  */
 function log(obj, source) {
-    // if ($(".log").length > 10) {
-    //     $(".log:first").remove();
-    // }
+    if (obj === null || obj === undefined || typeof obj !== "string") {
+        console.log("Invalid log parameter", obj);
+        return;
+    }
 
     // Split strings by "\n"
     var arrStrings = obj.split(/\n/);
@@ -96,6 +97,7 @@ function showCellDetail(id) {
 
         $("#property-banner").removeClass();
         $("#property-banner").addClass("cell-" + id);
+
         $("#property-id").text(cell.id);
         $("#property-name").text(name);
 
@@ -116,6 +118,9 @@ function showCellDetail(id) {
     } else {
         $("#action").show();
         $("#property").hide();
+
+        $("#action-banner").removeClass();
+        $("#action-banner").addClass("cell-" + id);
 
         $("#action-id").text(cell.id);
         $("#action-description").text(name);
