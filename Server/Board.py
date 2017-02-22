@@ -375,16 +375,16 @@ class Board:
         square = self.get_square(new_pos)
 
         if square.square_type in (Square.PROPERTY, Square.UTILITY, Square.TRANSPORT):
-            print(">>Square is ownable square")
+            #print(">>Square is ownable square")
             # can be bought or may be bought already
             if square.is_owned:
-                print(">>Square is owned")
+                #print(">>Square is owned")
                 if square.owner != player_id:
                     if square.square_type == Square.PROPERTY:
-                        print(">>Square is a property square")
+                        #print(">>Square is a property square")
                         rent = square.base_rent * (2**square.num_houses)
                     elif square.square_type == Square.UTILITY:
-                        print(">>Square is a utility square")
+                        #print(">>Square is a utility square")
                         dice_roll_sum = sum(self.roll_dice())
                         owner = self._players[square.owner]
                         if owner.num_utils() == 1:
@@ -392,7 +392,7 @@ class Board:
                         else:
                             rent = dice_roll_sum * square.two_owned
                     elif square.square_type == Square.TRANSPORT:
-                        print(">>Square is a transport square")
+                        #print(">>Square is a transport square")
                         owner = self._players[square.owner]
                         rent = square.base_rent * (2**owner.num_transports())
 
@@ -403,17 +403,17 @@ class Board:
                     self.take_money(player_id, rent)
                 else:
                     self._human_string.append("Player {} already owns square".format(player_id))
-                yield None
+                yield "paid_rent"
 
             elif self._players[player_id].money < square.price:
-                print(">>Square not owned but player doesn't have enough money")
+                #print(">>Square not owned but player doesn't have enough money")
                 yield "not_enough_money"
             
             else:
-                print(">>Square is not owned")
+                #print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
                 if buy_auction == "buy":
-                    print(">>User will buy")
+                    #print(">>User will buy")
                     cost = square.price
                     square.owner = player_id
                     self.take_money(player_id, cost)
@@ -430,10 +430,10 @@ class Board:
                     elif square.square_type == Square.TRANSPORT:
                         new_owner.add_transport(Square)
 
-                    yield None
+                    yield "property_bought"
                 
                 elif buy_auction == "auction":
-                    print(">>User will auction")
+                    #print(">>User will auction")
                     highest_bidder = yield None 
                     bid = yield None
                     square.owner = highest_bidder
@@ -452,21 +452,21 @@ class Board:
                     yield None
 
                 elif buy_auction == "no_buy":
-                    print(">>User will not buy")
+                    #print(">>User will not buy")
                     self._human_string.append("Player {} didn't buy square {}.".format(
                         player_id, new_pos))
 
                     yield None
 
                 else:
-                    print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
+                    #print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
                     
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
-            print(">>Square is action square")
+            #print(">>Square is action square")
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
-                print(">>Square is chest | chance")
+                #print(">>Square is chest | chance")
                 if square.action == ActionSquare.CHEST:
                     self._human_string.append("Player {} drew a Chest card".format(
                         player_id))
@@ -491,16 +491,16 @@ class Board:
                 self._human_string.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
-                print(">>Sqaure is Go to Jail square")
+                #print(">>Sqaure is Go to Jail square")
                 self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
             elif square.action == ActionSquare.STAY:
-                print(">>Sqaure is free parking")
+                #print(">>Sqaure is free parking")
                 self._human_string.append("Player {} got free parking".format(
                         player_id))
             elif square.action == ActionSquare.TAX:
-                print(">>Sqaure is get taxed square")
+                #print(">>Sqaure is get taxed square")
                 tax = 100 * (2**Board._TAX_POS.index(new_pos))
                 self.take_money(player_id, tax)
                 self._human_string.append("Player {} paid {} in tax".format(
