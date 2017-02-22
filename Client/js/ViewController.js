@@ -85,22 +85,36 @@ ViewController.addCallbacksToButtons = function () {
     });
 
     /**
-     * todo
      * Auction
      */
     $("#btn-buy-no").click(function () {
-        // Dont buy
-        game.connector.sendMessage(generateMessage("buy", {
-            property: -1
-        }));
+        var propertyIndex = parseInt(getContextValue("buy"));
 
-        // End of turn reached
-        ViewController.preEndTurn();
+        // Send auction message
+        game.connector.sendMessage(generateMessage("auction", {
+            property: propertyIndex
+        }));
     });
 
     $("#btn-end-turn").click(function () {
-        game.connector.sendMessage(generateMessage("end_turn", null));
         ViewController.endTurn();
+    });
+
+    $("#submit").click(function () {
+        if (game.state === GAME_STATE.AUCTION) {
+            try {
+                var price = parseInt($("#textfield input").val());
+            } catch (err) {
+                log("Please enter valid integer!", 5);
+            }
+
+            var bid = game.auctionHandler.bid(price);
+
+            log("You have placed bid: " + bid, game.clientID);
+        } else {
+            // Chat button
+            // todo: send chat message
+        }
     });
 
     // Show detail pane of a selected cell
@@ -129,17 +143,26 @@ ViewController.yourTurn = function () {
 
 /**
  * Show buy window to user
- * @param propertyIndex: from range 0 - 39
+ * @param propertyID: from range 0 - 39
  */
-ViewController.promptBuyWindow = function (propertyIndex) {
+ViewController.promptBuyWindow = function (propertyID) {
     showButtons([BUTTONS.buy_options]);
-    setContextValue("buy", propertyIndex);
+    setContextValue("buy", propertyID);
+};
+
+/**
+ * Actually start Auction time!
+ * @param {auction_start} data
+ */
+ViewController.promptAuctionWindow = function (data) {
+    game.startAuction(data);
 };
 
 /**
  * Reachs end of turn, show end turn button to players and more
  */
 ViewController.preEndTurn = function () {
+    game.state = GAME_STATE.EOT;
     showButtons([BUTTONS.end_turn]);
 };
 
@@ -148,4 +171,5 @@ ViewController.preEndTurn = function () {
  */
 ViewController.endTurn = function () {
     showButtons(null);
+    game.connector.sendMessage(generateMessage("end_turn", null));
 };

@@ -81,8 +81,9 @@ function parseMessage(data) {
             }
         },
         "board_sync": function (data) {
-            // todo: show board sync text
-            log(data["text"], 5);
+            if ("text" in data) {
+                log(data["text"], 5);
+            }
 
             var listProperties = data["cells"];
             var lop = 0;
@@ -122,15 +123,20 @@ function parseMessage(data) {
             }
         },
         "your_turn": function (data) {
-            if (game.isMyTurn(data["source"])) {
+            game.currentTurn = data["source"];
+
+            if (game.isMyTurn()) {
+                log("You turn!", data["source"]);
                 ViewController.yourTurn();
+            } else {
+                log(sprintf("Player %d's turn!", data["source"]), data["source"]);
             }
         },
         "roll_result": function (data) {
             var source = data["source"];
 
             // Log to log-area
-            if (game.isMyTurn(source)) {
+            if (game.isMyTurn()) {
                 log("You just rolled " + data["result"], source);
             } else {
                 log(sprintf("Player %d rolled ", source) + data["result"], source);
@@ -139,7 +145,13 @@ function parseMessage(data) {
             // Update model
             var landedOn = game.model.movePlayer(source, data["result"]);
 
-            if (!game.isMyTurn(source)) {
+            if (game.isMyTurn()) {
+                log(sprintf("You landed on %d", landedOn), data["source"]);
+            } else {
+                log(sprintf("Player %d landed on %d", data["source"], landedOn), data["source"]);
+            }
+
+            if (!game.isMyTurn()) {
                 return;
             }
 
@@ -173,7 +185,42 @@ function parseMessage(data) {
             }
         },
         "buy_ack": function (data) {
-            // todo: show buy ack
+            var price = game.model.selectCell(data["property"]).price;
+
+            if (data["source"] === game.clientID) {
+                log(sprintf("You have bought Property %d for %d", data["property"], price), data["source"]);
+            } else {
+                log(sprintf("Player %d has bough Property %d for %d", data["source"], data["property"], price), data["source"]);
+            }
+        },
+        "auction_start": function (data) {
+            if (data["source"] === game.clientID) {
+                log(sprintf("You have started an Auction on Property %d!", data["property"]), data["source"]);
+            } else {
+                log(sprintf("Player %d has started an Auction on Property %d!", data["source"], data["property"]), data["source"]);
+            }
+
+            log("Place your bid!", 5);
+
+            // Change button
+            ViewController.promptAuctionWindow(data);
+        },
+        "auction_bid_ack": function (data) {
+            if (data["source"] !== game.clientID) {
+                log("Player " + data["source"] + " has placed his bid", data["source"]);
+            }
+        },
+        "auction_finished": function (data) {
+            if (data["winner"] === game.clientID) {
+                log(sprintf("You have bought Property %d for %d", data["property"], data["price"]), 5);
+            } else {
+                log(sprintf("Player %s has bought Property %d for %d", data["winner"], data["property"], data["price"]), 5);
+            }
+
+            game.model.selectPlayer(data["winner"]).changeMoney(-data["price"]);
+            game.model.selectCell(data["property"]).changeOwner(data["winner"]);
+
+            game.endAuction(data);
         }
     };
 
@@ -248,6 +295,18 @@ function generateMessage(type, parameter) {
         "buy": function (parameter) {
             var ret = _generateHeader("buy", ["source"]);
             ret.property = parameter.property;
+
+            return ret;
+        },
+        "auction": function (parameter) {
+            var ret = _generateHeader("auction", ["source"]);
+            ret.property = parameter.property;
+
+            return ret;
+        },
+        "auction_bid": function (parameter) {
+            var ret = _generateHeader("auction_bid", ["source"]);
+            ret.price = parameter.price;
 
             return ret;
         }
