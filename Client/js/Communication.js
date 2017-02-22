@@ -200,6 +200,10 @@ function _generateHeader(type, include) {
     }
 
     for (var each in include) {
+        if (!include.hasOwnProperty(each)) {
+            continue;
+        }
+
         switch (include[each]) {
             case "source":
                 obj.source = game.clientID;

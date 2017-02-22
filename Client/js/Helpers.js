@@ -42,16 +42,24 @@ function getContextValue(name) {
     return tmp;
 }
 
+function updateScroll(){
+    var element = document.getElementById("log-area");
+    element.scrollTop = element.scrollHeight;
+}
+
 /**
  * Log things to log-area in HTML
  * @param {string} obj
+ * @param {int} source: Who generated this message ?
  */
 function log(obj, source) {
-    if ($(".log").length > 10) {
-        $(".log:first").remove();
-    }
+    // if ($(".log").length > 10) {
+    //     $(".log:first").remove();
+    // }
 
+    // Split strings by "\n"
     var arrStrings = obj.split(/\n/);
+
     var templateDivParent = '<div class="log %s"></div>';
     var classTable = {
         1: "player1",
@@ -68,6 +76,8 @@ function log(obj, source) {
     }
 
     divCurrentLog.appendTo("#log-area");
+
+    updateScroll();
 }
 
 /**
