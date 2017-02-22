@@ -20,7 +20,7 @@ class Card:
 
 class MoveCard(Card):
     """
-    Represents a card which moves a player to a new position
+    Represents a card which moves a player to a new position.
     """
     # Move to GO, JAIL, 3 Properties, 1 transport
     def __init__(self, move_to_pos, text):

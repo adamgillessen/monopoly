@@ -32,6 +32,9 @@ class Player:
 
     @property
     def money(self):
+        """
+        The current amount of money the player has.
+        """
         return self._money
 
     @money.setter
@@ -42,6 +45,9 @@ class Player:
 
     @property
     def free(self):
+        """
+        Whether or not the player has a get out of jail free card.
+        """
         return self._free 
 
     @free.setter
@@ -50,6 +56,9 @@ class Player:
 
     @property
     def jail(self):
+        """
+        Whether or not the player is currently in jail.
+        """
         return self._jail
 
     @jail.setter
@@ -58,6 +67,9 @@ class Player:
 
     @property
     def id(self):
+        """
+        The unique identifier of the player.
+        """
         return self._id
 
     @id.setter
@@ -66,25 +78,20 @@ class Player:
 
     @property
     def double_roll(self):
+        """
+        Whether or not the player rolled a double on their last dice-roll.
+        """
         return self._double_roll
 
     @double_roll.setter
     def double_roll(self, new_double_roll):
         self._double_roll = new_double_roll
 
-    @property
-    def free(self):
-        return self._free
-
-    @free.setter
-    def free(self, new_free):
-        self._free = new_free
-
     def add_property(self, property_square):
         """
         Adds the new property to the player's position.
 
-        :param property_square - the PropertySquare being added
+        :param property_square: the PropertySquare being added
         """
         self._properties.add(property_square)
 
@@ -92,7 +99,7 @@ class Player:
         """
         Adds the new utility to the player's position.
 
-        :param utility_square - the UtilitySquare being added
+        :param utility_square: the UtilitySquare being added
         """
         self._utils.add(utility_square)
 
@@ -100,20 +107,21 @@ class Player:
         """
         Adds the new transport to the player's position.
 
-        :param transport_square - the TransportSquare being added
+        :param transport_square: the TransportSquare being added
         """
         self._transports.add(transport_square)
 
     def num_transports(self):
         """
-        :return the number of transports the player owns
+        :returns: the number of transports the player owns
         """
         return len(self._transports)
 
     def num_utils(self):
         """
         The number of utilities which the player owns.
-        :return the number of utilities the player owns
+        
+        :returns: the number of utilities the player owns
         """
         return len(self._utils)
 
