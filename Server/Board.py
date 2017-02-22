@@ -59,8 +59,9 @@ class Board:
     _GO_POS = 0
     def __init__(self, num_players):
         """
-        Initialises the board with the relevant squares in the correct place
-        :param num_players - the number of players going to play the game
+        Initialises the board with the relevant squares in the correct place.
+
+        :param num_players: the number of players going to play the game
         """
 
         # Initialise Squares
@@ -136,7 +137,8 @@ class Board:
     def __str__(self):
         """
         Board String method.
-        :return a string representation of the baord
+
+        :returns: a string representation of the baord
         """
         s = ""
         for i, square in enumerate(self._board):
@@ -147,7 +149,10 @@ class Board:
 
     def game_state(self):
         """
-        Returns a dictionary of a the game state in the "baord_sync" format.
+        Builds up a dictionary of the current game state in the format of the
+        board_sync JSON message format. 
+
+        :returns: the json dictionary
         """
         msg = {
             "type":"board_sync",
@@ -198,7 +203,8 @@ class Board:
         """
         Simulates a dice roll. Returns a pair of integers representing the value
         on each dice. 
-        :return a tuple of ints of length 2
+
+        :returns: a tuple of ints of length 2
         """
         while True:
             d1, d2 = (random.randint(1, 6) for _ in range(2))
@@ -209,8 +215,9 @@ class Board:
     def move_player(self, player_id, new_pos):
         """
         Moves Player with id "player_id" from old position to "new_pos". 
-        :param player_id - the ID of the player being moved
-        :param new_pos - the (zero indexed) position on the board the player is moving too
+
+        :param player_id: the ID of the player being moved
+        :param new_pos: the (zero indexed) position on the board the player is moving too
         """
         player = self._players[player_id]
         # remove from old square
@@ -223,24 +230,27 @@ class Board:
     def get_players(self, pos):
         """
         Gets all the players in the game at a location.
-        :param pos - the location of the square ebing queried
-        :return a list of all players at position pos. 
+
+        :param pos: the location of the square ebing queried
+        :returns: a list of all players at position pos. 
         """
         return list(self._board[pos])
 
     def get_pos(self, player_id):
         """
         Get the position of the square a player is on. 
-        :param player_id - the id of the player being looked for
-        :return the position of the square which the player is on 
+
+        :param player_id: the id of the player being looked for
+        :returns: the position of the square which the player is on 
         """
         return self._player_positions[self._players[player_id]]
 
     def get_square(self, pos):
         """
-        Get a Square Object
-        :param pos - the position of the Square you are looking for
-        :return The square object at position pos
+        Get a Square Object.
+
+        :param pos: the position of the Square you are looking for
+        :returns: The square object at position pos
         """
         if pos >= Board._NUM_SQUARES:
             raise IndexError(
@@ -250,18 +260,20 @@ class Board:
 
     def take_money(self, player_id, amount):
         """
-        Takes "amount" amount of money from Player with id "player_id"
-        :param player_id the id of the player in question
-        :param amount the amount of money to be taken from this player
+        Takes "amount" amount of money from Player with id "player_id".
+
+        :param player_id: the id of the player in question
+        :param amount: the amount of money to be taken from this player
         """
         player = self._players[player_id]
         player.money -= amount
 
     def give_money(self, player_id, amount):
         """
-        Gives "amount" amount of money to Player with id "player_id"
-        :param player_id the id of the player in question
-        :param amount the amount of money to be given to this player
+        Gives "amount" amount of money to Player with id "player_id".
+
+        :param player_id: the id of the player in question
+        :param amount: the amount of money to be given to this player
         """
         player = self._players[player_id]
         player.money += amount
@@ -269,15 +281,17 @@ class Board:
     def obtain_get_out_jail_free(self, player_id):
         """
         Gives the Player with id "player_id" a get out of jail free card. 
-        :param player_id - the id of the player being given the card
+
+        :param player_id: the id of the player being given the card
         """
         player = self._players[player_id]
         player.free = True 
 
     def go_to_jail(self, player_id):
         """
-        Moves player with id "player_id" to jail"
-        :param player_id - the id of the player going to jail
+        Moves player with id "player_id" to jail".
+
+        :param player_id: the id of the player going to jail
         """
         self.move_player(player_id, Board._JAIL_POS)
         player = self._players[player_id]
@@ -286,7 +300,8 @@ class Board:
     def leave_jail(self, player_id):
         """
         Moves the player wit id "player_id" out of jail
-        :param player_if the id of the player being moved out of jail
+
+        :param player_if: the id of the player being moved out of jail
         """
         player = self._players[player_id]
         player.jail = False 
@@ -294,7 +309,8 @@ class Board:
     def use_get_out_jail_free(self, player_id):
         """
         Player with id "player_id" uses their get out of jail free card. 
-        :param player_id the id of the player using their card
+
+        :param player_id: the id of the player using their card
         """
         player = self._players[player_id]
         if not player.free:
@@ -307,7 +323,8 @@ class Board:
     def add_house(self, pos):
         """
         Adds a house to the Square at position pos. 
-        :param pos - the position of the square the house is being added to
+
+        :param pos: the position of the square the house is being added to
         """
         square = self.get_square(pos)
         square.num_houses += 1 
@@ -316,9 +333,9 @@ class Board:
         """
         Runs the specified player's turn based on their dice roll result.
 
-        :param player_id - The id of the player whose turn it is
-        :param dice1 - the result of dice 1
-        :param dice2 - the result of dice 2
+        :param player_id: The id of the player whose turn it is
+        :param dice1: the result of dice 1
+        :param dice2: the result of dice 2
 
         This is a generator which will yield the actions a user must address. 
         The final value of the generator will be a human-readable string which
