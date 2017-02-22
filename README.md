@@ -18,6 +18,8 @@ Resources - assorted development information
 ## Todos:  
 1. Update the login screen background due to issues with sizing of the browser window.
 2. Client: More log message  
+3. Write unit-tests for a turn involving an auction
+4. Add functionaility for a player to win or lose
 
 ## Presentation 1
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
