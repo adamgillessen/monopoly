@@ -241,18 +241,20 @@ class UtilitySquare(OwnableSquare):
     @property
     def one_owned(self):
         """
-        This is True if one utility is owned.
+        This is the multiplier which the dice is multiplied by when one utility
+        is owned and the rent is being calculated. 
 
-        :returns: a boolean
+        :returns: an integer
         """
         return self._one_owned
 
     @property
     def two_owned(self):
         """
-        This is True if two utilities are owned.
+        This is the multiplier which the dice is multiplied by when two utilities
+        are owned and the rent is being calculated. 
 
-        :returns: a boolean
+        :returns: an integer
         """
         return self._two_owned
 
