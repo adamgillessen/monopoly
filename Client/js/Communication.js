@@ -82,7 +82,7 @@ function parseMessage(data) {
         },
         "board_sync": function (data) {
             // todo: show board sync text
-            log(data["text"]);
+            log(data["text"], 5);
 
             var listProperties = data["cells"];
             var lop = 0;
@@ -131,9 +131,9 @@ function parseMessage(data) {
 
             // Log to log-area
             if (game.isMyTurn(source)) {
-                log("You just rolled " + data["result"]);
+                log("You just rolled " + data["result"], source);
             } else {
-                log(sprintf("Player %d rolled ", source) + data["result"]);
+                log(sprintf("Player %d rolled ", source) + data["result"], source);
             }
 
             // Update model

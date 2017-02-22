@@ -46,13 +46,21 @@ function getContextValue(name) {
  * Log things to log-area in HTML
  * @param {string} obj
  */
-function log(obj) {
+function log(obj, source) {
     if ($(".log").length > 10) {
         $(".log:first").remove();
     }
 
     var arrStrings = obj.split(/\n/);
-    var divCurrentLog = $('<div class="log"></div>');
+    var templateDivParent = '<div class="log %s"></div>';
+    var classTable = {
+        1: "player1",
+        2: "player2",
+        3: "player3",
+        4: "player4",
+        5: "server"
+    };
+    var divCurrentLog = $(sprintf(templateDivParent, classTable[source]));
 
     var lop = 0;
     for (; lop < arrStrings.length; lop++) {
