@@ -107,7 +107,6 @@ ViewController.addCallbacksToButtons = function () {
     $(".cell").click(function () {
         var id = parseInt($(this)[0].id.replace("cell-", ""));
         showCellDetail(id);
-        ViewController.currentSelectedSquare = id;
     });
 };
 
