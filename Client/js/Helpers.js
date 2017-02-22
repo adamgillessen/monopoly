@@ -47,8 +47,8 @@ function getContextValue(name) {
  * @param {string} obj
  */
 function log(obj) {
-    if ($(".log").length > 5) {
-        $(".log:last").remove();
+    if ($(".log").length > 10) {
+        $(".log:first").remove();
     }
 
     var arrStrings = obj.split(/\n/);
@@ -59,7 +59,7 @@ function log(obj) {
         $(sprintf('<div class="each-line">%s</div>', arrStrings[lop])).appendTo(divCurrentLog);
     }
 
-    divCurrentLog.prependTo("#log-area");
+    divCurrentLog.appendTo("#log-area");
 }
 
 /**
@@ -67,6 +67,8 @@ function log(obj) {
  * @param {int} id
  */
 function showCellDetail(id) {
+    ViewController.currentSelectedSquare = id;
+
     var name = $("#cell-" + id + " span").text();
     var cell = game.model.selectCell(id);
 
