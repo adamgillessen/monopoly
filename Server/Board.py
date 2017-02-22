@@ -147,6 +147,14 @@ class Board:
             s += str(square) + " "
         return s 
 
+    def all_players(self):
+        """
+        A list of player ids in the game.
+
+        :returns: a list of all player ids
+        """
+        return [player_id for player_id in self._players.keys()]
+
     def game_state(self):
         """
         Builds up a dictionary of the current game state in the format of the
@@ -424,14 +432,12 @@ class Board:
                     yield new_pos
                 
                 elif buy_auction == "auction":
-                    """
-                    selling_square = True
                     print(">>User will auction")
                     highest_bidder = yield None 
                     bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
-                    new_owner = self._players[highest_bidder]"""
+                    new_owner = self._players[highest_bidder]
 
                 elif buy_auction == "no_buy":
                     print(">>User will not buy")

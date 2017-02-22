@@ -24,6 +24,7 @@ class Server:
         self._current_turn = 1
         self._board = None
         self._num_players = 0
+        self._current_bidders = None 
 
     def next_id(self):
         """
@@ -104,6 +105,59 @@ class Server:
         """
         return self._board.game_state()
 
+    def get_all_players(self):
+        """
+        A list of all the player ids in the game.
+
+        :returns: a list of player ids who are taking part in the game 
+        """
+        return self._board.all_players()
+
+    @property
+    def current_bidders(self):
+        """
+        This is a list of all player_ids which are invlolved in a bid
+        """
+        return self._current_bidders
+
+    @current_bidders.setter
+    def current_bidders(self, new_current_bidders):
+        self._current_bidders = new_current_bidders
+
+    @property
+    def bids(self):
+        """
+        This is a dictionary of player_id, bid amount pairs for the current auction
+        """
+        return self._bids
+
+    @bids.setter
+    def bids(self, new_bids):
+        self._bids = new_bids
+
+    @property
+    def auction_property(self):
+        """
+        This is the ID of the property currently being auctioned. 
+        """
+        return self._auction_property
+
+    @auction_property.setter
+    def auction_property(self, new_auction_property):
+        self._auction_property = new_auction_property
+
+    def get_auction_result(self):
+        """
+        Gets the results of the current auction. A list of player_ids of those who
+        bid the max_amount and the actual maximum bid is returned. 
+
+        :returns: a tuple of length 2 - (winning_players, max_bid_amount)
+        """
+        max_bid = max(self._bids.values())
+        max_bid_players = [player_id for \
+            player_id, bid_amount in self._bids.items() \
+                if bid_amount == max_bid]
+        return max_bid_players, max_bid
 
 def new_client(client, server):
     """
@@ -212,7 +266,60 @@ def recv_message(client, server, message):
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
+    elif json_string["type"] == "auction":
+        response_json = {
+            "type" : "auction_start",
+            "competitor": s.get_all_players(),
+            "source": json_string["source"],
+            "property": json_string["property"],
+            "base_price": 10,
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+        s.current_bidders = s.get_all_players()
+        s.bids = {}
+        s.auction_property = json_string["property"]
+
+    elif json_string["type"] == "auction_bid":
+        player_id = json_string["source"]
+        bid_amount = json_string["price"]
+        s.bids[player_id] = bid_amount
+
+        response_json = {
+            "type": "auction_bid_ack",
+            "source": json_string["source"],
+        }
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         
+        if len(s.bids) == len(s.current_bidders):
+            max_bid_players, max_bid = s.get_auction_result()
+            if len(max_bid_players) == 1:
+                response_json = {
+                    "type": "auction_finished",
+                    "property": s.auction_property,
+                    "price": max_bid,
+                    "winner": max_bid_players[0],
+                }
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            
+                s.current_turn_generator.send(max_bid_players[0])
+                s.current_turn_generator.send(max_bid)
+
+            else:
+                response_json = {
+                    "type" : "auction_start",
+                    "competitor": max_bid_players,
+                    "source": json_string["source"],
+                    "property": json_string["property"],
+                    "base_price": max_bid,
+                }
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                s.current_bidders = max_bid_players
+                s.bids = {}
+                s.auction_property = json_string["property"]
 
     elif json_string["type"] == "end_turn":
         board_sync_json = s.game_state()
