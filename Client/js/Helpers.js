@@ -76,8 +76,9 @@ function showCellDetail(id) {
         $("#property").show();
         $("#action").hide();
 
+        $("#property-banner").removeClass();
+        $("#property-banner").addClass("cell-" + id);
         $("#property-id").text(cell.id);
-
         $("#property-name").text(name);
 
         if (cell.estate === -1) {
