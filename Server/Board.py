@@ -6,32 +6,31 @@ from Squares import *
 from Player import * 
 from Cards import * 
 import random
-import itertools 
 
 class Board:
     """
     This class represents the board state and provides functions to change the
     board state. 
     """
-    NUM_SQUARES = 40
-    CHEST_POS = [2, 17, 33]
-    CHANCE_POS = [7, 22, 36]
-    CORNER_POS = [0, 10, 20, 30]
-    TAX_POS = [4, 38]
-    # UTIL_POS_INFO[position] = price
-    UTIL_POS_INFO = {
+    _NUM_SQUARES = 40
+    _CHEST_POS = [2, 17, 33]
+    _CHANCE_POS = [7, 22, 36]
+    _CORNER_POS = [0, 10, 20, 30]
+    _TAX_POS = [4, 38]
+    # _UTIL_POS_INFO[position] = price
+    _UTIL_POS_INFO = {
         12 : 200,
         28 : 200,
     }
-    # TRANS_POS_INFO[position] = price
-    TRANS_POS_INFO = {
+    # _TRANS_POS_INFO[position] = price
+    _TRANS_POS_INFO = {
         5 : 150,
         15 : 150,
         25 : 150,
         35 : 150,
     }
-    # PROPERTY_POS_INFO[position] = [price, rent, estate]
-    PROPERTY_POS_INFO = {
+    # _PROPERTY_POS_INFO[position] = [price, rent, estate]
+    _PROPERTY_POS_INFO = {
         1 : [60, 10, 0],
         3 : [60, 20, 0],
         6 : [100, 30, 1],
@@ -55,9 +54,9 @@ class Board:
         37 : [350, 175, 7],
         39 : [400, 200, 7],
     }
-    JAIL_POS = 10
-    GO_AMOUNT = 200
-    GO_POS = 0
+    _JAIL_POS = 10
+    _GO_AMOUNT = 200
+    _GO_POS = 0
     def __init__(self, num_players):
         """
         Initialises the board with the relevant squares in the correct place
@@ -65,30 +64,30 @@ class Board:
         """
 
         # Initialise Squares
-        self._board = [None for _ in range(Board.NUM_SQUARES)]
+        self._board = [None for _ in range(Board._NUM_SQUARES)]
 
-        for pos in Board.CHEST_POS:
+        for pos in Board._CHEST_POS:
             self._board[pos] = ActionSquare(pos, action=ActionSquare.CHEST)
 
-        for pos in Board.CHANCE_POS:
+        for pos in Board._CHANCE_POS:
             self._board[pos] = ActionSquare(pos, action=ActionSquare.CHANCE)
 
-        for pos in Board.TAX_POS:
+        for pos in Board._TAX_POS:
             self._board[pos] = ActionSquare(pos, action=ActionSquare.TAX)
 
-        for pos in Board.CORNER_POS:
-            if pos in Board.CORNER_POS[:3]:
+        for pos in Board._CORNER_POS:
+            if pos in Board._CORNER_POS[:3]:
                 self._board[pos] = ActionSquare(pos, action=ActionSquare.STAY)
-            elif pos == Board.CORNER_POS[3]:
+            elif pos == Board._CORNER_POS[3]:
                 self._board[pos] = ActionSquare(pos, action=ActionSquare.JAIL)
 
-        for pos, price in Board.UTIL_POS_INFO.items():
+        for pos, price in Board._UTIL_POS_INFO.items():
             self._board[pos] = UtilitySquare(pos, price)
 
-        for pos, price in Board.TRANS_POS_INFO.items():
+        for pos, price in Board._TRANS_POS_INFO.items():
             self._board[pos] = TransportSquare(pos, price)
 
-        for pos, info in Board.PROPERTY_POS_INFO.items():
+        for pos, info in Board._PROPERTY_POS_INFO.items():
             price, rent, estate = info 
             self._board[pos] = PropertySquare(pos, price, rent, estate)
 
@@ -103,12 +102,12 @@ class Board:
 
         # initialise
         self._action_cards = {
-            MoveCard(Board.GO_POS, "Advance to GO"),
+            MoveCard(Board._GO_POS, "Advance to GO"),
             GainMoneyCard(200, "Bank error in your favour; collect 200"),
             LoseMoneyCard(50, "Doctor's fee; pay 50"),
             GainMoneyCard(50, "From sale of stock, you get 50"),
             GetOutOfJailFreeCard(),
-            MoveCard(Board.JAIL_POS, "Go to Jail"),
+            MoveCard(Board._JAIL_POS, "Go to Jail"),
             GainMoneyCard(50, "Grand Opera opening night; collect 50"),
             GainMoneyCard(100, "Holiday Fund matures; collect 100"),
             GainMoneyCard(20, "Income Tax Refund; collect 20"),
@@ -119,17 +118,17 @@ class Board:
             GainMoneyCard(25, "Receive 25 in consultancy fees"),
             GainMoneyCard(10, "You have won second place in a beauty contest; collect 10"),
             GainMoneyCard(100, "You receive inheritance; collect 100"),
-            MoveCard(Board.GO_POS, "Advance to GO"),
+            MoveCard(Board._GO_POS, "Advance to GO"),
             GainMoneyCard(50, "Bank pays you a dividened; collect 50"),
             GetOutOfJailFreeCard(),
             GetOutOfJailFreeCard(),
-            MoveCard(Board.JAIL_POS, "Go to Jail"),
+            MoveCard(Board._JAIL_POS, "Go to Jail"),
             GainMoneyCard(15, "Pay 15 in poor tax"),
             GainMoneyCard(150, "Your building and loan matures; collect 150"),
             GainMoneyCard(100, "You have won 100 in a crossword competition"),
-            MoveCard(random.choice(list(Board.UTIL_POS_INFO)), "Move to a utility"),
+            MoveCard(random.choice(list(Board._UTIL_POS_INFO)), "Move to a utility"),
         } | {
-            MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board.PROPERTY_POS_INFO)) for _ in range(3))
+            MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board._PROPERTY_POS_INFO)) for _ in range(3))
         }
 
         self._current_player = None           
@@ -155,7 +154,7 @@ class Board:
             "cells": {},
             "players": {},
         }
-        for pos, info in Board.PROPERTY_POS_INFO.items():
+        for pos, info in Board._PROPERTY_POS_INFO.items():
             price, rent, estate = info 
             property_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
@@ -164,7 +163,7 @@ class Board:
             msg["cells"][str(pos)]["owner"] = property_square.owner 
             #msg["cells"][str(pos)]["price"] =  price 
 
-        for pos, info in Board.TRANS_POS_INFO.items():
+        for pos, info in Board._TRANS_POS_INFO.items():
             price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
@@ -174,7 +173,7 @@ class Board:
             msg["cells"][str(pos)]["owner"] = transport_square.owner 
             #msg["cells"][str(pos)]["price"] = price 
 
-        for pos, info in Board.UTIL_POS_INFO.items():
+        for pos, info in Board._UTIL_POS_INFO.items():
             price = info 
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
@@ -243,10 +242,10 @@ class Board:
         :param pos - the position of the Square you are looking for
         :return The square object at position pos
         """
-        if pos >= Board.NUM_SQUARES:
+        if pos >= Board._NUM_SQUARES:
             raise IndexError(
                 "Board.get_square({}): Index {} not in Board of size {}".format(
-                    pos, pos, Board.NUM_SQUARES)) 
+                    pos, pos, Board._NUM_SQUARES)) 
         return self._board[pos]
 
     def take_money(self, player_id, amount):
@@ -280,7 +279,7 @@ class Board:
         Moves player with id "player_id" to jail"
         :param player_id - the id of the player going to jail
         """
-        self.move_player(player_id, Board.JAIL_POS)
+        self.move_player(player_id, Board._JAIL_POS)
         player = self._players[player_id]
         player.jail = True 
 
@@ -342,7 +341,7 @@ class Board:
 
         new_pos = self.get_pos(player_id) + dice1 + dice2
         if new_pos > 39:
-            self.give_money(player_id, Board.GO_AMOUNT)
+            self.give_money(player_id, Board._GO_AMOUNT)
             new_pos %= 40
             self._human_string.append("Player {} passed go and got $200.".format(player_id))
         self._human_string.append("Player {} landed on position {}.".format(player_id, new_pos))
@@ -458,7 +457,7 @@ class Board:
 
             elif square.action == ActionSquare.JAIL:
                 print(">>Sqaure is Go to Jail square")
-                self.move_player(player_id, Board.JAIL_POS)
+                self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
             elif square.action == ActionSquare.STAY:
@@ -467,7 +466,7 @@ class Board:
                         player_id))
             elif square.action == ActionSquare.TAX:
                 print(">>Sqaure is get taxed square")
-                tax = 100 * (2**Board.TAX_POS.index(new_pos))
+                tax = 100 * (2**Board._TAX_POS.index(new_pos))
                 self.take_money(player_id, tax)
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
