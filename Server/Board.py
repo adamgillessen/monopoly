@@ -413,7 +413,6 @@ class Board:
                 print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
                 if buy_auction == "buy":
-                    selling_square = True
                     print(">>User will buy")
                     cost = square.price
                     square.owner = player_id
@@ -421,6 +420,7 @@ class Board:
                     new_owner = self._players[player_id]
                     self._human_string.append("Player {} bought square {}.".format(
                         player_id, new_pos))
+                    
                     square.is_owned = True
 
                     if square.square_type == Square.PROPERTY:
@@ -429,7 +429,8 @@ class Board:
                         new_owner.add_utility(square)
                     elif square.square_type == Square.TRANSPORT:
                         new_owner.add_transport(Square)
-                    yield new_pos
+
+                    yield None
                 
                 elif buy_auction == "auction":
                     print(">>User will auction")
@@ -439,11 +440,22 @@ class Board:
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
 
+                    square.is_owned = True
+
+                    if square.square_type == Square.PROPERTY:
+                        new_owner.add_property(square)
+                    elif square.square_type == Square.UTILITY:
+                        new_owner.add_utility(square)
+                    elif square.square_type == Square.TRANSPORT:
+                        new_owner.add_transport(Square)
+
+                    yield None
+
                 elif buy_auction == "no_buy":
                     print(">>User will not buy")
-                    selling_square = False
                     self._human_string.append("Player {} didn't buy square {}.".format(
                         player_id, new_pos))
+
                     yield None
 
                 else:

@@ -256,11 +256,11 @@ def recv_message(client, server, message):
             s.current_turn_generator.send("no_buy")
         
         else:
-            property_id = s.current_turn_generator.send("buy")
+            s.current_turn_generator.send("buy")
             response_json = {
                 "type": "buy_ack",
                 "source": s.current_player(),
-                "property": property_id,
+                "property": json_string["property"],
             }
 
             response_json_string = json.dumps(response_json)
