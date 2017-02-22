@@ -44,3 +44,19 @@
   margin: 0;
   cursor: pointer;
 }
+
+.player1 {
+  color: #FB8CFF;
+}
+
+.player2 {
+  color: #5AE7FF;
+}
+
+.player3 {
+  color: #C4FF7F;
+}
+
+.player4 {
+  color: #FF3C7C;
+}
