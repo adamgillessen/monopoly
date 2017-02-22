@@ -14,7 +14,7 @@
 .log {
   padding-bottom: 0.5em;
   margin-bottom: 0.5em;
-  border-bottom: 1px dashed #ffffff;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 #textfield {
