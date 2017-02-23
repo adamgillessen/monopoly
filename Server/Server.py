@@ -280,6 +280,7 @@ def recv_message(client, server, message):
         s.current_bidders = s.get_all_players()
         s.bids = {}
         s.auction_property = json_string["property"]
+        s.current_turn_generator.send("auction")
 
     elif json_string["type"] == "auction_bid":
         player_id = json_string["source"]
@@ -312,14 +313,13 @@ def recv_message(client, server, message):
                     "type" : "auction_start",
                     "competitor": max_bid_players,
                     "source": json_string["source"],
-                    "property": json_string["property"],
+                    "property": s.auction_property,
                     "base_price": max_bid,
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
                 s.current_bidders = max_bid_players
                 s.bids = {}
-                s.auction_property = json_string["property"]
 
     elif json_string["type"] == "end_turn":
         board_sync_json = s.game_state()

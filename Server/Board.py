@@ -458,7 +458,7 @@ class Board:
                     yield None
 
                 else:
-                    #print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
+                    print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
                     
         elif square.square_type == Square.ACTION:
