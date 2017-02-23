@@ -259,7 +259,12 @@ function parseMessage(data) {
             var source = data.source;
             var text = data.text;
 
-            log(text, source);
+            if (game.isSource(source)) {
+                log("You:\n" + text, source);
+            } else {
+                var template = "Player %d:\n%s";
+                log(sprintf(template, source, text), source);
+            }
         }
     };
 
