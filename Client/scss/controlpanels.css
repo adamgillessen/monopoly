@@ -71,3 +71,22 @@
   border: 0;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 }
+
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #control-pane {
+    left: 2.5em;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #control-pane {
+      left: 2.5em;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #control-pane {-chrome-:only(;
+     left: 2.5em;
+  );}
+}
