@@ -67,6 +67,15 @@ Game.prototype.isMyTurn = function () {
     return this.clientID === this.currentTurn;
 };
 
+/**
+ *
+ * @param {int} source
+ * @return {boolean}
+ */
+Game.prototype.isSource = function (source) {
+    return this.clientID === source;
+};
+
 Game.prototype.startAuction = function (data) {
     this.state = GAME_STATE.AUCTION;
 

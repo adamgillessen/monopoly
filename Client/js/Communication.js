@@ -67,14 +67,21 @@ Connector.prototype.sendMessage = function (msg) {
 function parseMessage(data) {
     parseMessage._parseTree = {
         "player_join_ack": function (data) {
-            if (data["key"] === game.connector.key) {
-                game.clientID = data['your_id'];
+            var key = data["key"];
+            var yourID = data['your_id'];
+            var currentPlayer = data["current_player"];
+            var expects = data["expects"];
+            var hasGameStarted = data["game_start"];
+
+            if (key === game.connector.key) {
+                game.clientID = yourID;
             }
 
-            updatePlayerNum(data["current_player"], data["expects"]);
-            if (data["game_start"]) {
-                // Init first !
-                game.initGame(parseInt(data["current_player"]));
+            updatePlayerNum(currentPlayer, expects);
+            if (hasGameStarted) {
+                // Init model first !
+                game.initGame(currentPlayer);
+
                 // Then change View
                 // Because we are using data from game.model
                 hideLobbyShowBoard();
@@ -86,8 +93,10 @@ function parseMessage(data) {
             }
 
             var listProperties = data["cells"];
+            var listPlayers = data["players"];
             var lop = 0;
             var current = undefined;
+
             // Update property's owner
             for (lop in listProperties) {
                 // Skip un-necessary property of object
@@ -106,8 +115,6 @@ function parseMessage(data) {
                 game.model.selectCell(current["id"]).owner = current.owner;
             }
 
-            var listPlayers = data["players"];
-
             // Update player's money and position
             for (lop in listPlayers) {
                 if (!listPlayers.hasOwnProperty(lop)) {
@@ -123,32 +130,34 @@ function parseMessage(data) {
             }
         },
         "your_turn": function (data) {
-            game.currentTurn = data["source"];
+            var turnOfID = data["source"];
+            game.currentTurn = turnOfID;
 
             if (game.isMyTurn()) {
-                log("You turn!", data["source"]);
+                log("You turn!", turnOfID);
                 ViewController.yourTurn();
             } else {
-                log(sprintf("Player %d's turn!", data["source"]), data["source"]);
+                log(sprintf("Player %d's turn!", turnOfID), turnOfID);
             }
         },
         "roll_result": function (data) {
             var source = data["source"];
+            var result = data["result"];
 
-            // Log to log-area
+            // Log roll result to log-area
             if (game.isMyTurn()) {
-                log("You just rolled " + data["result"], source);
+                log("You just rolled " + result, source);
             } else {
-                log(sprintf("Player %d rolled ", source) + data["result"], source);
+                log(sprintf("Player %d rolled ", source) + result, source);
             }
 
             // Update model
-            var landedOn = game.model.movePlayer(source, data["result"]);
+            var landedOn = game.model.movePlayer(source, result);
 
             if (game.isMyTurn()) {
-                log(sprintf("You landed on %d", landedOn), data["source"]);
+                log(sprintf("You landed on %d", landedOn), source);
             } else {
-                log(sprintf("Player %d landed on %d", data["source"], landedOn), data["source"]);
+                log(sprintf("Player %d landed on %d", source, landedOn), source);
             }
 
             if (!game.isMyTurn()) {
@@ -185,19 +194,26 @@ function parseMessage(data) {
             }
         },
         "buy_ack": function (data) {
-            var price = game.model.selectCell(data["property"]).price;
+            var source = data["source"];
+            var property = data["property"];
 
-            if (data["source"] === game.clientID) {
-                log(sprintf("You have bought Property %d for %d", data["property"], price), data["source"]);
+            var price = game.model.selectCell(property).price;
+
+            if (game.isSource(source)) {
+                log(sprintf("You have bought Property %d for %d", property, price), source);
             } else {
-                log(sprintf("Player %d has bough Property %d for %d", data["source"], data["property"], price), data["source"]);
+                log(sprintf("Player %d has bough Property %d for %d", source, property, price), source);
             }
         },
         "auction_start": function (data) {
-            if (data["source"] === game.clientID) {
-                log(sprintf("You have started an Auction on Property %d!", data["property"]), data["source"]);
+            var source = data["source"];
+            var property = data["property"];
+            var list = data["competitor"];
+
+            if (game.isSource(source)) {
+                log(sprintf("You have started an Auction on Property %d!", property), source);
             } else {
-                log(sprintf("Player %d has started an Auction on Property %d!", data["source"], data["property"]), data["source"]);
+                log(sprintf("Player %d has started an Auction on Property %d!", source, property), source);
             }
 
             log("Place your bid!", 5);
@@ -206,19 +222,25 @@ function parseMessage(data) {
             ViewController.promptAuctionWindow(data);
         },
         "auction_bid_ack": function (data) {
-            if (data["source"] !== game.clientID) {
-                log("Player " + data["source"] + " has placed his bid", data["source"]);
+            var source = data["source"];
+
+            if (game.isSource(source)) {
+                log("Player " + source + " has placed his bid", source);
             }
         },
         "auction_finished": function (data) {
-            if (data["winner"] === game.clientID) {
-                log(sprintf("You have bought Property %d for %d", data["property"], data["price"]), 5);
+            var winner = data["winner"];
+            var property = data["property"];
+            var price = data["price"];
+
+            if (game.isSource(winner)) {
+                log(sprintf("You have bought Property %d for %d", property, price), 5);
             } else {
-                log(sprintf("Player %s has bought Property %d for %d", data["winner"], data["property"], data["price"]), 5);
+                log(sprintf("Player %s has bought Property %d for %d", winner, property, price), 5);
             }
 
-            game.model.selectPlayer(data["winner"]).changeMoney(-data["price"]);
-            game.model.selectCell(data["property"]).changeOwner(data["winner"]);
+            game.model.selectPlayer(winner).changeMoney(-price);
+            game.model.selectCell(property).changeOwner(winner);
 
             game.endAuction(data);
         }

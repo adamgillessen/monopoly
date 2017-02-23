@@ -50,7 +50,7 @@ function updateScroll() {
 /**
  * Log things to log-area in HTML
  * @param {string} obj
- * @param {int} source: Who generated this message ?
+ * @param {int} source: Who generated this message ? If a message has a source field, pass it to this parameter
  */
 function log(obj, source) {
     if (obj === null || obj === undefined || typeof obj !== "string") {

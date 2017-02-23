@@ -170,18 +170,27 @@ function Player(id) {
 }
 
 /**
- * Call backs
- * @param {int} money
+ * Callback on money change
+ * @param id
+ * @param money
  */
 Player.onMoneyChange = function (id, money) {
 };
 
 /**
- * Call backs
- * @param {int} from
- * @param {int} to
+ * Callback on position change
+ * @param id
+ * @param from
+ * @param to
  */
 Player.onPositionChange = function (id, from, to) {
+};
+
+/**
+ * Callback on pass GO
+ * @param id
+ */
+Player.onGoPassed = function (id) {
 };
 
 /**
@@ -240,6 +249,8 @@ Player.prototype.moveByStep = function (step) {
     this.position = this.position + step;
     if (this.position >= 40) {
         this.position -= 40;
+
+        Player.onGoPassed(this.id);
     }
 
     Player.onPositionChange(this.id, from, this.position);

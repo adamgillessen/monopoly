@@ -38,6 +38,16 @@ ViewController.addCallbacksToEvents = function () {
         ViewController.movePlayer(id, to);
     };
 
+    Player.onGoPassed = function (id) {
+        if (game.isSource(id)) {
+            log("You have passed GO, got 200", id);
+        } else {
+            log(sprintf("Player %d has passed GO, got 200", id), id);
+        }
+
+        game.model.selectPlayer(id).changeMoney(200);
+    };
+
     Property.onOwnerChange = function (id, owner) {
         if (id === ViewController.currentSelectedSquare) {
             showCellDetail(id);
