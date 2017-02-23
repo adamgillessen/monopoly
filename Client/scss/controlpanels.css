@@ -85,7 +85,7 @@
     left: 51.5em;
   }
 
-  #inventory ::-webkit-scrollbar {
+  #inventory::-webkit-scrollbar {
     display: none;
   }
 }
@@ -104,7 +104,7 @@
       left: 51.5em;
     }
 
-    #inventory ::-webkit-scrollbar {
+    #inventory::-webkit-scrollbar {
       display: none;
     }
 }
@@ -122,7 +122,7 @@
     left: 51.5em;
   );}
 
-  #inventory ::-webkit-scrollbar {-chrome-:only(;
+  #inventory::-webkit-scrollbar {-chrome-:only(;
     display: none;
   );}
 }
