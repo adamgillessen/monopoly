@@ -158,6 +158,32 @@ function showButtons(buttons) {
     }
 }
 
+function chatButtonClicked() {
+    var stringVal = $("#input-chat").val();
+    if (stringVal === null || stringVal === undefined || stringVal.length === 0) {
+        return;
+    }
+    // Clear input field
+    $("#input-chat").val("");
+
+    if (game.state === GAME_STATE.AUCTION && game.auctionHandler.state === AUCTION_STATE.YOU_BID) {
+        try {
+            var price = parseInt(stringVal);
+        } catch (err) {
+            log("Please enter valid integer!", 5);
+        }
+
+        var bid = game.auctionHandler.bid(price);
+
+        log("You have placed bid: " + bid, game.clientID);
+    } else {
+        // Send Chat
+        game.connector.sendMessage(generateMessage("chat", {
+            text: stringVal
+        }));
+    }
+}
+
 /**
  * Randomly generate a int from range [0, max]
  * @param {int} max: Max number allowed to be generated

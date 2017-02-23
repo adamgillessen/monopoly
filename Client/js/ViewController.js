@@ -116,27 +116,14 @@ ViewController.addCallbacksToButtons = function () {
         ViewController.endTurn();
     });
 
-    $("#submit").click(function () {
-        var stringVal = $("#textfield input").val();
-        // Clear input field
-        $("#textfield input").val("");
-
-        if (game.state === GAME_STATE.AUCTION && game.auctionHandler.state === AUCTION_STATE.YOU_BID) {
-            try {
-                var price = parseInt(stringVal);
-            } catch (err) {
-                log("Please enter valid integer!", 5);
-            }
-
-            var bid = game.auctionHandler.bid(price);
-
-            log("You have placed bid: " + bid, game.clientID);
-        } else {
-            // Send Chat
-            game.connector.sendMessage(generateMessage("chat", {
-                text: stringVal
-            }));
+    $("#input-chat").keydown(function (e) {
+        if (e.keyCode === 13) {
+            chatButtonClicked();
         }
+    });
+
+    $("#submit").click(function () {
+        chatButtonClicked();
     });
 
     // Show detail pane of a selected cell
