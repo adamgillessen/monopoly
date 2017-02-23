@@ -84,6 +84,10 @@
   #inventory {
     left: 51.5em;
   }
+
+  #inventory ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
@@ -99,6 +103,10 @@
     #inventory {
       left: 51.5em;
     }
+
+    #inventory ::-webkit-scrollbar {
+      display: none;
+    }
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
@@ -112,5 +120,9 @@
 
   #inventory {-chrome-:only(;
     left: 51.5em;
+  );}
+
+  #inventory ::-webkit-scrollbar {-chrome-:only(;
+    display: none;
   );}
 }
