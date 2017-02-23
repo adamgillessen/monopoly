@@ -27,13 +27,47 @@
 
 #control-pane #prompt-buy {
   border: 0;
+  width: 31em;
+  position: fixed;
 }
 
 #money {
+  position: relative;
+  background-color: rgba(86, 86, 86, 0.99);
+  width: 5.85em;
+  height: 100%;
   float: right;
+  text-align: center;
+  line-height: 2.4em;
   color: #ffffff;
-  font-weight: 100;
   font-size: 2em;
-  margin-top: 0.6em;
-  margin-right: 0.6em;
+  font-weight: 100;
+}
+
+#inventory {
+  width: 22em;
+  height: calc(100% - 25em - 1.1em);
+  background: #ffffff;
+  position: absolute;
+  float: left;
+  box-sizing: border-box;
+  overflow: scroll;
+  top: 25em;
+  left: 50.1em;
+  padding: 1em;
+  border: 1px solid #000000;
+  background-color: rgba(39,39,39, 0.95);
+  color: #ffffff;
+}
+
+#inventory h1 {
+  font-size: 1.4em;
+  font-weight: 100;
+  text-align: center;
+}
+
+#inventory hr {
+  margin-top: 0.5em;
+  border: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 }
