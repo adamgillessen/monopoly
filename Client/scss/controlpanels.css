@@ -76,6 +76,10 @@
   #control-pane {
     left: 4.7em;
   }
+
+  #prompt-buy {
+    width: 32em !important;
+  }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
@@ -83,10 +87,18 @@
     #control-pane {
       left: 4.7em;
     }
+
+    #prompt-buy {
+      width: 32em !important;
+    }
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
   #control-pane {-chrome-:only(;
      left: 4.7em;
+  );}
+
+  #prompt-buy {-chrome-:only(;
+     width: 32em !important;
   );}
 }
