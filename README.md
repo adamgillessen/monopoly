@@ -16,7 +16,7 @@ Server - the server which will run the game for all clients
 Resources - assorted development information
 
 ## Todos:  
-1. Update the login screen background due to issues with sizing of the browser window.
+1. Update the games cross browser compatability. CSS currently renders different in several browsers.
 2. Client: More log message  
 3. Write unit-tests for a turn involving an auction
 4. Add functionaility for a player to win or lose
