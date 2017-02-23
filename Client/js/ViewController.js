@@ -118,8 +118,10 @@ ViewController.addCallbacksToButtons = function () {
 
     $("#submit").click(function () {
         var stringVal = $("#textfield input").val();
+        // Clear input field
+        $("#textfield input").val("");
 
-        if (game.state === GAME_STATE.AUCTION) {
+        if (game.state === GAME_STATE.AUCTION && game.auctionHandler.state === AUCTION_STATE.YOU_BID) {
             try {
                 var price = parseInt(stringVal);
             } catch (err) {
