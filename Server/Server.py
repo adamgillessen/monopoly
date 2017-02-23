@@ -340,6 +340,13 @@ def recv_message(client, server, message):
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
+    elif json_string["type"] == "chat":
+        response_json = json_string
+        response_json_string = json.dumps(response_json)
+        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+
+
 if __name__ == "__main__":
     try:
         hostname, portnumber = sys.argv[1:]
