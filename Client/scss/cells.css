@@ -12,3 +12,23 @@
 #cell-10, .cell-10 {background-color: #FFBE41;}
 #cell-20, .cell-20 {background-color: #FF4343;}
 #cell-30, .cell-30 {background-color: #6890FF;}
+
+#cell-7, #cell-22 {
+  background: url(../images/chancehor.jpg);
+  background-size: cover;
+}
+
+#cell-36 {
+  background: url(../images/chancevert.jpg);
+  background-size: cover;
+}
+
+#cell-2 {
+  background: url(../images/chesthor.jpg);
+  background-size: cover;
+}
+
+#cell-17, #cell-33 {
+  background: url(../images/chestvert.jpg);
+  background-size: cover;
+}
