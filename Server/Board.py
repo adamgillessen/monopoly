@@ -434,8 +434,7 @@ class Board:
                 
                 elif buy_auction == "auction":
                     #print(">>User will auction")
-                    highest_bidder = yield None 
-                    bid = yield None
+                    highest_bidder, bid = yield None 
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
@@ -449,7 +448,7 @@ class Board:
                     elif square.square_type == Square.TRANSPORT:
                         new_owner.add_transport(Square)
 
-                    yield None
+                    yield "property_auctioned"
 
                 elif buy_auction == "no_buy":
                     #print(">>User will not buy")

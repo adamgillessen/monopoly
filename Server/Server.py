@@ -7,6 +7,7 @@ import websocket_server
 import json
 import random
 from Board import * 
+import sys 
 
 #Run to install the websocket server:
 #    sudo pip3 install websocket-server
@@ -304,8 +305,7 @@ def recv_message(client, server, message):
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
             
-                s.current_turn_generator.send(max_bid_players[0])
-                s.current_turn_generator.send(max_bid)
+                s.current_turn_generator.send((max_bid_players[0], max_bid))
 
             else:
                 response_json = {
@@ -341,6 +341,7 @@ def recv_message(client, server, message):
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
 if __name__ == "__main__":
+    hostname, portnumber = sys.argv[1:]
     s = Server()
     ws = websocket_server.WebsocketServer(4444, "127.0.0.1")
     ws.set_fn_new_client(new_client)
