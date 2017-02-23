@@ -341,8 +341,12 @@ def recv_message(client, server, message):
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
 if __name__ == "__main__":
-    hostname, portnumber = sys.argv[1:]
-    portnumber = int(portnumber)
+    try:
+        hostname, portnumber = sys.argv[1:]
+        portnumber = int(portnumber)
+    except ValueError:
+        hostname = "localhost"
+        portnumber = 4444
     s = Server()
     ws = websocket_server.WebsocketServer(portnumber, hostname)
     ws.set_fn_new_client(new_client)
