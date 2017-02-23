@@ -16,13 +16,8 @@ Server - the server which will run the game for all clients
 Resources - assorted development information
 
 ## Todos:  
-1. Update the games cross browser compatability. CSS currently renders different in several browsers.
-2. Client: More log message  
-3. Write unit-tests for a turn involving an auction
+1. Update the games cross browser compatability. CSS currently renders different in several browsers. 
 4. Add functionaility for a player to win or lose
-5. Fix error when placed the same bid
-6. Fix error occurs after auction
-6. Auction issues on client - bid-text doesn't clear itself after you press send; When you send a bid that is less than the current base bid, it will send the base bid but not inform the user it has done so.
 
 ## Presentation 1
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)

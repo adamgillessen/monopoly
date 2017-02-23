@@ -312,7 +312,7 @@ def recv_message(client, server, message):
                 response_json = {
                     "type" : "auction_start",
                     "competitor": max_bid_players,
-                    "source": json_string["source"],
+                    "source": -1,
                     "property": s.auction_property,
                     "base_price": max_bid,
                 }

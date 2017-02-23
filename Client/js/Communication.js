@@ -224,7 +224,7 @@ function parseMessage(data) {
         "auction_bid_ack": function (data) {
             var source = data["source"];
 
-            if (game.isSource(source)) {
+            if (!game.isSource(source)) {
                 log("Player " + source + " has placed his bid", source);
             }
         },
