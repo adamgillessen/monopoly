@@ -74,19 +74,19 @@
 
 @media and (-webkit-min-device-pixel-ratio:0) {
   #control-pane {
-    left: 2.5em;
+    left: 4.7em;
   }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
   and (min-resolution:.001dpcm) {
     #control-pane {
-      left: 2.5em;
+      left: 4.7em;
     }
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
   #control-pane {-chrome-:only(;
-     left: 2.5em;
+     left: 4.7em;
   );}
 }
