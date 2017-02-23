@@ -80,6 +80,10 @@
   #prompt-buy {
     width: 32em !important;
   }
+
+  #inventory {
+    left: 51.5em;
+  }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
@@ -91,6 +95,10 @@
     #prompt-buy {
       width: 32em !important;
     }
+
+    #inventory {
+      left: 51.5em;
+    }
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
@@ -100,5 +108,9 @@
 
   #prompt-buy {-chrome-:only(;
      width: 32em !important;
+  );}
+
+  #inventory {-chrome-:only(;
+    left: 51.5em;
   );}
 }
