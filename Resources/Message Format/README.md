@@ -10,6 +10,7 @@ ID is odd number
 |9|start\_game\_now|
 |11|auction|
 |13|auction\_bid|
+|15|chat|
 
 ------
 
@@ -26,3 +27,4 @@ ID is even number
 |12|auction_start|yes|
 |14|auction\_bid\_ack|yes|
 |16|auction\_finished|yes|
+|18|chat\_sync|yes|

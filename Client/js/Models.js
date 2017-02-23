@@ -135,6 +135,10 @@ function Property(cell_id, property_id, estate, price) {
 Property.onOwnerChange = function (id, owner) {
 };
 
+/**
+ * Change
+ * @param owner
+ */
 Property.prototype.changeOwner = function (owner) {
     this.owner = owner;
 
@@ -256,4 +260,3 @@ Player.prototype.moveByStep = function (step) {
     Player.onPositionChange(this.id, from, this.position);
     return this.position;
 };
-

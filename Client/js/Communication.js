@@ -243,6 +243,12 @@ function parseMessage(data) {
             game.model.selectCell(property).changeOwner(winner);
 
             game.endAuction(data);
+        },
+        "chat_sync": function (data) {
+            var source = data.source;
+            var text = data.text;
+
+            log(text, source);
         }
     };
 
@@ -329,6 +335,12 @@ function generateMessage(type, parameter) {
         "auction_bid": function (parameter) {
             var ret = _generateHeader("auction_bid", ["source"]);
             ret.price = parameter.price;
+
+            return ret;
+        },
+        "chat": function (parameter) {
+            var ret = _generateHeader("chat", ["source"]);
+            ret.text = parameter.text;
 
             return ret;
         }

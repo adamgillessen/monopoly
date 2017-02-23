@@ -52,6 +52,7 @@ ViewController.addCallbacksToEvents = function () {
         if (id === ViewController.currentSelectedSquare) {
             showCellDetail(id);
         }
+        // todo: add to property list
     };
 };
 
@@ -86,8 +87,13 @@ ViewController.addCallbacksToButtons = function () {
                 "property": propertyIndex
             }));
         } else {
-            // todo: auction
-            console.log("You dont have enough money!");
+            log("You don't have enough money to buy this property", 5);
+            log("Start Auction instead", 5);
+
+            // Send auction message
+            game.connector.sendMessage(generateMessage("auction", {
+                property: propertyIndex
+            }));
         }
 
         // End of turn reached
@@ -111,9 +117,11 @@ ViewController.addCallbacksToButtons = function () {
     });
 
     $("#submit").click(function () {
+        var stringVal = $("#textfield input").val();
+
         if (game.state === GAME_STATE.AUCTION) {
             try {
-                var price = parseInt($("#textfield input").val());
+                var price = parseInt(stringVal);
             } catch (err) {
                 log("Please enter valid integer!", 5);
             }
@@ -122,8 +130,10 @@ ViewController.addCallbacksToButtons = function () {
 
             log("You have placed bid: " + bid, game.clientID);
         } else {
-            // Chat button
-            // todo: send chat message
+            // Send Chat
+            game.connector.sendMessage(generateMessage("chat", {
+                text: stringVal
+            }));
         }
     });
 
