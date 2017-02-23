@@ -256,14 +256,14 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(human_string.startswith("Player"))
 
 
-    """def test_take_turn_transport_square_owned_auction(self):
+    def test_take_turn_util_square_owned_auction(self):
         player = self.players[0]
         old_money = player.money
         board = self.board
-        trans_square = board.get_square(5)
-        self.assertFalse(trans_square.is_owned)
+        util_square = board.get_square(12)
+        self.assertFalse(util_square.is_owned)
 
-        turn = board.take_turn(player.id, 2, 3)
+        turn = board.take_turn(player.id, 4, 8)
         message1 = turn.send(None)
         self.assertTrue(message1 == "buy_auction")
         message2 = turn.send("auction")
@@ -273,13 +273,13 @@ class BoardTests(unittest.TestCase):
         message3 = turn.send((highest_bidder, highest_bid))
         self.assertTrue(message3 == "property_auctioned")
 
-        self.assertTrue(board.get_pos(player.id) == 5)
-        self.assertTrue(trans_square.is_owned)
-        self.assertTrue(trans_square.owner == player.id)
+        self.assertTrue(board.get_pos(player.id) == 12)
+        self.assertTrue(util_square.is_owned)
+        self.assertTrue(util_square.owner == player.id)
         self.assertTrue(highest_bid + player.money == old_money)
 
         human_string = turn.send(None)
-        self.assertTrue(human_string.startswith("Player"))"""
+        self.assertTrue(human_string.startswith("Player"))
 
         
 
