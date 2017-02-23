@@ -34,3 +34,13 @@
   box-sizing: border-box;
   padding: 0.5em;
 }
+
+#action {
+  height: 100%;
+}
+
+#action-banner {
+  height: 100%;
+  text-align: center;
+  line-height: 17em;
+}
