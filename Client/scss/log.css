@@ -70,3 +70,22 @@
 .server {
   color: #ffffff;
 }
+
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #log-area::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #log-area::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #log-area::-webkit-scrollbar {-chrome-:only(;
+    display: none;
+  );}
+}
