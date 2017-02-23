@@ -209,14 +209,25 @@ function parseMessage(data) {
             var source = data["source"];
             var property = data["property"];
             var list = data["competitor"];
+            var basePrice = data["base_price"];
 
-            if (game.isSource(source)) {
+            if (source === -1) {
+                log("Two or more players have placed the same bid, Auction tarts over again", 5);
+            } else if (game.isSource(source)) {
                 log(sprintf("You have started an Auction on Property %d!", property), source);
             } else {
                 log(sprintf("Player %d has started an Auction on Property %d!", source, property), source);
             }
 
-            log("Place your bid!", 5);
+            log("Base price is " + basePrice, 5);
+
+            if (list.indexOf(game.clientID) >= 0) {
+                // You should bid
+                log("Place your bid!", 5);
+            } else {
+                // Just watch
+                log("Please wait while others placing bids", 5);
+            }
 
             // Change button
             ViewController.promptAuctionWindow(data);
