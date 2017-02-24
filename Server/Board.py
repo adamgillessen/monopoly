@@ -159,7 +159,7 @@ class Board:
         """
         while True:
             self._current_turn += 1
-            if self._current_turn == self.num_players():
+            if self._current_turn == len(self._players) + 1:
                 self._current_turn = 1
 
             if self._is_in_game[self._current_turn]:
