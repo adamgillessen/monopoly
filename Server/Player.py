@@ -125,6 +125,14 @@ class Player:
         """
         return len(self._utils)
 
+    def get_assets(self):
+        """
+        Gets all the assets this player owns.
+
+        :returns: a list of assets this player owns
+        """
+        return list(self._properties) + list(self._utils) + list(self._transports)
+
 class PlayerLostError(Exception):
     """
     An exception class which will be raised if a player's money goes below 0

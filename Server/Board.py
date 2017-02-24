@@ -94,12 +94,18 @@ class Board:
 
         # create players
         self._players = {i:Player(i) for i in range(1, num_players + 1)}
+        self._current_player = None  
+        self._current_turn = 1    
 
         # Initialise players at position 0 (Go)
         self._player_positions = {}
         for p in self._players.values():
             self._player_positions[p] = 0 
             self._board[0].add_player(p)
+
+        self._is_in_game = {}
+        for player_id in self._players:
+            self._is_in_game[player_id] = True
 
         # initialise
         self._action_cards = {
@@ -130,9 +136,7 @@ class Board:
             MoveCard(random.choice(list(Board._UTIL_POS_INFO)), "Move to a utility"),
         } | {
             MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board._PROPERTY_POS_INFO)) for _ in range(3))
-        }
-
-        self._current_player = None           
+        }     
 
     def __str__(self):
         """
@@ -147,13 +151,29 @@ class Board:
             s += str(square) + " "
         return s 
 
+    def next_player(self):
+        """
+        Increments and returns the next player whose turn it is.
+
+        :returns: the player_id of the next player
+        """
+        while True:
+            self._current_turn += 1
+            if self._current_turn == self.num_players():
+                self._current_turn = 1
+
+            if self._is_in_game[self._current_turn]:
+                break
+        return self._current_turn
+
+
     def all_players(self):
         """
         A list of player ids in the game.
 
         :returns: a list of all player ids
         """
-        return [player_id for player_id in self._players.keys()]
+        return [player_id for player_id in self._players.keys() if self._is_in_game[player_id]]
 
     def game_state(self):
         """
@@ -197,12 +217,13 @@ class Board:
             #msg["cells"][str(pos)]["price"] = price 
 
         for player_id, player in self._players.items():
-            pos = self._player_positions[player]
-            msg["players"][str(player_id)] = {}
-            msg["players"][str(player_id)]["id"] = player_id
-            msg["players"][str(player_id)]["is_in_jail"] = player.jail 
-            msg["players"][str(player_id)]["money"] = player.money 
-            msg["players"][str(player_id)]["position"] = pos 
+            if self._is_in_game[player_id]:
+                pos = self._player_positions[player]
+                msg["players"][str(player_id)] = {}
+                msg["players"][str(player_id)]["id"] = player_id
+                msg["players"][str(player_id)]["is_in_jail"] = player.jail 
+                msg["players"][str(player_id)]["money"] = player.money 
+                msg["players"][str(player_id)]["position"] = pos 
 
         return msg 
 
@@ -337,6 +358,32 @@ class Board:
         square = self.get_square(pos)
         square.num_houses += 1 
 
+    def remove_player(self, player_id):
+        """
+        Gracefully removes a plyer from the game.
+
+        :param player_id: the id of the player being removed
+        """
+        player = self._players[player_id]
+        for asset in player.get_assets():
+            asset.owner = None 
+            asset.is_owned = False
+        self._is_in_game[player_id] = False
+
+        current_square = self.get_square(self.get_pos(player_id))
+        current_square.remove_player(player)
+
+    def is_valid_player(self, player_id):
+        """
+        Checks of the player_id is a valid one.
+
+        :param player_id: the id of the player being queried
+        :returns: True of the player is valid, False otherwise
+        """
+        return player_id in self._is_in_game.keys() and self._is_in_game[player_id]
+
+
+
     def take_turn(self, player_id, dice1, dice2):
         """
         Runs the specified player's turn based on their dice roll result.
@@ -396,18 +443,20 @@ class Board:
                         owner = self._players[square.owner]
                         rent = square.base_rent * (2**owner.num_transports())
 
-                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                        player_id, rent, square.owner))
+                    try:
+                        self.take_money(player_id, rent)
+                    except PlayerLostError:
+                        self.remove_player(player_id)
+                        raise PlayerLostError
 
+                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
+                    player_id, rent, square.owner))
                     self.give_money(square.owner, rent)
-                    self.take_money(player_id, rent)
+
                 else:
                     self._human_string.append("Player {} already owns square".format(player_id))
+                
                 yield "paid_rent"
-
-            elif self._players[player_id].money < square.price:
-                #print(">>Square not owned but player doesn't have enough money")
-                yield "not_enough_money"
             
             else:
                 #print(">>Square is not owned")
@@ -483,7 +532,11 @@ class Board:
                     self.give_money(player_id, amount)
                 elif card.card_type == Card.LOSE_MONEY:
                     amount = card.lose_amount
-                    self.take_money(player_id, amount)
+                    try:
+                        self.take_money(player_id, amount)
+                    except PlayerLostError:
+                        self.remove_player(player_id)
+                        raise PlayerLostError
                 elif card.card_type == Card.GET_OUT_OF_JAIL:
                     player.free = True
 
@@ -501,10 +554,14 @@ class Board:
             elif square.action == ActionSquare.TAX:
                 #print(">>Sqaure is get taxed square")
                 tax = 100 * (2**Board._TAX_POS.index(new_pos))
-                self.take_money(player_id, tax)
+                try:
+                    self.take_money(player_id, tax)
+                except PlayerLostError:
+                    self.remove_player(player_id)
+                    raise PlayerLostError
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
-            yield "action_square" # pauses generator to be in sync with server
+            yield "action_square" 
 
         re_check_location = False # TODO double roll mechanism
         if re_check_location:
