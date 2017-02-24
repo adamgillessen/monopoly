@@ -20,7 +20,6 @@ Resources - assorted development information
 1. Add functionaility for a player to win or lose.
 1. Add player losing functionality to client and server. 
 1. Add graceful disconection of players to server.
-1. (Will put this in issues when I have internet) The user is allowed to bid all of their money. The client should prevent them from doing this. In the case when the client doesn't have the minimum bet, they should bet $0.
 
 
 ## Presentation 1:
