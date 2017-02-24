@@ -4,8 +4,8 @@
 #cell-6, #cell-8, #cell-9, .cell-6, .cell-8, .cell-9 {background-color: #BADBEE;}
 #cell-11, #cell-13, #cell-14, .cell-11, .cell-13, .cell-14 {background-color: #ECB8F2;}
 #cell-16, #cell-18, #cell-19, .cell-16, .cell-18, .cell-19 {background-color: #FFC161;}
-#cell-21, #cell-23, #cell-24, .cell-21, .cell-23, .cell-24 {background-color: #FF6161;}
-#cell-26, #cell-27, #cell-29, .cell-26, .cell-27, .cell-29 {background-color: #FEFF75;}
+#cell-21, #cell-23, #cell-24, .cell-21, .cell-23, .cell-24 {background-color: #BB292C;}
+#cell-26, #cell-27, #cell-29, .cell-26, .cell-27, .cell-29 {background-color: #FFF138;}
 #cell-31, #cell-32, #cell-34, .cell-31, .cell-32, .cell-34 {background-color: #95FF75;}
 #cell-37, #cell-39, .cell-37, .cell-39 {background-color: #75A1FF; }
 #cell-5, #cell-15, #cell-25, #cell-35, .cell-5, .cell-15, .cell-25, .cell-35 {background-color: #E1E1E1;}
@@ -21,7 +21,7 @@
   display: none;
 }
 
-/* CSS for Images in Cells */
+/* CSS for Images in Property Cells */
 
 #cell-0 {
   background: url(../images/cell0.jpg);
@@ -67,6 +67,58 @@
   background: url(../images/cell10.jpg);
   background-size: cover;
 }
+
+#cell-20 {
+  background: url(../images/cell20.jpg);
+  background-size: cover;
+}
+
+#cell-21 {
+  background: url(../images/cell21.jpg);
+  background-size: cover;
+}
+
+#cell-23 {
+  background: url(../images/cell23.jpg);
+  background-size: cover;
+}
+
+#cell-24 {
+  background: url(../images/cell24.jpg);
+  background-size: cover;
+}
+
+#cell-25 {
+  background: url(../images/cell25.jpg);
+  background-size: cover;
+}
+
+#cell-26 {
+  background: url(../images/cell26.jpg);
+  background-size: cover;
+}
+
+#cell-27 {
+  background: url(../images/cell27.jpg);
+  background-size: cover;
+}
+
+#cell-28 {
+  background: url(../images/cell28.jpg);
+  background-size: cover;
+}
+
+#cell-29 {
+  background: url(../images/cell29.jpg);
+  background-size: cover;
+}
+
+#cell-30 {
+  background: url(../images/cell30.jpg);
+  background-size: cover;
+}
+
+/* CSS for images in Chance/Community Chest Cells */
 
 #cell-7, #cell-22 {
   background: url(../images/chancehor.jpg);
