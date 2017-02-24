@@ -281,8 +281,23 @@ class BoardTests(unittest.TestCase):
         human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
-        
+    def test_player_lose(self):
+        player = self.players[0]
+        board = self.board
+        player.money = 100
+        trans_square = board.get_square(5)
+        trans_square.is_owned = True 
+        trans_square.owner = player.id
+        player.add_transport(trans_square)
 
+        self.assertTrue(len(player.get_assets()) == 1)
+        turn = board.take_turn(player.id, 19, 19)  # will get taxed 200
+        def f():
+            turn.send(None)
+        self.assertRaises(PlayerLostError, f)
+
+        self.assertFalse(trans_square.is_owned)
+        self.assertTrue(trans_square.owner == -1)
 
 if __name__ == "__main__":
     unittest.main()

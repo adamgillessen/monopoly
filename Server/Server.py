@@ -62,6 +62,8 @@ class Server:
         """
         turn = self._board.take_turn(player_id, dice1, dice2)
         yield from turn
+        
+
 
     def current_player(self):
         """
@@ -83,9 +85,7 @@ class Server:
         """
         Changes the player whose turn it is from the last, to the next.
         """
-        self._current_turn += 1
-        if self._current_turn == self.num_players() + 1:
-            self._current_turn = 1
+        self._current_turn = self._board.next_player()
 
     @property
     def current_turn_generator(self):
@@ -159,6 +159,15 @@ class Server:
             player_id, bid_amount in self._bids.items() \
                 if bid_amount == max_bid]
         return max_bid_players, max_bid
+
+    def is_valid_player(self, player_id):
+        """
+        Checks of the player_id is a valid one.
+
+        :param player_id: the id of the player being queried
+        :returns: True of the player is valid, False otherwise
+        """
+        return self._board.is_valid_player(player_id)
 
 def new_client(client, server):
     """
@@ -239,10 +248,6 @@ def recv_message(client, server, message):
     elif json_string["type"] == "roll":
         player_id = json_string["source"]
         dice1, dice2 = s.roll_dice()
-        
-        s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
-        s.current_turn_generator.send(None)
-        
         response_json = {
             "type": "roll_result",
             "source": player_id,
@@ -252,6 +257,32 @@ def recv_message(client, server, message):
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
+        s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
+        try:
+            s.current_turn_generator.send(None)
+        except PlayerLostError:
+            response_json = {
+                "type": "player_lose",
+                "player": s.current_player(),
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+            board_sync_json = s.game_state()
+            board_sync_string = json.dumps(board_sync_json)
+            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                        
+            s.next_player()
+            new_current_player_id = s.current_player()
+            response_json = {
+                "type": "your_turn",
+                "source": new_current_player_id,
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+
+        
     elif json_string["type"] == "buy":
         if json_string["property"] == -1:
             s.current_turn_generator.send("no_buy")
@@ -322,23 +353,24 @@ def recv_message(client, server, message):
                 s.bids = {}
 
     elif json_string["type"] == "end_turn":
-        board_sync_json = s.game_state()
-        human_string = s.current_turn_generator.send(None)
-        board_sync_json["text"] = human_string
+        if s.is_valid_player(json_string["source"]):
+            board_sync_json = s.game_state()
+            human_string = s.current_turn_generator.send(None)
+            board_sync_json["text"] = human_string
 
-        board_sync_string = json.dumps(board_sync_json)
-        server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+            board_sync_string = json.dumps(board_sync_json)
+            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
 
-        print(human_string)
-        
-        s.next_player()
-        new_current_player_id = s.current_player()
-        response_json = {
-            "type": "your_turn",
-            "source": new_current_player_id,
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            print(human_string)
+            
+            s.next_player()
+            new_current_player_id = s.current_player()
+            response_json = {
+                "type": "your_turn",
+                "source": new_current_player_id,
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
     elif json_string["type"] == "chat":
         response_json = json_string
