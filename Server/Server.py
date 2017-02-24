@@ -269,14 +269,9 @@ def recv_message(client, server, message):
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
             board_sync_json = s.game_state()
-            human_string = s.current_turn_generator.send(None)
-            board_sync_json["text"] = human_string
-
             board_sync_string = json.dumps(board_sync_json)
             server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-
-            print(human_string)
-            
+                        
             s.next_player()
             new_current_player_id = s.current_player()
             response_json = {
