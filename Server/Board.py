@@ -1,16 +1,16 @@
 """
-This controls the Squares and Players and manages the whole game. 
+This controls the Squares and Players and manages the whole game.
 """
 
-from Squares import * 
-from Player import * 
-from Cards import * 
+from Squares import *
+from Player import *
+from Cards import *
 import random
 
 class Board:
     """
     This class represents the board state and provides functions to change the
-    board state. 
+    board state.
     """
     _NUM_SQUARES = 40
     _CHEST_POS = [2, 17, 33]
@@ -89,17 +89,17 @@ class Board:
             self._board[pos] = TransportSquare(pos, price)
 
         for pos, info in Board._PROPERTY_POS_INFO.items():
-            price, rent, estate = info 
+            price, rent, estate = info
             self._board[pos] = PropertySquare(pos, price, rent, estate)
 
         # create players
-        self._players = {i:Player(i) for i in range(1, num_players + 1)}  
-        self._current_turn = 1    
+        self._players = {i:Player(i) for i in range(1, num_players + 1)}
+        self._current_turn = 1
 
         # Initialise players at position 0 (Go)
         self._player_positions = {}
         for p in self._players.values():
-            self._player_positions[p] = 0 
+            self._player_positions[p] = 0
             self._board[0].add_player(p)
 
         self._is_in_game = {}
@@ -129,13 +129,13 @@ class Board:
             GetOutOfJailFreeCard(),
             GetOutOfJailFreeCard(),
             MoveCard(Board._JAIL_POS, "Go to Jail"),
-            GainMoneyCard(15, "Pay 15 in poor tax"),
+            LoseMoneyCard(15, "Pay 15 in poor tax"),
             GainMoneyCard(150, "Your building and loan matures; collect 150"),
             GainMoneyCard(100, "You have won 100 in a crossword competition"),
             MoveCard(random.choice(list(Board._UTIL_POS_INFO)), "Move to a utility"),
         } | {
             MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board._PROPERTY_POS_INFO)) for _ in range(3))
-        }     
+        }
 
     def __str__(self):
         """
@@ -148,7 +148,7 @@ class Board:
             if i > 0 and not i%5:
                 s += "\n"
             s += str(square) + " "
-        return s 
+        return s
 
     def next_player(self):
         """
@@ -177,7 +177,7 @@ class Board:
     def game_state(self):
         """
         Builds up a dictionary of the current game state in the format of the
-        board_sync JSON message format. 
+        board_sync JSON message format.
 
         :returns: the json dictionary
         """
@@ -187,59 +187,59 @@ class Board:
             "players": {},
         }
         for pos, info in Board._PROPERTY_POS_INFO.items():
-            price, rent, estate = info 
+            price, rent, estate = info
             property_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = property_square.owner 
-            #msg["cells"][str(pos)]["price"] =  price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = property_square.owner
+            #msg["cells"][str(pos)]["price"] =  price
 
         for pos, info in Board._TRANS_POS_INFO.items():
-            price = info 
+            price = info
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
-            transport_id = transport_square.square_id 
+            transport_id = transport_square.square_id
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            #msg["cells"][str(pos)]["price"] = price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = transport_square.owner
+            #msg["cells"][str(pos)]["price"] = price
 
         for pos, info in Board._UTIL_POS_INFO.items():
-            price = info 
+            price = info
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
-            transport_id = transport_square.square_id 
+            transport_id = transport_square.square_id
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            #msg["cells"][str(pos)]["price"] = price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = transport_square.owner
+            #msg["cells"][str(pos)]["price"] = price
 
         for player_id, player in self._players.items():
             if self._is_in_game[player_id]:
                 pos = self._player_positions[player]
                 msg["players"][str(player_id)] = {}
                 msg["players"][str(player_id)]["id"] = player_id
-                msg["players"][str(player_id)]["is_in_jail"] = player.jail 
-                msg["players"][str(player_id)]["money"] = player.money 
-                msg["players"][str(player_id)]["position"] = pos 
+                msg["players"][str(player_id)]["is_in_jail"] = player.jail
+                msg["players"][str(player_id)]["money"] = player.money
+                msg["players"][str(player_id)]["position"] = pos
 
-        return msg 
+        return msg
 
 
     def roll_dice(self):
         """
         Simulates a dice roll. Returns a pair of integers representing the value
-        on each dice. 
+        on each dice.
 
         :returns: a tuple of ints of length 2
         """
         d1, d2 = (random.randint(1, 6) for _ in range(2))
-        return d1, d2 
+        return d1, d2
 
     def move_player(self, player_id, new_pos):
         """
-        Moves Player with id "player_id" from old position to "new_pos". 
+        Moves Player with id "player_id" from old position to "new_pos".
 
         :param player_id: the ID of the player being moved
         :param new_pos: the (zero indexed) position on the board the player is moving too
@@ -257,16 +257,16 @@ class Board:
         Gets all the players in the game at a location.
 
         :param pos: the location of the square ebing queried
-        :returns: a list of all players at position pos. 
+        :returns: a list of all players at position pos.
         """
         return list(self._board[pos])
 
     def get_pos(self, player_id):
         """
-        Get the position of the square a player is on. 
+        Get the position of the square a player is on.
 
         :param player_id: the id of the player being looked for
-        :returns: the position of the square which the player is on 
+        :returns: the position of the square which the player is on
         """
         return self._player_positions[self._players[player_id]]
 
@@ -280,7 +280,7 @@ class Board:
         if pos >= Board._NUM_SQUARES:
             raise IndexError(
                 "Board.get_square({}): Index {} not in Board of size {}".format(
-                    pos, pos, Board._NUM_SQUARES)) 
+                    pos, pos, Board._NUM_SQUARES))
         return self._board[pos]
 
     def take_money(self, player_id, amount):
@@ -305,12 +305,12 @@ class Board:
 
     def obtain_get_out_jail_free(self, player_id):
         """
-        Gives the Player with id "player_id" a get out of jail free card. 
+        Gives the Player with id "player_id" a get out of jail free card.
 
         :param player_id: the id of the player being given the card
         """
         player = self._players[player_id]
-        player.free = True 
+        player.free = True
 
     def go_to_jail(self, player_id):
         """
@@ -320,7 +320,7 @@ class Board:
         """
         self.move_player(player_id, Board._JAIL_POS)
         player = self._players[player_id]
-        player.jail = True 
+        player.jail = True
 
     def leave_jail(self, player_id):
         """
@@ -329,11 +329,11 @@ class Board:
         :param player_if: the id of the player being moved out of jail
         """
         player = self._players[player_id]
-        player.jail = False 
+        player.jail = False
 
     def use_get_out_jail_free(self, player_id):
         """
-        Player with id "player_id" uses their get out of jail free card. 
+        Player with id "player_id" uses their get out of jail free card.
 
         :param player_id: the id of the player using their card
         """
@@ -342,17 +342,17 @@ class Board:
             raise ValueError(
                 "Board.use_get_out_jail_free({}): Player with id {} has no get out of jail free card".format(
                     player_id, player_id))
-        player.free = False 
-        player.jail = False 
+        player.free = False
+        player.jail = False
 
     def add_house(self, pos):
         """
-        Adds a house to the Square at position pos. 
+        Adds a house to the Square at position pos.
 
         :param pos: the position of the square the house is being added to
         """
         square = self.get_square(pos)
-        square.num_houses += 1 
+        square.num_houses += 1
 
     def remove_player(self, player_id):
         """
@@ -362,7 +362,7 @@ class Board:
         """
         player = self._players[player_id]
         for asset in player.get_assets():
-            asset.owner = None 
+            asset.owner = None
             asset.is_owned = False
         self._is_in_game[player_id] = False
 
@@ -388,10 +388,10 @@ class Board:
         :param dice1: the result of dice 1
         :param dice2: the result of dice 2
 
-        This is a generator which will yield the actions a user must address. 
+        This is a generator which will yield the actions a user must address.
         The final value of the generator will be a human-readable string which
-        explains what happened in this turn. This return will also raise a 
-        StopIteration exception. 
+        explains what happened in this turn. This return will also raise a
+        StopIteration exception.
         """
         self._human_string = []
         self._human_string.append("Player {}'s turn.".format(player_id))
@@ -399,7 +399,7 @@ class Board:
 
         if dice1 == dice2:
             self._human_string.append("Player {} rolled a double.".format(player_id))
-            player.double_roll = True 
+            player.double_roll = True
             re_check_location = True
         else:
             re_check_location = False
@@ -448,9 +448,9 @@ class Board:
 
                 else:
                     self._human_string.append("Player {} already owns square".format(player_id))
-                
+
                 yield "paid_rent"
-            
+
             else:
                 #print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
@@ -462,7 +462,7 @@ class Board:
                     new_owner = self._players[player_id]
                     self._human_string.append("Player {} bought square {}.".format(
                         player_id, new_pos))
-                    
+
                     square.is_owned = True
 
                     if square.square_type == Square.PROPERTY:
@@ -473,10 +473,10 @@ class Board:
                         new_owner.add_transport(Square)
 
                     yield "property_bought"
-                
+
                 elif buy_auction == "auction":
                     #print(">>User will auction")
-                    highest_bidder, bid = yield None 
+                    highest_bidder, bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
                     new_owner = self._players[highest_bidder]
@@ -502,7 +502,7 @@ class Board:
                 else:
                     print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
-                    
+
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             #print(">>Square is action square")
