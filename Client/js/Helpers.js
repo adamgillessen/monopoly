@@ -116,7 +116,7 @@ function showCellDetail(id) {
             $("#property-estate").text("Estate: " + cell.estate);
         }
 
-        $("#property-price").text(cell.price);
+        $("#property-price").text("£" + cell.price);
 
         var owner = cell.owner;
         if (owner === -1) {

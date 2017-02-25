@@ -36,7 +36,7 @@ ViewController.createPlayers = function (num) {
 
 ViewController.addCallbacksToEvents = function () {
     Player.onMoneyChange = function (id, money) {
-        $("#money").text(money);
+        $("#money").text("£" + money);
     };
 
     Player.onPositionChange = function (id, from, to) {
