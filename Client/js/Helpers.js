@@ -88,7 +88,7 @@ function log(obj, source) {
 function showCellDetail(id) {
     ViewController.currentSelectedSquare = id;
 
-    var name = $("#cell-" + id + " span").text();
+    var name = ViewController.tableName[id];
     var cell = game.model.selectCell(id);
 
     if (cell.type === "property") {
@@ -158,6 +158,9 @@ function showButtons(buttons) {
     }
 }
 
+/**
+ * Function to be executed when the button in the chat window is clicked
+ */
 function chatButtonClicked() {
     var stringVal = $("#input-chat").val();
     if (stringVal === null || stringVal === undefined || stringVal.length === 0) {
@@ -182,6 +185,15 @@ function chatButtonClicked() {
             text: stringVal
         }));
     }
+}
+
+/**
+ * Add element to Inventory pane in HTML
+ *
+ * @param {int} id: ID of property, if ID === 41, it means "Get out of Jail free" card
+ */
+function addToInventory(id) {
+    // todo
 }
 
 /**

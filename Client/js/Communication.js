@@ -212,7 +212,7 @@ function parseMessage(data) {
             var basePrice = data["base_price"];
 
             if (source === -1) {
-                log("Two or more players have placed the same bid, Auction tarts over again", 5);
+                log("Two or more players have placed the same bid, Auction starts over again", 5);
             } else if (game.isSource(source)) {
                 log(sprintf("You have started an Auction on Property %d!", property), source);
             } else {
