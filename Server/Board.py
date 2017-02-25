@@ -513,12 +513,17 @@ class Board:
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             #print(">>Square is action square")
+            what_happened = []
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
                 #print(">>Square is chest | chance")
                 if square.action == ActionSquare.CHEST:
+                    what_happened.append("Player {} drew a Chest card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chest card".format(
                         player_id))
                 elif square.action == ActionSquare.CHANCE:
+                    what_happened.append("Player {} drew a Chance card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chance card".format(
                         player_id))
 
@@ -541,15 +546,21 @@ class Board:
                     player.free = True
 
                 self._human_string.append(card.text)
+                what_happened.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
                 #print(">>Sqaure is Go to Jail square")
                 self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
+
+                what_happened.append("Player {} went to jail".format(
+                        player_id))
             elif square.action == ActionSquare.STAY:
                 #print(">>Sqaure is free parking")
                 self._human_string.append("Player {} got free parking".format(
+                        player_id))
+                what_happened.append("Player {} got free parking".format(
                         player_id))
             elif square.action == ActionSquare.TAX:
                 #print(">>Sqaure is get taxed square")
@@ -561,7 +572,10 @@ class Board:
                     raise PlayerLostError
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
-            yield "action_square" 
+                what_happened.append("Player {} paid {} in tax".format(
+                        player_id, tax))
+
+            yield "action_square|" + "\n".join(what_happened)
 
         re_check_location = False # TODO double roll mechanism
         if re_check_location:
