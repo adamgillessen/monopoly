@@ -107,17 +107,22 @@ function showCellDetail(id) {
         $("#property-banner").removeClass();
         $("#property-banner").addClass("cell-" + id);
 
+        // ID
         $("#property-id").text(cell.id);
+        // Property Name
         $("#property-name").text(name);
 
+        // Estate info
         if (cell.estate === -1) {
             $("#property-estate").text(" --- ");
         } else {
             $("#property-estate").text("Estate: " + cell.estate);
         }
 
+        // Price info
         $("#property-price").text(cell.price);
 
+        // Owner info
         var owner = cell.owner;
         if (owner === -1) {
             $("#property-owner").text("ON SALE");
