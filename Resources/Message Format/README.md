@@ -28,4 +28,5 @@ ID is even number
 |14|auction\_bid\_ack|yes|
 |16|auction\_finished|yes|
 |18|chat\_sync|yes|
-|20|player\_lose|yes
+|20|player\_lose|yes|
+|22|update|yes|
