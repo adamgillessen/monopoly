@@ -4,6 +4,7 @@
 "use strict";
 
 /**
+ * Class with static methods and viriables only
  * Layer: View and Controller
  */
 function ViewController() {
@@ -14,7 +15,7 @@ function ViewController() {
  * Which square is being displayed in the detail pane
  * @type {int}
  */
-ViewController.currentSelectedSquare = undefined;
+ViewController.currentSelectedSquare = 0;
 
 /**
  * Name of each square
