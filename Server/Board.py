@@ -93,8 +93,7 @@ class Board:
             self._board[pos] = PropertySquare(pos, price, rent, estate)
 
         # create players
-        self._players = {i:Player(i) for i in range(1, num_players + 1)}
-        self._current_player = None  
+        self._players = {i:Player(i) for i in range(1, num_players + 1)}  
         self._current_turn = 1    
 
         # Initialise players at position 0 (Go)
@@ -235,10 +234,7 @@ class Board:
 
         :returns: a tuple of ints of length 2
         """
-        while True:
-            d1, d2 = (random.randint(1, 6) for _ in range(2))
-            if d1 != d2:
-                break
+        d1, d2 = (random.randint(1, 6) for _ in range(2))
         return d1, d2 
 
     def move_player(self, player_id, new_pos):
@@ -397,10 +393,7 @@ class Board:
         explains what happened in this turn. This return will also raise a 
         StopIteration exception. 
         """
-        if not self._current_player:
-            self._current_player = player_id
-            self._human_string = []
-        
+        self._human_string = []
         self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
@@ -513,12 +506,17 @@ class Board:
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
             #print(">>Square is action square")
+            what_happened = []
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
                 #print(">>Square is chest | chance")
                 if square.action == ActionSquare.CHEST:
+                    what_happened.append("Player {} drew a Chest card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chest card".format(
                         player_id))
                 elif square.action == ActionSquare.CHANCE:
+                    what_happened.append("Player {} drew a Chance card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chance card".format(
                         player_id))
 
@@ -541,15 +539,21 @@ class Board:
                     player.free = True
 
                 self._human_string.append(card.text)
+                what_happened.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
                 #print(">>Sqaure is Go to Jail square")
                 self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
+
+                what_happened.append("Player {} went to jail".format(
+                        player_id))
             elif square.action == ActionSquare.STAY:
                 #print(">>Sqaure is free parking")
                 self._human_string.append("Player {} got free parking".format(
+                        player_id))
+                what_happened.append("Player {} got free parking".format(
                         player_id))
             elif square.action == ActionSquare.TAX:
                 #print(">>Sqaure is get taxed square")
@@ -561,21 +565,14 @@ class Board:
                     raise PlayerLostError
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
-            yield "action_square" 
+                what_happened.append("Player {} paid {} in tax".format(
+                        player_id, tax))
 
-        re_check_location = False # TODO double roll mechanism
-        if re_check_location:
-            if player.double_roll:
-                player.double_roll = False
-                dice1, dice2 = self.roll_dice()
-                self._human_string.append("Player {} rolled again and got {} and {}".format(
-                    player_id, dice1, dice2))
-                re_check_turn = self.take_turn(player_id, dice1, dice2)
-            else:
-                re_check_turn = self.take_turn(player_id, 0, 0)
-            yield from re_check_turn
-        self._current_player = None
-        yield "\n".join(self._human_string)
+            yield "action_square|" + "\n".join(what_happened)
+
+        new_roll = player.double_roll
+        player.double_roll = False
+        yield re_check_location, new_roll, "\n".join(self._human_string)
 
 
 if __name__ == "__main__":
