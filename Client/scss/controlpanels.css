@@ -72,6 +72,29 @@
   border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
+.owned {
+  width: 100%;
+  height: 4.5em;
+  color: #ffffff;
+  box-sizing: border-box;
+  padding: 0.5em 0.5em 0.5em 0em;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.square {
+  width: 3.5em;
+  height: 3.5em;
+  float: left;
+}
+
+.placename {
+  float: left;
+  font-size: 1.4em;
+  font-weight: 100;
+  padding-left: 0.75em;
+  line-height: 2.3em;
+}
+
 @media and (-webkit-min-device-pixel-ratio:0) {
   #control-pane {
     left: 4.7em;
