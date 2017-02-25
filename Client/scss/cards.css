@@ -28,6 +28,7 @@
 
 #detail-pane {
   border: 1px solid #000000;
+  overflow: scroll;
 }
 
 #property-estate, #property-owner, #property-price {
@@ -43,4 +44,27 @@
   height: 100%;
   text-align: center;
   line-height: 17em;
+}
+
+#property-controls {
+  background: rgba(39, 39, 39, 0.95);
+  padding: 1.1em;
+  box-sizing: border-box;
+  padding-bottom: 0em;
+}
+
+#property-controls button {
+  background-color: #e75a56;
+  width: 7.1em;
+  height: 1.5em;
+  font-size: 1.45em;
+  border: 1px solid #b73531;
+  box-shadow: 0 3px 0 0 #bd4846;
+  text-shadow: 0 1px 1px #000000;
+  color: #ffffff;
+  border-radius: 0.1em;
+  font-weight: 100;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin-bottom: 1em;
 }

@@ -102,6 +102,7 @@ function showCellDetail(id) {
     if (cell.type === "property") {
         $("#property").show();
         $("#action").hide();
+        $("#property-controls").hide();
 
         $("#property-banner").removeClass();
         $("#property-banner").addClass("cell-" + id);
@@ -123,8 +124,10 @@ function showCellDetail(id) {
         } else {
             if (game.isSource(owner)) {
                 $("#property-owner").text("Owner: You");
+                $("#property-controls").show();
             } else {
                 $("#property-owner").text("Owner: Player " + owner);
+                $("#property-controls").hide();
             }
         }
     } else {
