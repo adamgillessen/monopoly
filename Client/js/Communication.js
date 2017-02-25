@@ -208,11 +208,14 @@ function parseMessage(data) {
 
             var price = game.model.selectCell(property).price;
 
+            // Change money value first
+            game.model.selectPlayer(source).changeMoney(-game.model.selectCell(property).price);
+            // Change property owner, too
+            game.model.selectCell(property).changeOwner(source);
+
+
             if (game.isSource(source)) {
                 log(sprintf("You have bought Property %d for %d", property, price), source);
-
-                // Add to Inventory pane in HTML
-                addToInventory(property);
             } else {
                 log(sprintf("Player %d has bought Property %d for %d", source, property, price), source);
             }
@@ -258,13 +261,11 @@ function parseMessage(data) {
 
             if (game.isSource(winner)) {
                 log(sprintf("You have bought Property %d for %d", property, price), 5);
-
-                // Add property to inventory
-                addToInventory(property);
             } else {
                 log(sprintf("Player %s has bought Property %d for %d", winner, property, price), 5);
             }
 
+            // Change price and property's owner
             game.model.selectPlayer(winner).changeMoney(-price);
             game.model.selectCell(property).changeOwner(winner);
 
