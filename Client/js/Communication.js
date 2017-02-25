@@ -214,7 +214,7 @@ function parseMessage(data) {
                 // Add to Inventory pane in HTML
                 addToInventory(property);
             } else {
-                log(sprintf("Player %d has bough Property %d for %d", source, property, price), source);
+                log(sprintf("Player %d has bought Property %d for %d", source, property, price), source);
             }
         },
         "auction_start": function (data) {
