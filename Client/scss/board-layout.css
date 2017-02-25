@@ -10,6 +10,7 @@
 
 #game-area {
   min-width: 1200px;
+  min-height: 900px;
 }
 
 #game-area #main-board {

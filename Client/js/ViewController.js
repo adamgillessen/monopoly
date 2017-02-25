@@ -59,7 +59,7 @@ ViewController.addCallbacksToEvents = function () {
             ViewController.showCellDetail(id);
         }
 
-        // If this player gets new property, add it to invenotry
+        // If this player gets new property, add it to inventory
         if (game.isSource(owner)) {
             ViewController.addToInventory(id);
         }
@@ -105,7 +105,7 @@ ViewController.addCallbacksToButtons = function () {
     });
 
     /**
-     * Auction
+     * Auction Button
      */
     $("#btn-buy-no").click(function () {
         var propertyIndex = parseInt(getContextValue("buy"));
@@ -121,6 +121,7 @@ ViewController.addCallbacksToButtons = function () {
     });
 
     $("#input-chat").keydown(function (e) {
+        // Return key
         if (e.keyCode === 13) {
             ViewController.chatButtonClicked();
         }
@@ -134,6 +135,25 @@ ViewController.addCallbacksToButtons = function () {
     $(".cell").click(function () {
         var id = parseInt($(this)[0].id.replace("cell-", ""));
         ViewController.showCellDetail(id);
+    });
+
+    /////////////////
+    // Detail pane //
+    /////////////////
+
+    // Build property
+    $("#p-c-build").click(function () {
+
+    });
+
+    // Mortgage property
+    $("#p-c-mortgage").click(function () {
+
+    });
+
+    // Sell property
+    $("#p-c-sell").click(function () {
+
     });
 };
 

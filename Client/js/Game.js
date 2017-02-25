@@ -31,10 +31,15 @@ function Game() {
      */
     this.model = new Board();
 
-    this.state = undefined;
+    /**
+     * Current state of this client
+     * @type {string}
+     */
+    this.state = GAME_STATE.OTHERS_TURN;
 
     /**
-     *
+     * Auction Handler
+     * Handles the game logic during an auction
      * @type {Auction}
      */
     this.auctionHandler = null;
@@ -43,7 +48,7 @@ function Game() {
      * ID of player who is on the turn
      * @type {int}
      */
-    this.currentTurn = undefined;
+    this.currentTurn = false;
 
     /**
      * True if this player rolled a double in the previous roll
