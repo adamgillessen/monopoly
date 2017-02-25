@@ -44,6 +44,12 @@ function Game() {
      * @type {int}
      */
     this.currentTurn = undefined;
+
+    /**
+     * True if this player rolled a double in the previous roll
+     * @type {boolean}
+     */
+    this.doubleRoll = false;
 }
 
 /**
@@ -68,7 +74,7 @@ Game.prototype.isMyTurn = function () {
 };
 
 /**
- *
+ * Is the source this player?
  * @param {int} source
  * @return {boolean}
  */

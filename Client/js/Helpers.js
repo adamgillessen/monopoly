@@ -21,6 +21,14 @@ function selectPlayer(id) {
     return $("#player-" + id);
 }
 
+function selectCellModel(id) {
+    return game.model.selectCell(id);
+}
+
+function selectPlayerModel(id) {
+    return game.model.selectPlayer(id);
+}
+
 /**
  * Set value in HTML
  * @param {string} name
@@ -113,7 +121,11 @@ function showCellDetail(id) {
         if (owner === -1) {
             $("#property-owner").text("ON SALE");
         } else {
-            $("#property-owner").text("Owner: Player " + owner);
+            if (game.isSource(owner)) {
+                $("#property-owner").text("Owner: You");
+            } else {
+                $("#property-owner").text("Owner: Player " + owner);
+            }
         }
     } else {
         $("#action").show();
@@ -193,7 +205,35 @@ function chatButtonClicked() {
  * @param {int} id: ID of property, if ID === 41, it means "Get out of Jail free" card
  */
 function addToInventory(id) {
-    // todo
+    function addEachToInventory(id) {
+        var templateProperty = '<div class="owned">' +
+            '<div class="square cell-%d">%d</div>' +
+            '<div class="placename">%s</div>' +
+            '</div>';
+        // todo
+        // Get out of jail card
+
+        var current = $(sprintf(templateProperty, id, id, ViewController.tableName[id]));
+        current.appendTo('#inventory');
+
+        // Click item in Inventory Pane
+        current.click(function () {
+            var id = $(this).children(".square").text();
+            showCellDetail(id);
+        });
+    }
+
+    game.model.propertiesOwnedByThisPlayer.push(id);
+    game.model.propertiesOwnedByThisPlayer.sort(function (a, b) {
+        return a > b;
+    });
+
+    // Clear all
+    $(".owned").remove();
+
+    for (var lop = 0; lop < game.model.propertiesOwnedByThisPlayer.length; lop++) {
+        addEachToInventory(game.model.propertiesOwnedByThisPlayer[lop]);
+    }
 }
 
 /**

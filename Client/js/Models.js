@@ -21,6 +21,12 @@ function Board() {
      * @type {{0: Player, 1: Player, 2: Player, 3: Player}}
      */
     this.players = {};
+
+    /**
+     * Array of properties owned by this player
+     * @type {Array}
+     */
+    this.propertiesOwnedByThisPlayer = [];
 }
 
 

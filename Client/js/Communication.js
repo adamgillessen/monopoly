@@ -88,14 +88,13 @@ function parseMessage(data) {
             }
         },
         "board_sync": function (data) {
-            if ("text" in data) {
-                log(data["text"], 5);
-            }
-
             var listProperties = data["cells"];
             var listPlayers = data["players"];
             var lop = 0;
             var current = undefined;
+
+            // Clear property list
+            game.model.propertiesOwnedByThisPlayer = [];
 
             // Update property's owner
             for (lop in listProperties) {
@@ -113,6 +112,11 @@ function parseMessage(data) {
 
                 // Update owner
                 game.model.selectCell(current["id"]).owner = current.owner;
+
+
+                if (game.isSource(current.owner)) {
+                    game.model.propertiesOwnedByThisPlayer.push(current["id"]);
+                }
             }
 
             // Update player's money and position
@@ -134,7 +138,12 @@ function parseMessage(data) {
             game.currentTurn = turnOfID;
 
             if (game.isMyTurn()) {
-                log("You turn!", turnOfID);
+                if (game.doubleRoll) {
+                    game.doubleRoll = false;
+                    log("You rolled double\nKeep rolling!", turnOfID);
+                } else {
+                    log("You turn!", turnOfID);
+                }
                 ViewController.yourTurn();
             } else {
                 log(sprintf("Player %d's turn!", turnOfID), turnOfID);
@@ -144,24 +153,24 @@ function parseMessage(data) {
             var source = data["source"];
             var result = data["result"];
 
-            // Log roll result to log-area
-            if (game.isMyTurn()) {
-                log("You just rolled " + result, source);
-            } else {
-                log(sprintf("Player %d rolled ", source) + result, source);
-            }
-
             // Update model
             var landedOn = game.model.movePlayer(source, result);
 
+            // Log result to chat window
             if (game.isMyTurn()) {
-                log(sprintf("You landed on %d", landedOn), source);
+                log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
             } else {
-                log(sprintf("Player %d landed on %d", source, landedOn), source);
+                log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
             }
 
+            // Do nothing if its not your turn
             if (!game.isMyTurn()) {
                 return;
+            }
+
+            // Rolled double?
+            if (result[0] === result[1]) {
+                game.doubleRoll = true;
             }
 
             // What type of square player lands on?
@@ -201,6 +210,9 @@ function parseMessage(data) {
 
             if (game.isSource(source)) {
                 log(sprintf("You have bought Property %d for %d", property, price), source);
+
+                // Add to Inventory pane in HTML
+                addToInventory(property);
             } else {
                 log(sprintf("Player %d has bough Property %d for %d", source, property, price), source);
             }
@@ -246,6 +258,9 @@ function parseMessage(data) {
 
             if (game.isSource(winner)) {
                 log(sprintf("You have bought Property %d for %d", property, price), 5);
+
+                // Add property to inventory
+                addToInventory(property);
             } else {
                 log(sprintf("Player %s has bought Property %d for %d", winner, property, price), 5);
             }
@@ -265,13 +280,32 @@ function parseMessage(data) {
                 var template = "Player %d:\n%s";
                 log(sprintf(template, source, text), source);
             }
+        },
+        "update": function (data) {
+            var text = data["text"];
+            var card = undefined;
+
+            if ("card" in data) {
+                card = data["card"];
+            }
+
+            log(text, 5);
+        },
+        "textual_update": function (data) {
+            log(data["text"], 5);
         }
     };
 
     if (typeof data === "string") {
         data = JSON.parse(data);
     }
-    (parseMessage._parseTree[data["type"]])(data);
+
+    try {
+        (parseMessage._parseTree[data["type"]])(data);
+    } catch (e) {
+        console.log(e);
+        console.log(data);
+    }
 }
 
 /**
