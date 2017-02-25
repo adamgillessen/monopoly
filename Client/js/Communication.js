@@ -142,7 +142,7 @@ function parseMessage(data) {
                     game.doubleRoll = false;
                     log("You rolled double\nKeep rolling!", turnOfID);
                 } else {
-                    log("You turn!", turnOfID);
+                    log("Your turn!", turnOfID);
                 }
                 ViewController.yourTurn();
             } else {
