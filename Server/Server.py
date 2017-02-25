@@ -26,6 +26,7 @@ class Server:
         self._board = None
         self._num_players = 0
         self._current_bidders = None 
+        self._new_roll = True
 
     def next_id(self):
         """
@@ -169,6 +170,18 @@ class Server:
         """
         return self._board.is_valid_player(player_id)
 
+    @property
+    def new_roll(self):
+        """
+        This says whether or not the server should roll the dice for a new turn or give 0 values so
+        a player will take a turn from the same square (when they get moved to a square by a card)
+        """
+        return self._new_roll
+
+    @new_roll.setter
+    def new_roll(self, new_new_roll):
+        self._new_roll = new_new_roll
+
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
@@ -247,7 +260,10 @@ def recv_message(client, server, message):
     
     elif json_string["type"] == "roll":
         player_id = json_string["source"]
-        dice1, dice2 = s.roll_dice()
+        if s.new_roll:
+            dice1, dice2 = s.roll_dice()
+        else:
+            dice1, dice2 = 0, 0
         response_json = {
             "type": "roll_result",
             "source": player_id,
@@ -364,15 +380,16 @@ def recv_message(client, server, message):
     elif json_string["type"] == "end_turn":
         if s.is_valid_player(json_string["source"]):
             board_sync_json = s.game_state()
-            human_string = s.current_turn_generator.send(None)
+            re_check_location, new_roll, human_string = s.current_turn_generator.send(None)
             board_sync_json["text"] = human_string
-
             board_sync_string = json.dumps(board_sync_json)
             server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-
             print(human_string)
             
-            s.next_player()
+            if not re_check_location:
+                s.next_player()
+            s.new_roll = new_roll
+
             new_current_player_id = s.current_player()
             response_json = {
                 "type": "your_turn",
