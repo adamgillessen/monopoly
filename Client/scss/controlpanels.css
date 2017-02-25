@@ -85,6 +85,10 @@
   width: 3.5em;
   height: 3.5em;
   float: left;
+  line-height: 3.5em;
+  text-align: center;
+  font-size: 1em;
+  text-shadow: 2px 2px 10px #000000;
 }
 
 .placename {
