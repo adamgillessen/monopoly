@@ -6,8 +6,8 @@
 #cell-16, #cell-18, #cell-19, .cell-16, .cell-18, .cell-19 {background-color: #FFC161;}
 #cell-21, #cell-23, #cell-24, .cell-21, .cell-23, .cell-24 {background-color: #BB292C;}
 #cell-26, #cell-27, #cell-29, .cell-26, .cell-27, .cell-29 {background-color: #FFF138;}
-#cell-31, #cell-32, #cell-34, .cell-31, .cell-32, .cell-34 {background-color: #95FF75;}
-#cell-37, #cell-39, .cell-37, .cell-39 {background-color: #75A1FF; }
+#cell-31, #cell-32, #cell-34, .cell-31, .cell-32, .cell-34 {background-color: #5FA55D;}
+#cell-37, #cell-39, .cell-37, .cell-39 {background-color: #2C67A1; }
 #cell-5, #cell-15, #cell-25, #cell-35, .cell-5, .cell-15, .cell-25, .cell-35 {background-color: #E1E1E1;}
 #cell-2, #cell-4, #cell-7, #cell-12, #cell-17, #cell-22, #cell-28, #cell-33, #cell-36, #cell-38, .cell-2, .cell-4, .cell-7, .cell-12, .cell-17, .cell-22, .cell-28, .cell-33, .cell-36, .cell-38 {background-color: #CCE6CF;}
 #cell-0, .cell-0 {background-color: #ACE4FF;}
@@ -115,6 +115,41 @@
 
 #cell-30 {
   background: url(../images/cell30.jpg);
+  background-size: cover;
+}
+
+#cell-31 {
+  background: url(../images/cell31.jpg);
+  background-size: cover;
+}
+
+#cell-32 {
+  background: url(../images/cell32.jpg);
+  background-size: cover;
+}
+
+#cell-34 {
+  background: url(../images/cell34.jpg);
+  background-size: cover;
+}
+
+#cell-35 {
+  background: url(../images/cell35.jpg);
+  background-size: cover;
+}
+
+#cell-37 {
+  background: url(../images/cell37.jpg);
+  background-size: cover;
+}
+
+#cell-38 {
+  background: url(../images/cell38.jpg);
+  background-size: cover;
+}
+
+#cell-39 {
+  background: url(../images/cell39.jpg);
   background-size: cover;
 }
 
