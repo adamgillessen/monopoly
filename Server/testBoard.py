@@ -94,7 +94,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(prop_square.owner == player.id)
         self.assertTrue(prop_square.price + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_property_square_owned(self):
@@ -116,7 +116,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(p2_old_money + prop_rent == player2.money)
         self.assertTrue(board.get_pos(player1.id) == 3)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_utility_square_not_owned_buy(self):
@@ -136,7 +136,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(util_square.owner == player.id)
         self.assertTrue(util_square.price + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_utility_square_owned(self):
@@ -158,7 +158,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
         self.assertTrue(board.get_pos(player1.id) == 12)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_transport_square_not_owned_buy(self):
@@ -179,7 +179,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(trans_square.owner == player.id)
         self.assertTrue(trans_square.price + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_transport_square_owned(self):
@@ -201,7 +201,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
         self.assertTrue(board.get_pos(player1.id) == 5)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_property_square_owned_auction(self):
@@ -226,7 +226,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(prop_square.owner == player.id)
         self.assertTrue(highest_bid + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
 
@@ -252,7 +252,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(trans_square.owner == player.id)
         self.assertTrue(highest_bid + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
 
@@ -278,7 +278,7 @@ class BoardTests(unittest.TestCase):
         self.assertTrue(util_square.owner == player.id)
         self.assertTrue(highest_bid + player.money == old_money)
 
-        human_string = turn.send(None)
+        _, _, human_string = turn.send(None)
         self.assertTrue(human_string.startswith("Player"))
 
     def test_player_lose(self):
