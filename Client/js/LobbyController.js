@@ -28,7 +28,7 @@ function hideLobbyShowBoard() {
     $("#game-area").show();
 
     // Show GO in detail pane
-    showCellDetail(0);
+    ViewController.showCellDetail(0);
     // Show buttons
     showButtons([]);
 }

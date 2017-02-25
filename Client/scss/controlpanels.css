@@ -97,6 +97,8 @@
   font-weight: 100;
   padding-left: 0.75em;
   line-height: 2.3em;
+  width: 200px;
+  white-space: nowrap;
 }
 
 @media and (-webkit-min-device-pixel-ratio:0) {

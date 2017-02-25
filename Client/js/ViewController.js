@@ -55,9 +55,13 @@ ViewController.addCallbacksToEvents = function () {
 
     Property.onOwnerChange = function (id, owner) {
         if (id === ViewController.currentSelectedSquare) {
-            showCellDetail(id);
+            ViewController.showCellDetail(id);
         }
-        // todo: add to property list
+
+        // If this player gets new property, add it to invenotry
+        if (game.isSource(owner)) {
+            ViewController.addToInventory(id);
+        }
     };
 };
 
@@ -81,11 +85,6 @@ ViewController.addCallbacksToButtons = function () {
         var propertyIndex = parseInt(getContextValue("buy"));
 
         if (game.model.selectPlayer(game.clientID).canBuyProperty(propertyIndex)) {
-            // Change money value first
-            game.model.selectPlayer(game.clientID).changeMoney(-game.model.selectCell(propertyIndex).price);
-            // Change property owner, too
-            game.model.selectCell(propertyIndex).changeOwner(game.clientID);
-
             // Send buy message to server
             game.connector.sendMessage(generateMessage("buy", {
                 "property": propertyIndex
@@ -122,19 +121,144 @@ ViewController.addCallbacksToButtons = function () {
 
     $("#input-chat").keydown(function (e) {
         if (e.keyCode === 13) {
-            chatButtonClicked();
+            ViewController.chatButtonClicked();
         }
     });
 
     $("#submit").click(function () {
-        chatButtonClicked();
+        ViewController.chatButtonClicked();
     });
 
     // Show detail pane of a selected cell
     $(".cell").click(function () {
         var id = parseInt($(this)[0].id.replace("cell-", ""));
-        showCellDetail(id);
+        ViewController.showCellDetail(id);
     });
+};
+
+/**
+ * Add element to Inventory pane in HTML
+ *
+ * @param {int} id: ID of property, if ID === 41, it means "Get out of Jail free" card
+ */
+ViewController.addToInventory = function (id) {
+    function addEachToInventory(id) {
+        var templateProperty = '<div class="owned">' +
+            '<div class="square cell-%d">%d</div>' +
+            '<div class="placename">%s</div>' +
+            '</div>';
+        // todo
+        // Get out of jail card
+
+        var current = $(sprintf(templateProperty, id, id, ViewController.tableName[id]));
+        current.appendTo('#inventory');
+
+        // Click item in Inventory Pane
+        current.click(function () {
+            var id = $(this).children(".square").text();
+            ViewController.showCellDetail(id);
+        });
+    }
+
+    game.model.propertiesOwnedByThisPlayer.push(id);
+    game.model.propertiesOwnedByThisPlayer.sort(function (a, b) {
+        return a > b;
+    });
+
+    // Clear all items in Inventory pane
+    $(".owned").remove();
+
+    for (var lop = 0; lop < game.model.propertiesOwnedByThisPlayer.length; lop++) {
+        addEachToInventory(game.model.propertiesOwnedByThisPlayer[lop]);
+    }
+};
+
+/**
+ * Function to be executed when the button in the chat window is clicked
+ */
+ViewController.chatButtonClicked = function () {
+    var stringVal = $("#input-chat").val();
+    // Clear input field
+    $("#input-chat").val("");
+
+    if (stringVal === null || stringVal === undefined || stringVal.length === 0) {
+        return;
+    }
+
+    if (game.state === GAME_STATE.AUCTION && game.auctionHandler.state === AUCTION_STATE.YOU_BID) {
+        try {
+            var price = parseInt(stringVal);
+        } catch (err) {
+            log("Please enter valid integer!", 5);
+        }
+
+        var bid = game.auctionHandler.bid(price);
+
+        log("You have placed bid: " + bid, game.clientID);
+    } else {
+        // Send Chat
+        game.connector.sendMessage(generateMessage("chat", {
+            text: stringVal
+        }));
+    }
+};
+
+/**
+ * Show details of a given cell to the detail-pane section in HTML
+ * @param {int} id
+ */
+ViewController.showCellDetail = function (id) {
+    ViewController.currentSelectedSquare = id;
+
+    var name = ViewController.tableName[id];
+    var cell = game.model.selectCell(id);
+
+    if (cell.type === "property") {
+        $("#property").show();
+        $("#action").hide();
+        $("#property-controls").hide();
+
+        $("#property-banner").removeClass();
+        $("#property-banner").addClass("cell-" + id);
+
+        // ID
+        $("#property-id").text(cell.id);
+        // Property Name
+        $("#property-name").text(name);
+
+        // Estate info
+        if (cell.estate === -1) {
+            $("#property-estate").text(" --- ");
+        } else {
+            $("#property-estate").text("Estate: " + cell.estate);
+        }
+
+        // Price info
+        $("#property-price").text(cell.price);
+
+        // Owner info
+        var owner = cell.owner;
+        if (owner === -1) {
+            $("#property-owner").text("ON SALE");
+        } else {
+            if (game.isSource(owner)) {
+                $("#property-owner").text("Owner: You");
+                $("#property-controls").show();
+            } else {
+                $("#property-owner").text("Owner: Player " + owner);
+                $("#property-controls").hide();
+            }
+        }
+    } else {
+        $("#action").show();
+        $("#property").hide();
+
+        $("#action-banner").removeClass();
+        $("#action-banner").addClass("cell-" + id);
+
+        $("#action-id").text(cell.id);
+        $("#action-description").text(name);
+    }
 };
 
 /**
