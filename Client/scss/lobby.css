@@ -15,7 +15,7 @@
 	overflow: hidden;
 	position: relative;
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translateY(-42%);
 	background: rgba(39, 39, 39, 0.75);
 	padding: 1em;
 	border-radius: 5px;
