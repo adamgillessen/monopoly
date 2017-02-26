@@ -286,7 +286,7 @@ ViewController.showCellDetail = function (id) {
         }
 
         // Price info
-        $("#property-price").text(cell.price);
+        $("#property-price").text("Price: £" + cell.price);
         // Rent info
         if (cell.rent === -1) {
             $("#property-rent").text("");
