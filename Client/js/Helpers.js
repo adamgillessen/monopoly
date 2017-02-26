@@ -21,12 +21,30 @@ function selectPlayer(id) {
     return $("#player-" + id);
 }
 
+/**
+ * Get square by id
+ * @param {number} id
+ * @return {Property|Action}
+ */
 function selectCellModel(id) {
     return game.model.selectCell(id);
 }
 
+/**
+ * Get player by id
+ * @param id
+ * @return {Player}
+ */
 function selectPlayerModel(id) {
     return game.model.selectPlayer(id);
+}
+
+/**
+ * Return this client
+ * @return {Player}
+ */
+function getThisPlayerModel() {
+    return selectPlayerModel(game.clientID);
 }
 
 /**
@@ -53,6 +71,13 @@ function getContextValue(name) {
 function updateScroll() {
     var element = document.getElementById("log-area");
     element.scrollTop = element.scrollHeight;
+}
+
+function generateProgressBar(current, total) {
+    var FULL = "XXXXXX";
+    var EMPTY = '------';
+
+    return sprintf("[%s]", FULL.substr(0, current) + EMPTY.substr(0, total - current));
 }
 
 /**

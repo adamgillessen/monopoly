@@ -64,6 +64,12 @@ ViewController.addCallbacksToEvents = function () {
             ViewController.addToInventory(id);
         }
     };
+
+    Property.onBuildProgressChange = function (id, progress) {
+        if (id === ViewController.currentSelectedSquare) {
+            ViewController.showCellDetail(id);
+        }
+    };
 };
 
 /**
@@ -143,17 +149,31 @@ ViewController.addCallbacksToButtons = function () {
 
     // Build property
     $("#p-c-build").click(function () {
-
+        var propertyTuBuild = ViewController.currentSelectedSquare;
+        // Check if all properties of same estate are owned by this player
+        if (game.model.canBuildHouse(propertyTuBuild)) {
+            // Check if this player has enough money to build
+            if (getThisPlayerModel().hasEnoughMoneyThan(selectCellModel(propertyTuBuild).rent)) {
+                // Send build message
+                game.connector.sendMessage(generateMessage("build_house", {
+                    property: propertyTuBuild
+                }));
+            } else {
+                alert("You don't have enough money to build!");
+            }
+        } else {
+            alert("You can only build after you owns all properties in the same estate!");
+        }
     });
 
     // Mortgage property
     $("#p-c-mortgage").click(function () {
-
+        // todo: mortgage
     });
 
     // Sell property
     $("#p-c-sell").click(function () {
-
+        // todo: sell
     });
 };
 
@@ -168,8 +188,7 @@ ViewController.addToInventory = function (id) {
             '<div class="square cell-%d">%d</div>' +
             '<div class="placename">%s</div>' +
             '</div>';
-        // todo
-        // Get out of jail card
+        // todo: Get out of jail card
 
         var current = $(sprintf(templateProperty, id, id, ViewController.tableName[id]));
         current.appendTo('#inventory');
@@ -233,7 +252,7 @@ ViewController.showCellDetail = function (id) {
         id = parseInt(id);
     }
 
-    var notProp = [5, 12, 15, 25, 28, 35];
+    var notProperties = [5, 12, 15, 25, 28, 35];
 
     ViewController.currentSelectedSquare = id;
 
@@ -241,9 +260,12 @@ ViewController.showCellDetail = function (id) {
     var cell = game.model.selectCell(id);
 
     if (cell.type === "property") {
+        // Hide action pane
+        // Show property pane
         $("#property").show();
         $("#action").hide();
 
+        // Add class
         $("#property-banner").removeClass();
         $("#property-banner").addClass("cell-" + id);
 
@@ -254,13 +276,24 @@ ViewController.showCellDetail = function (id) {
 
         // Estate info
         if (cell.estate === -1) {
+            // This is UTIL or TRANS
             $("#property-estate").text(" --- ");
+            $("#property-build").text(" --- ");
         } else {
+            // This is Property
             $("#property-estate").text("Estate: " + cell.estate);
+            $("#property-build").text(generateProgressBar(cell.buildProgress, 5));
         }
 
         // Price info
         $("#property-price").text(cell.price);
+        // Rent info
+        if (cell.rent === -1) {
+            $("#property-rent").text("");
+        } else {
+            $("#property-rent").text(sprintf("Rent: £%d", cell.displayRent));
+        }
+
         // Control pane hide.
         $("#property-controls").hide();
 
@@ -275,12 +308,16 @@ ViewController.showCellDetail = function (id) {
 
                 // Show or hide "Build" button base on this is property or other
                 // If this is property
-                if (notProp.indexOf(id) < 0) {
-                    console.log("Show ALL");
-                    showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                if (notProperties.indexOf(id) < 0) {
+                    if (game.model.canBuildHouse(id)) {
+                        showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                    } else {
+                        showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                    }
+                    // Change rent info
+                    $("#build-cost").text(cell.rent);
                 } else {
                     // This is util or transp
-                    console.log("Not Show ALL");
                     showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
                 }
             } else {
