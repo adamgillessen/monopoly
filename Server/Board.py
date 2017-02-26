@@ -601,8 +601,3 @@ class Board:
 class BuildException(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-
-if __name__ == "__main__":
-    b = Board(4)
-    b.take_turn(1, 1, 2).send(None)
