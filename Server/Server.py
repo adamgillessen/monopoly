@@ -414,7 +414,7 @@ def recv_message(client, server, message):
             self._board.build_house(player_id, property_id)
             response_json = {
                 "type" : "build_ack",
-                "property": json_string["property"]
+                "property": json_string["property"],
                 "source": json_string["source"],
             }
             response_json_string = json.dumps(response_json)
