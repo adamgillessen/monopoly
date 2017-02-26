@@ -8,7 +8,7 @@ function Connector() {
     this.webSocket = undefined;
     /**
      * Identify this client during player_join phase
-     * @type {int}
+     * @type {number}
      */
     this.key = undefined;
 }

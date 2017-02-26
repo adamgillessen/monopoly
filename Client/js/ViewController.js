@@ -13,7 +13,7 @@ function ViewController() {
 
 /**
  * Which square is being displayed in the detail pane
- * @type {int}
+ * @type {number}
  */
 ViewController.currentSelectedSquare = 0;
 
@@ -160,7 +160,7 @@ ViewController.addCallbacksToButtons = function () {
 /**
  * Add element to Inventory pane in HTML
  *
- * @param {int} id: ID of property, if ID === 41, it means "Get out of Jail free" card
+ * @param {number} id: ID of property, if ID === 41, it means "Get out of Jail free" card
  */
 ViewController.addToInventory = function (id) {
     function addEachToInventory(id) {
@@ -176,7 +176,7 @@ ViewController.addToInventory = function (id) {
 
         // Click item in Inventory Pane
         current.click(function () {
-            var id = $(this).children(".square").text();
+            var id = parseInt($(this).children(".square").text());
             ViewController.showCellDetail(id);
         });
     }
@@ -226,9 +226,15 @@ ViewController.chatButtonClicked = function () {
 
 /**
  * Show details of a given cell to the detail-pane section in HTML
- * @param {int} id
+ * @param {number} id
  */
 ViewController.showCellDetail = function (id) {
+    if (typeof id !== "number") {
+        id = parseInt(id);
+    }
+
+    var notProp = [5, 12, 15, 25, 28, 35];
+
     ViewController.currentSelectedSquare = id;
 
     var name = ViewController.tableName[id];
@@ -237,7 +243,6 @@ ViewController.showCellDetail = function (id) {
     if (cell.type === "property") {
         $("#property").show();
         $("#action").hide();
-        $("#property-controls").hide();
 
         $("#property-banner").removeClass();
         $("#property-banner").addClass("cell-" + id);
@@ -256,6 +261,8 @@ ViewController.showCellDetail = function (id) {
 
         // Price info
         $("#property-price").text(cell.price);
+        // Control pane hide.
+        $("#property-controls").hide();
 
         // Owner info
         var owner = cell.owner;
@@ -265,9 +272,19 @@ ViewController.showCellDetail = function (id) {
             if (game.isSource(owner)) {
                 $("#property-owner").text("Owner: You");
                 $("#property-controls").show();
+
+                // Show or hide "Build" button base on this is property or other
+                // If this is property
+                if (notProp.indexOf(id) < 0) {
+                    console.log("Show ALL");
+                    showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                } else {
+                    // This is util or transp
+                    console.log("Not Show ALL");
+                    showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                }
             } else {
                 $("#property-owner").text("Owner: Player " + owner);
-                $("#property-controls").hide();
             }
         }
     } else {
@@ -284,8 +301,8 @@ ViewController.showCellDetail = function (id) {
 
 /**
  * Move circle that represents player to the given cell by id
- * @param {int} to: id of cell to
- * @param {int} player: player id
+ * @param {number} to: id of cell to
+ * @param {number} player: player id
  */
 ViewController.movePlayer = function (player, to) {
     selectPlayer(player).detach().appendTo(selectCell(to));

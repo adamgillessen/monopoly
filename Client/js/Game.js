@@ -15,7 +15,7 @@ function Game() {
     /**
      * Unique ID for this player/client
      * Obtained from server
-     * @type {int}
+     * @type {number}
      */
     this.clientID = undefined;
 
@@ -46,7 +46,7 @@ function Game() {
 
     /**
      * ID of player who is on the turn
-     * @type {int}
+     * @type {number}
      */
     this.currentTurn = false;
 
@@ -59,7 +59,7 @@ function Game() {
 
 /**
  * Initialize variables that game would use later
- * @param {int} num: number of players
+ * @param {number} num: number of players
  */
 Game.prototype.initGame = function (num) {
     this.model.initCells();
@@ -80,7 +80,7 @@ Game.prototype.isMyTurn = function () {
 
 /**
  * Is the source this player?
- * @param {int} source
+ * @param {number} source
  * @return {boolean}
  */
 Game.prototype.isSource = function (source) {

@@ -51,7 +51,7 @@ Board.prototype.initCells = function () {
 
 /**
  * Add player to model
- * @param {int} id: id of player
+ * @param {number} id: id of player
  */
 Board.prototype.addPlayer = function (id) {
     if (id in this.players) {
@@ -73,7 +73,7 @@ Board.prototype.initPlayer = function (num) {
 
 /**
  * Return square by id
- * @param {int} id
+ * @param {number} id
  * @return {Property | Action}
  */
 Board.prototype.selectCell = function (id) {
@@ -82,7 +82,7 @@ Board.prototype.selectCell = function (id) {
 
 /**
  * Return player by id
- * @param {int} id
+ * @param {number} id
  * @returns {Player}
  */
 Board.prototype.selectPlayer = function (id) {
@@ -91,7 +91,7 @@ Board.prototype.selectPlayer = function (id) {
 
 /**
  * Return ID of square where the player lands
- * @param {int} id
+ * @param {number} id
  */
 Board.prototype.playerAtByID = function (id) {
     return this.players[id].position;
@@ -99,7 +99,7 @@ Board.prototype.playerAtByID = function (id) {
 
 /**
  * Move player given roll_result
- * @param {int} source
+ * @param {number} source
  * @param {[int, int]} result
  */
 Board.prototype.movePlayer = function (source, result) {
@@ -112,10 +112,10 @@ Board.prototype.movePlayer = function (source, result) {
 /**
  * Layer: Model
  * Property Class
- * @param {int} cell_id
- * @param {int} property_id
- * @param {int} estate,
- * @param {int} price
+ * @param {number} cell_id
+ * @param {number} property_id
+ * @param {number} estate,
+ * @param {number} price
  * @constructor
  */
 function Property(cell_id, property_id, estate, price) {
@@ -135,7 +135,7 @@ function Property(cell_id, property_id, estate, price) {
 }
 /**
  * Call back to on owner change event
- * @param {int} owner
+ * @param {number} owner
  */
 Property.onOwnerChange = function (id, owner) {
 };
@@ -153,8 +153,8 @@ Property.prototype.changeOwner = function (owner) {
 /**
  * Layer: Model
  * Action Class
- * @param {int} cell_id
- * @param {int} action_id
+ * @param {number} cell_id
+ * @param {number} action_id
  * @constructor
  */
 function Action(cell_id, action_id) {
@@ -168,7 +168,7 @@ function Action(cell_id, action_id) {
 /**
  * Player Class
  * Model, stores data only
- * @param {int} id: should always starts from 0, or error might occur
+ * @param {number} id: should always starts from 0, or error might occur
  * @constructor
  */
 function Player(id) {
@@ -204,7 +204,7 @@ Player.onGoPassed = function (id) {
 
 /**
  * Does this player has enough money to buy the given property ?
- * @param {int} propertyIndex: range from 0 - 39
+ * @param {number} propertyIndex: range from 0 - 39
  */
 Player.prototype.canBuyProperty = function (propertyIndex) {
     return (this.money >= game.model.selectCell(propertyIndex).price) &&
@@ -214,8 +214,8 @@ Player.prototype.canBuyProperty = function (propertyIndex) {
 /**
  * Modify this player's balance by given amount of money
  * Can be negative or positive value
- * @param {int} amount
- * @return {int} money left
+ * @param {number} amount
+ * @return {number} money left
  */
 Player.prototype.changeMoney = function (amount) {
     this.money += amount;
@@ -230,8 +230,8 @@ Player.prototype.changeMoney = function (amount) {
 
 /**
  * Set Money
- * @param {int} money
- * @return {int} money left
+ * @param {number} money
+ * @return {number} money left
  */
 Player.prototype.setMoney = function (money) {
     this.money = money;

@@ -5,7 +5,7 @@
 
 /**
  * Return jQuery object selected by given id
- * @param {int} id: No.0 to No.3
+ * @param {number} id: No.0 to No.3
  * @returns {*|jQuery|HTMLElement}
  */
 function selectCell(id) {
@@ -14,7 +14,7 @@ function selectCell(id) {
 
 /**
  * Return jQuery object selected by given id
- * @param {int} id
+ * @param {number} id
  * @returns {*|jQuery|HTMLElement}
  */
 function selectPlayer(id) {
@@ -58,7 +58,7 @@ function updateScroll() {
 /**
  * Log things to log-area in HTML
  * @param {string} obj
- * @param {int} source: Who generated this message ? If a message has a source field, pass it to this parameter
+ * @param {number} source: Who generated this message ? If a message has a source field, pass it to this parameter
  */
 function log(obj, source) {
     if (obj === null || obj === undefined || typeof obj !== "string") {
@@ -89,58 +89,33 @@ function log(obj, source) {
     updateScroll();
 }
 
+
+var BUTTONS_PROPERTY = {
+    build: "#p-c-build",
+    mortgage: "#p-c-mortgage",
+    sell: "#p-c-sell"
+};
+
 /**
- * Show details of a given cell to the detail-pane section in HTML
- * @param {int} id
+ * Show given property control button
+ * @param {[BUTTONS_PROPERTY]} buttons
  */
-function showCellDetail(id) {
-    ViewController.currentSelectedSquare = id;
-
-    var name = ViewController.tableName[id];
-    var cell = game.model.selectCell(id);
-
-    var notprop = ["5","12","15","25","28","35"];
-
-    if (cell.type === "property") {
-        $("#property").show();
-        $("#action").hide();
-        $("#property-controls").hide();
-
-        $("#property-banner").removeClass();
-        $("#property-banner").addClass("cell-" + id);
-
-        $("#property-id").text(cell.id);
-        $("#property-name").text(name);
-
-        if (cell.estate === -1) {
-            $("#property-estate").text(" --- ");
-        } else {
-            $("#property-estate").text("Estate: " + cell.estate);
+function showPropertyButtons(buttons) {
+    // Hide all buttons first
+    for (var key in BUTTONS_PROPERTY) {
+        if (BUTTONS_PROPERTY.hasOwnProperty(key)) {
+            $(BUTTONS_PROPERTY[key]).hide();
         }
+    }
 
-        $("#property-price").text("£" + cell.price);
+    if (buttons === null || buttons === undefined) {
+        return;
+    }
 
-        var owner = cell.owner;
-        if (owner === -1) {
-            $("#property-owner").text("ON SALE");
-        } else {
-            if (game.isSource(owner)) {
-                $("#property-owner").text("Owner: You");
-                $("#property-controls").show();
-            } else {
-                $("#property-owner").text("Owner: Player " + owner);
-                $("#property-controls").hide();
-            }
-        }
-    } else {
-        $("#action").show();
-        $("#property").hide();
-
-        $("#action-banner").removeClass();
-        $("#action-banner").addClass("cell-" + id);
-
-        $("#action-id").text(cell.id);
-        $("#action-description").text(name);
+    // Show given ones
+    var lop = 0;
+    for (; lop < buttons.length; lop++) {
+        $(buttons[lop]).show();
     }
 }
 
@@ -177,8 +152,8 @@ function showButtons(buttons) {
 
 /**
  * Randomly generate a int from range [0, max]
- * @param {int} max: Max number allowed to be generated
- * @returns {int} integer in range [0, max)
+ * @param {number} max: Max number allowed to be generated
+ * @returns {number} integer in range [0, max)
  */
 function ranRange(max) {
     return parseInt(Math.random() * max);
