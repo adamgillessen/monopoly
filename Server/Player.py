@@ -133,6 +133,17 @@ class Player:
         """
         return list(self._properties) + list(self._utils) + list(self._transports)
 
+    @property
+    def properties(self):
+        """
+        A set of properties which the player owns.
+        """
+        return self._properties
+
+    @properties.setter
+    def properties(self, new_val):
+        self._properties = new_val
+
 class PlayerLostError(Exception):
     """
     An exception class which will be raised if a player's money goes below 0

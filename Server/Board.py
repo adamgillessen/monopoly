@@ -378,7 +378,31 @@ class Board:
         """
         return player_id in self._is_in_game.keys() and self._is_in_game[player_id]
 
+    def build_house(player_id, property_id):
+        """
+        Builds a house on the property whose id is property_id, owned by player_id
 
+        :param player_id: the id of the player who owns the square
+        :param property_d: the id of the property which the house is being built on
+        """
+        player = self._players[player_id]
+        property_square = self.get_square(property_id)
+        if property_square.is_owned and property_square.owner == player_id:
+            # hinges on the fact the estate ids 0 and 7 only have two properties
+            # estate ids in between all have 3 properties in them
+            _, _, estate_id = Board._PROPERTY_POS_INFO[property_id]
+            estate_prop_count = 0
+            for owned_property in player.properties:
+                if owned_property.estate == estate_id:
+                    estate_prop_count += 1 
+
+            if (estate_id in (0, 7) and estate_prop_count == 2)\
+                or (estate_id in range(2, 7) and estate_prop_count == 3):
+                if property_square.num_houses < 5:
+                    property_square.num_houses += 1
+                    self.take_money(player_id, property_square.house_cost) 
+                    return 
+        raise BuildException
 
     def take_turn(self, player_id, dice1, dice2):
         """
@@ -573,6 +597,10 @@ class Board:
         new_roll = player.double_roll
         player.double_roll = False
         yield re_check_location, new_roll, "\n".join(self._human_string)
+
+class BuildException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 if __name__ == "__main__":

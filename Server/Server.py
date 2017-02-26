@@ -407,6 +407,20 @@ def recv_message(client, server, message):
         response_json_string = json.dumps(response_json)
         server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
+    elif json_string["type"] == "build_house":
+        player_id = json_string["source"]
+        property_id = json_string["property"]
+        try:
+            self._board.build_house(player_id, property_id)
+            response_json = {
+                "type" : "build_ack",
+                "property": json_string["property"]
+                "source": json_string["source"],
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+        except BuildException:
+            pass
 
 
 if __name__ == "__main__":

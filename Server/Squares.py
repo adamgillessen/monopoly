@@ -197,6 +197,7 @@ class PropertySquare(OwnableSquare):
         self._estate = estate
         self._square_type = Square.PROPERTY
         self._num_houses = 0
+        self._house_cost = base_rent
 
     def __str__(self):
         """
@@ -215,6 +216,14 @@ class PropertySquare(OwnableSquare):
     @property
     def base_rent(self):
         return self._base_rent
+
+    @property
+    def estate(self):
+        return self._estate
+
+    @property
+    def house_cost(self):
+        return self._house_cost
 
 class UtilitySquare(OwnableSquare):
     """
