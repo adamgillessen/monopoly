@@ -18,10 +18,13 @@ Resources - assorted development information
 ## Todos:  
 1. Update the games cross browser compatability. CSS currently renders different in several browsers. 
 1. Add graceful disconection of players to server.
-1. Add Jail functionality
 1. Add player loss stuff to client
 1. Add mortgaging property
 1. Add unit tests for house building to server
+1. Add Jail turn functionality to Client
+1. Add selling houses
+1. Define a "pay\_bail" json message which a clinet sends to the server to say that the user is paying their bail
+
 
 ## Presentation 1:
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
