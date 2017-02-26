@@ -99,6 +99,8 @@ function showCellDetail(id) {
     var name = ViewController.tableName[id];
     var cell = game.model.selectCell(id);
 
+    var notprop = ["5","12","15","25","28","35"];
+
     if (cell.type === "property") {
         $("#property").show();
         $("#action").hide();
