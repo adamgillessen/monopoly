@@ -404,6 +404,27 @@ class Board:
                     return 
         raise BuildException
 
+    def get_house_cost(self, property_id):
+        """
+        Returns the cost to build a new house for a property.
+
+        :param property_id: the id of the property which is being queried
+        :returns: the cost to build a house on that property
+        """
+        property_square = self.get_square(property_id)
+        return property_square.base_rent 
+
+    def get_current_rent(self, property_id):
+        """
+        Returns the current rent for landing on a property
+
+        :param property_id: the id of the property which is being queried
+        :returns: the current rent which a user will pay for landing on that swaure
+        """
+        property_square = self.get_square(property_id)
+        current_rent = property_square.base_rent * (2 ** property_square.num_houses)
+        return current_rent
+
     def take_turn(self, player_id, dice1, dice2):
         """
         Runs the specified player's turn based on their dice roll result.

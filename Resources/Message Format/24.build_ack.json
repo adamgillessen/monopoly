@@ -2,4 +2,5 @@
     "type":"build_ack",
     "property": 3, // the id of the property which the house has been built on
     "source": 1, // the player id of the player who built the house
+    "current_rent": 300, // the rent a player will now pay for landing on the square
 }
