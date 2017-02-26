@@ -264,6 +264,7 @@ def recv_message(client, server, message):
             dice1, dice2 = s.roll_dice()
         else:
             dice1, dice2 = 0, 0
+            s.new_roll = False
         response_json = {
             "type": "roll_result",
             "source": player_id,
@@ -388,7 +389,9 @@ def recv_message(client, server, message):
             
             if not re_check_location:
                 s.next_player()
-            s.new_roll = new_roll
+                s.new_roll = True 
+            else:
+                s.new_roll = new_roll
 
             new_current_player_id = s.current_player()
             response_json = {

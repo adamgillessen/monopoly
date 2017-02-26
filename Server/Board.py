@@ -234,7 +234,7 @@ class Board:
 
         :returns: a tuple of ints of length 2
         """
-        d1, d2 = (random.randint(1, 6) for _ in range(2))
+        d1, d2 = (random.choice(range(1, 7)) for _ in range(2))
         return d1, d2
 
     def move_player(self, player_id, new_pos):
