@@ -5,8 +5,8 @@
 
 /**
  * Used to update lobby display's info
- * @param {int} current
- * @param {int} expects
+ * @param {number} current
+ * @param {number} expects
  */
 function updatePlayerNum(current, expects) {
     if (current >= 2) {
