@@ -411,8 +411,6 @@ def recv_message(client, server, message):
         player_id = json_string["source"]
         property_id = json_string["property"]
         current_rent = self._board.get_current_rent(property_id)
-        what_happened = "Player {} built a house on property {}".format(
-            player_id, property_id)
         try:
             self._board.build_house(player_id, property_id)
             response_json = {
@@ -421,14 +419,6 @@ def recv_message(client, server, message):
                 "source": json_string["source"],
                 "current_rent": current_rent,
             }
-            response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-            response_json = {
-                "type": "textual_update",
-                "text": what_happened,
-            }
-
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
         except BuildException:
