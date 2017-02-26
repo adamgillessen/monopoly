@@ -10,5 +10,5 @@ body {
   background-attachment: fixed;
   background-size: cover;
   font-family: 'Roboto', sans-serif;
-  overflow: hidden;
+  overflow: scroll;
 }
