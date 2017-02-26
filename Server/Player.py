@@ -133,6 +133,19 @@ class Player:
         """
         return list(self._properties) + list(self._utils) + list(self._transports)
 
+
+    @property
+    def jail_turn_count(self):
+        """
+        The number of turns which a player has been in jail. 
+        """
+        return self._jail_turn_count 
+
+    @jail_turn_count.setter
+    def jail_turn_count(self, new_val):
+        self._jail_turn_count = new_val
+
+
     @property
     def properties(self):
         """

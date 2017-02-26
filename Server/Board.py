@@ -444,10 +444,19 @@ class Board:
 
         if dice1 == dice2:
             self._human_string.append("Player {} rolled a double.".format(player_id))
-            player.double_roll = True
-            re_check_location = True
+            if not player.jail:
+                player.double_roll = True
+                re_check_location = True
+            else:
+                player.jail = False
+                player.double_roll = False
+                re_check_location = False
+                self._human_string.append("Player {} left jail.".format(player_id))
         else:
             re_check_location = False
+            if player.jail:
+                print(">> Player didn't roll a double and is in jail")
+                dice1, dice2 = 0, 0
 
         new_pos = self.get_pos(player_id) + dice1 + dice2
         if new_pos > 39:
@@ -569,7 +578,13 @@ class Board:
                 if card.card_type == Card.MOVE:
                     new_pos = card.move_to_pos
                     self.move_player(player_id, new_pos)
-                    re_check_location = True
+                    if new_pos != Board._JAIL_POS:
+                        re_check_location = True
+                    else:
+                        player.double_roll = False
+                        re_check_location = False
+                        player.jail = True
+                        player.jail_turn_count = 0
                 elif card.card_type == Card.GAIN_MONEY:
                     amount = card.gain_amount
                     self.give_money(player_id, amount)
@@ -588,6 +603,10 @@ class Board:
 
             elif square.action == ActionSquare.JAIL:
                 #print(">>Sqaure is Go to Jail square")
+                player.double_roll = False
+                re_check_location = False
+                player.jail = True
+                player.jail_turn_count = 0
                 self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
@@ -596,10 +615,16 @@ class Board:
                         player_id))
             elif square.action == ActionSquare.STAY:
                 #print(">>Sqaure is free parking")
-                self._human_string.append("Player {} got free parking".format(
-                        player_id))
-                what_happened.append("Player {} got free parking".format(
-                        player_id))
+                if player.jail:
+                    self._human_string.append("Player {} is still in jail".format(
+                            player_id))
+                    what_happened.append("Player {} is still in jail".format(
+                            player_id))
+                else:
+                    self._human_string.append("Player {} got free parking".format(
+                            player_id))
+                    what_happened.append("Player {} got free parking".format(
+                            player_id))
             elif square.action == ActionSquare.TAX:
                 #print(">>Sqaure is get taxed square")
                 tax = 100 * (2**Board._TAX_POS.index(new_pos))
