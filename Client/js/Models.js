@@ -11,16 +11,28 @@
  */
 function Board() {
     /**
-     * A dict holds all cells info
+     * A dict holds all squares info
      * @type {{int:Property|Action}}
      */
-    this.cells = {};
+    this.squares = {};
+
+    /**
+     * Contains properties in each estate
+     * @type {{number:[number]}}
+     */
+    this.propertyEstate = {};
 
     /**
      * A dict holds all players info
      * @type {{0: Player, 1: Player, 2: Player, 3: Player}}
      */
     this.players = {};
+
+    /**
+     * Array of properties owned by this player
+     * @type {Array}
+     */
+    this.propertiesOwnedByThisPlayer = [];
 }
 
 
@@ -30,23 +42,31 @@ function Board() {
 Board.prototype.initCells = function () {
     // I had no choice but to put this long text here...
     // Source: "Client/data/model.json"
-    var cellsData = '{"0":{"action_id":0,"id":0,"type":"action"},"1":{"estate":0,"id":1,"price":60,"property_id":0,"type":"property"},"10":{"action_id":4,"id":10,"type":"action"},"11":{"estate":2,"id":11,"price":140,"property_id":5,"type":"property"},"12":{"estate":-1,"id":12,"price":200,"property_id":22,"type":"property"},"13":{"estate":2,"id":13,"price":140,"property_id":6,"type":"property"},"14":{"estate":2,"id":14,"price":160,"property_id":7,"type":"property"},"15":{"estate":-1,"id":15,"price":150,"property_id":25,"type":"property"},"16":{"estate":3,"id":16,"price":180,"property_id":8,"type":"property"},"17":{"action_id":5,"id":17,"type":"action"},"18":{"estate":3,"id":18,"price":180,"property_id":9,"type":"property"},"19":{"estate":3,"id":19,"price":200,"property_id":10,"type":"property"},"2":{"action_id":1,"id":2,"type":"action"},"20":{"action_id":6,"id":20,"type":"action"},"21":{"estate":4,"id":21,"price":220,"property_id":11,"type":"property"},"22":{"action_id":7,"id":22,"type":"action"},"23":{"estate":4,"id":23,"price":220,"property_id":12,"type":"property"},"24":{"estate":4,"id":24,"price":240,"property_id":13,"type":"property"},"25":{"estate":-1,"id":25,"price":150,"property_id":26,"type":"property"},"26":{"estate":5,"id":26,"price":260,"property_id":14,"type":"property"},"27":{"estate":5,"id":27,"price":260,"property_id":15,"type":"property"},"28":{"estate":-1,"id":28,"price":200,"property_id":23,"type":"property"},"29":{"estate":5,"id":29,"price":280,"property_id":16,"type":"property"},"3":{"estate":0,"id":3,"price":60,"property_id":1,"type":"property"},"30":{"action_id":8,"id":30,"type":"action"},"31":{"estate":6,"id":31,"price":300,"property_id":17,"type":"property"},"32":{"estate":6,"id":32,"price":300,"property_id":18,"type":"property"},"33":{"action_id":9,"id":33,"type":"action"},"34":{"estate":6,"id":34,"price":320,"property_id":19,"type":"property"},"35":{"estate":-1,"id":35,"price":150,"property_id":27,"type":"property"},"36":{"action_id":10,"id":36,"type":"action"},"37":{"estate":7,"id":37,"price":350,"property_id":20,"type":"property"},"38":{"action_id":11,"id":38,"type":"action"},"39":{"estate":7,"id":39,"price":400,"property_id":21,"type":"property"},"4":{"action_id":2,"id":4,"type":"action"},"40":{"action_id":12,"id":40,"type":"action"},"5":{"estate":-1,"id":5,"price":150,"property_id":24,"type":"property"},"6":{"estate":1,"id":6,"price":100,"property_id":2,"type":"property"},"7":{"action_id":3,"id":7,"type":"action"},"8":{"estate":1,"id":8,"price":100,"property_id":3,"type":"property"},"9":{"estate":1,"id":9,"price":120,"property_id":4,"type":"property"}}';
-
+    var cellsData = '{"0":{"id":0,"type":"action"},"1":{"id":1,"type":"property","price":60,"rent":10,"estate":0},"2":{"id":2,"type":"action"},"3":{"id":3,"type":"property","price":60,"rent":20,"estate":0},"4":{"id":4,"type":"action"},"5":{"id":5,"type":"property","price":150,"rent":-1,"estate":-1},"6":{"id":6,"type":"property","price":100,"rent":30,"estate":1},"7":{"id":7,"type":"action"},"8":{"id":8,"type":"property","price":100,"rent":30,"estate":1},"9":{"id":9,"type":"property","price":120,"rent":40,"estate":1},"10":{"id":10,"type":"action"},"11":{"id":11,"type":"property","price":140,"rent":50,"estate":2},"12":{"id":12,"type":"property","price":200,"rent":-1,"estate":-1},"13":{"id":13,"type":"property","price":140,"rent":50,"estate":2},"14":{"id":14,"type":"property","price":160,"rent":60,"estate":2},"15":{"id":15,"type":"property","price":150,"rent":-1,"estate":-1},"16":{"id":16,"type":"property","price":180,"rent":70,"estate":3},"17":{"id":17,"type":"action"},"18":{"id":18,"type":"property","price":180,"rent":70,"estate":3},"19":{"id":19,"type":"property","price":200,"rent":80,"estate":3},"20":{"id":20,"type":"action"},"21":{"id":21,"type":"property","price":220,"rent":90,"estate":4},"22":{"id":22,"type":"action"},"23":{"id":23,"type":"property","price":220,"rent":90,"estate":4},"24":{"id":24,"type":"property","price":240,"rent":100,"estate":4},"25":{"id":25,"type":"property","price":150,"rent":-1,"estate":-1},"26":{"id":26,"type":"property","price":260,"rent":110,"estate":5},"27":{"id":27,"type":"property","price":260,"rent":110,"estate":5},"28":{"id":28,"type":"property","price":200,"rent":-1,"estate":-1},"29":{"id":29,"type":"property","price":280,"rent":120,"estate":5},"30":{"id":30,"type":"action"},"31":{"id":31,"type":"property","price":300,"rent":130,"estate":6},"32":{"id":32,"type":"property","price":300,"rent":130,"estate":6},"33":{"id":33,"type":"action"},"34":{"id":34,"type":"property","price":320,"rent":150,"estate":6},"35":{"id":35,"type":"property","price":150,"rent":-1,"estate":-1},"36":{"id":36,"type":"action"},"37":{"id":37,"type":"property","price":350,"rent":175,"estate":7},"38":{"id":38,"type":"action"},"39":{"id":39,"type":"property","price":400,"rent":200,"estate":7}}';
     cellsData = JSON.parse(cellsData);
 
     for (var lop = 0; lop < 40; lop++) {
         if (cellsData[lop].type === "property") {
             // is a property
-            this.cells[lop] = new Property(lop, cellsData[lop].property_id, cellsData[lop].estate, cellsData[lop].price);
+            this.squares[lop] = new Property(lop, cellsData[lop].estate, cellsData[lop].price, cellsData[lop].rent);
+
+            var estate = cellsData[lop].estate;
+            if (cellsData[lop].estate !== -1) {
+                if (this.propertyEstate[estate] === undefined) {
+                    this.propertyEstate[estate] = [];
+                }
+                this.propertyEstate[estate].push(lop);
+            }
+
         } else {
-            this.cells[lop] = new Action(lop, cellsData[lop].action_id);
+            this.squares[lop] = new Action(lop);
         }
     }
 };
 
 /**
  * Add player to model
- * @param {int} id: id of player
+ * @param {number} id: id of player
  */
 Board.prototype.addPlayer = function (id) {
     if (id in this.players) {
@@ -68,16 +88,16 @@ Board.prototype.initPlayer = function (num) {
 
 /**
  * Return square by id
- * @param {int} id
+ * @param {number} id
  * @return {Property | Action}
  */
 Board.prototype.selectCell = function (id) {
-    return this.cells[id];
+    return this.squares[id];
 };
 
 /**
  * Return player by id
- * @param {int} id
+ * @param {number} id
  * @returns {Player}
  */
 Board.prototype.selectPlayer = function (id) {
@@ -86,15 +106,38 @@ Board.prototype.selectPlayer = function (id) {
 
 /**
  * Return ID of square where the player lands
- * @param {int} id
+ * @param {number} id
  */
 Board.prototype.playerAtByID = function (id) {
     return this.players[id].position;
 };
 
 /**
+ * Check if this client can build a house on given property
+ * Return true if all properties in the same estate is owned by this player
+ * @param {number} propertyID
+ * @return {Boolean}
+ */
+Board.prototype.canBuildHouse = function (propertyID) {
+    var estate = this.squares[propertyID].estate;
+
+    var lop = 0;
+    for (; lop < game.model.propertyEstate[estate].length; lop++) {
+        // If not all owned by this player
+        // Return false
+        if (!game.isSource(this.squares[game.model.propertyEstate[estate][lop]].owner)) {
+            return false;
+        }
+
+        // todo:Check if is evenly built
+    }
+
+    return true;
+};
+
+/**
  * Move player given roll_result
- * @param {int} source
+ * @param {number} source
  * @param {[int, int]} result
  */
 Board.prototype.movePlayer = function (source, result) {
@@ -107,13 +150,13 @@ Board.prototype.movePlayer = function (source, result) {
 /**
  * Layer: Model
  * Property Class
- * @param {int} cell_id
- * @param {int} property_id
- * @param {int} estate,
- * @param {int} price
+ * @param {number} cell_id
+ * @param {number} estate
+ * @param {number} price
+ * @param {number} rent
  * @constructor
  */
-function Property(cell_id, property_id, estate, price) {
+function Property(cell_id, estate, price, rent) {
     // An unique ID for every cell
     // Also represents the position on board
     this.id = cell_id;
@@ -122,19 +165,54 @@ function Property(cell_id, property_id, estate, price) {
     // Property specific fields
     this.estate = estate;
     this.price = price;
-    /*
-     -1: Nobody
-     [0, N]: Player ID
+
+    /**
+     * Progress of build
+     * @type {number}
+     */
+    this.buildProgress = 0;
+
+    /**
+     * Base rent
+     * @type {number}
+     */
+    this.rent = rent;
+
+    /**
+     * Rent info that actually being displayed to players
+     * Because rent could change if you build house on a property
+     * @type {number}
+     */
+    this.displayRent = this.rent;
+
+    /**
+     * Who owns this property
+     * -1: Nobody
+     * 1 -> 4: Player 1 to 4
+     * @type {number}
      */
     this.owner = -1;
 }
 /**
  * Call back to on owner change event
- * @param {int} owner
+ * @param {number} id
+ * @param {number} owner
  */
 Property.onOwnerChange = function (id, owner) {
 };
 
+/**
+ * Callback on build progress change
+ * @param {number} id
+ * @param {number} newProgress
+ */
+Property.onBuildProgressChange = function (id, newProgress) {
+};
+
+/**
+ * Change
+ * @param owner
+ */
 Property.prototype.changeOwner = function (owner) {
     this.owner = owner;
 
@@ -144,11 +222,10 @@ Property.prototype.changeOwner = function (owner) {
 /**
  * Layer: Model
  * Action Class
- * @param {int} cell_id
- * @param {int} action_id
+ * @param {number} cell_id
  * @constructor
  */
-function Action(cell_id, action_id) {
+function Action(cell_id) {
     // An unique ID for every cell
     // Also represents the position on board
     this.id = cell_id;
@@ -159,7 +236,7 @@ function Action(cell_id, action_id) {
 /**
  * Player Class
  * Model, stores data only
- * @param {int} id: should always starts from 0, or error might occur
+ * @param {number} id: should always starts from 0, or error might occur
  * @constructor
  */
 function Player(id) {
@@ -170,34 +247,51 @@ function Player(id) {
 }
 
 /**
- * Call backs
- * @param {int} money
+ * Callback on money change
+ * @param id
+ * @param money
  */
 Player.onMoneyChange = function (id, money) {
 };
 
 /**
- * Call backs
- * @param {int} from
- * @param {int} to
+ * Callback on position change
+ * @param id
+ * @param from
+ * @param to
  */
 Player.onPositionChange = function (id, from, to) {
 };
 
 /**
+ * Callback on pass GO
+ * @param id
+ */
+Player.onGoPassed = function (id) {
+};
+
+/**
  * Does this player has enough money to buy the given property ?
- * @param {int} propertyIndex: range from 0 - 39
+ * @param {number} propertyIndex: range from 0 - 39
  */
 Player.prototype.canBuyProperty = function (propertyIndex) {
-    return (this.money >= game.model.selectCell(propertyIndex).price) &&
-        (game.model.selectCell(propertyIndex).owner === -1);
+    return (this.hasEnoughMoneyThan(selectCellModel(propertyIndex).price)) && (selectCellModel(propertyIndex).owner === -1);
+};
+
+/**
+ * Return true if this player has more money than given parameter
+ * @param {number} money
+ * @return {boolean}
+ */
+Player.prototype.hasEnoughMoneyThan = function (money) {
+    return this.money >= money;
 };
 
 /**
  * Modify this player's balance by given amount of money
  * Can be negative or positive value
- * @param {int} amount
- * @return {int} money left
+ * @param {number} amount
+ * @return {number} money left
  */
 Player.prototype.changeMoney = function (amount) {
     this.money += amount;
@@ -212,8 +306,8 @@ Player.prototype.changeMoney = function (amount) {
 
 /**
  * Set Money
- * @param {int} money
- * @return {int} money left
+ * @param {number} money
+ * @return {number} money left
  */
 Player.prototype.setMoney = function (money) {
     this.money = money;
@@ -240,9 +334,10 @@ Player.prototype.moveByStep = function (step) {
     this.position = this.position + step;
     if (this.position >= 40) {
         this.position -= 40;
+
+        Player.onGoPassed(this.id);
     }
 
     Player.onPositionChange(this.id, from, this.position);
     return this.position;
 };
-

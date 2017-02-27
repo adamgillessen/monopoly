@@ -8,7 +8,7 @@ function Connector() {
     this.webSocket = undefined;
     /**
      * Identify this client during player_join phase
-     * @type {int}
+     * @type {number}
      */
     this.key = undefined;
 }
@@ -65,122 +65,260 @@ Connector.prototype.sendMessage = function (msg) {
  * @param {Object|string} data: could be JSON object or JSON string
  */
 function parseMessage(data) {
-    parseMessage._parseTree = {
-        "player_join_ack": function (data) {
-            if (data["key"] === game.connector.key) {
-                game.clientID = data['your_id'];
-            }
+    if (parseMessage._parseTree === undefined) {
+        parseMessage._parseTree = {
+            "player_join_ack": function (data) {
+                var key = data["key"];
+                var yourID = data['your_id'];
+                var currentPlayer = data["current_player"];
+                var expects = data["expects"];
+                var hasGameStarted = data["game_start"];
 
-            updatePlayerNum(data["current_player"], data["expects"]);
-            if (data["game_start"]) {
-                // Init first !
-                game.initGame(parseInt(data["current_player"]));
-                // Then change View
-                // Because we are using data from game.model
-                hideLobbyShowBoard();
-            }
-        },
-        "board_sync": function (data) {
-            // todo: show board sync text
-            log(data["text"]);
-
-            var listProperties = data["cells"];
-            var lop = 0;
-            var current = undefined;
-            // Update property's owner
-            for (lop in listProperties) {
-                // Skip un-necessary property of object
-                if (!listProperties.hasOwnProperty(lop)) {
-                    continue;
+                if (key === game.connector.key) {
+                    game.clientID = yourID;
                 }
 
-                current = listProperties[lop];
+                updatePlayerNum(currentPlayer, expects);
+                if (hasGameStarted) {
+                    // Init model first !
+                    game.initGame(currentPlayer);
 
-                // This is not a property
-                if (game.model.selectCell(current["id"]).type !== "property") {
-                    continue;
+                    // Then change View
+                    // Because we are using data from game.model
+                    hideLobbyShowBoard();
+                }
+            },
+            "board_sync": function (data) {
+                var listProperties = data["cells"];
+                var listPlayers = data["players"];
+                var lop;
+                var current;
+
+                // Clear property list
+                game.model.propertiesOwnedByThisPlayer = [];
+
+                // Update property's owner
+                for (lop in listProperties) {
+                    // Skip un-necessary property of object
+                    if (!listProperties.hasOwnProperty(lop)) {
+                        continue;
+                    }
+
+                    current = listProperties[lop];
+
+                    // This is not a property
+                    if (selectCellModel(current["id"]).type !== "property") {
+                        continue;
+                    }
+
+                    // Update owner
+                    selectCellModel(current["id"]).owner = current.owner;
+
+
+                    if (game.isSource(current.owner)) {
+                        game.model.propertiesOwnedByThisPlayer.push(current["id"]);
+                    }
                 }
 
-                // Update owner
-                game.model.selectCell(current["id"]).owner = current.owner;
-            }
+                // Update player's money and position
+                for (lop in listPlayers) {
+                    if (!listPlayers.hasOwnProperty(lop)) {
+                        continue;
+                    }
 
-            var listPlayers = data["players"];
+                    current = listPlayers[lop];
+                    // Update money
+                    selectPlayerModel(current["id"]).setMoney(current["money"]);
 
-            // Update player's money and position
-            for (lop in listPlayers) {
-                if (!listPlayers.hasOwnProperty(lop)) {
-                    continue;
+                    // Update position
+                    selectPlayerModel(current["id"]).moveTo(current["position"]);
+                }
+            },
+            "your_turn": function (data) {
+                var turnOfID = data["source"];
+                game.currentTurn = turnOfID;
+
+                if (game.isMyTurn()) {
+                    if (game.doubleRoll) {
+                        game.doubleRoll = false;
+                        log("You rolled double\nKeep rolling!", turnOfID);
+                    } else {
+                        log("Your turn!", turnOfID);
+                    }
+                    ViewController.yourTurn();
+                } else {
+                    log(sprintf("Player %d's turn!", turnOfID), turnOfID);
+                }
+            },
+            "roll_result": function (data) {
+                var source = data["source"];
+                var result = data["result"];
+
+                // Update model
+                var landedOn = game.model.movePlayer(source, result);
+
+                // Log result to chat window
+                if (game.isMyTurn()) {
+                    log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
+                } else {
+                    log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
                 }
 
-                current = listPlayers[lop];
-                // Update money
-                game.model.selectPlayer(current["id"]).setMoney(current["money"]);
-
-                // Update position
-                game.model.selectPlayer(current["id"]).moveTo(current["position"]);
-            }
-        },
-        "your_turn": function (data) {
-            if (game.isMyTurn(data["source"])) {
-                ViewController.yourTurn();
-            }
-        },
-        "roll_result": function (data) {
-            var source = data["source"];
-
-            // Log to log-area
-            if (game.isMyTurn(source)) {
-                log("You just rolled " + data["result"]);
-            } else {
-                log(sprintf("Player %d rolled ", source) + data["result"]);
-            }
-
-            // Update model
-            var landedOn = game.model.movePlayer(source, data["result"]);
-
-            if (!game.isMyTurn(source)) {
-                return;
-            }
-
-            // What type of square player lands on?
-            if (game.model.selectCell(landedOn).type === "action") {
-                // Lands on Action square
-                // todo: lands on Action square
-
-                ViewController.preEndTurn();
-            } else {
-                // Lands on Property square
-
-                // Who owns this property?
-                switch (game.model.selectCell(landedOn).owner) {
-                    case -1:
-                        // Nobody
-                        // Prompt buy options
-                        ViewController.promptBuyWindow(landedOn);
-                        break;
-                    case game.clientID:
-                        // Me
-                        // Do nothing, Proceed to EOT
-                        ViewController.preEndTurn();
-                        break;
-                    default:
-                        // Others
-                        // Do nothing, Proceed to EOT
-                        ViewController.preEndTurn();
-                        break;
+                // Do nothing if its not your turn
+                if (!game.isMyTurn()) {
+                    return;
                 }
+
+                // Rolled double?
+                if (result[0] === result[1]) {
+                    game.doubleRoll = true;
+                }
+
+                // What type of square player lands on?
+                if (selectCellModel(landedOn).type === "action") {
+                    // Lands on Action square
+                    ViewController.preEndTurn();
+                } else {
+                    // Lands on Property square
+
+                    // Who owns this property?
+                    switch (selectCellModel(landedOn).owner) {
+                        case -1:
+                            // Nobody
+                            // Prompt buy options
+                            ViewController.promptBuyWindow(landedOn);
+                            break;
+                        case game.clientID:
+                            // Me
+                            // Do nothing, Proceed to EOT
+                            ViewController.preEndTurn();
+                            break;
+                        default:
+                            // Others
+                            // Do nothing, Proceed to EOT
+                            ViewController.preEndTurn();
+                            break;
+                    }
+                }
+            },
+            "buy_ack": function (data) {
+                var source = data["source"];
+                var property = data["property"];
+
+                var price = selectCellModel(property).price;
+
+                // Change money value first
+                selectPlayerModel(source).changeMoney(-selectCellModel(property).price);
+                // Change property owner, too
+                selectCellModel(property).changeOwner(source);
+
+
+                if (game.isSource(source)) {
+                    log(sprintf("You have bought Property %d for £%d", property, price), 5);
+                } else {
+                    log(sprintf("Player %d has bought Property %d for £%d", source, property, price), 5);
+                }
+            },
+            "auction_start": function (data) {
+                var source = data["source"];
+                var property = data["property"];
+                var list = data["competitor"];
+                var basePrice = data["base_price"];
+
+                if (source === -1) {
+                    log("Two or more players have placed the same bid, Auction starts over again", 5);
+                } else if (game.isSource(source)) {
+                    log(sprintf("You have started an Auction on Property %d!", property), source);
+                } else {
+                    log(sprintf("Player %d has started an Auction on Property %d!", source, property), source);
+                }
+
+                log("Base price is " + basePrice, 5);
+
+                if (list.indexOf(game.clientID) >= 0) {
+                    // You should bid
+                    log("Place your bid!", 5);
+                } else {
+                    // Just watch
+                    log("Please wait while others placing bids", 5);
+                }
+
+                // Change button
+                ViewController.promptAuctionWindow(data);
+            },
+            "auction_bid_ack": function (data) {
+                var source = data["source"];
+
+                if (!game.isSource(source)) {
+                    log("Player " + source + " has placed his bid", 5);
+                }
+            },
+            "auction_finished": function (data) {
+                var winner = data["winner"];
+                var property = data["property"];
+                var price = data["price"];
+
+                if (game.isSource(winner)) {
+                    log(sprintf("You have bought Property %d for £%d", property, price), 5);
+                } else {
+                    log(sprintf("Player %s has bought Property %d for £%d", winner, property, price), 5);
+                }
+
+                // Change price and property's owner
+                selectPlayerModel(winner).changeMoney(-price);
+                selectCellModel(property).changeOwner(winner);
+
+                game.endAuction(data);
+            },
+            "chat_sync": function (data) {
+                var source = data.source;
+                var text = data.text;
+
+                if (game.isSource(source)) {
+                    log("You:\n" + text, source);
+                } else {
+                    var template = "Player %d:\n%s";
+                    log(sprintf(template, source, text), source);
+                }
+            },
+            "player_lose": function (data) {
+                var player = data["player"];
+
+                // todo: player lose
+                alert("GAME OVER!\nYou lose!");
+            },
+            "textual_update": function (data) {
+                log(data["text"], 5);
+            },
+            "build_ack": function (data) {
+                var source = data["source"];
+                var property = data["property"];
+                var currentRent = data["current_rent"];
+
+                if (game.isSource(source)) {
+                    log("You have built a house on Property " + property, 5);
+                } else {
+                    log(sprintf("Player %d has built a house on Property %d", source, property), 5);
+                }
+
+                // todo: update model
+                selectCellModel(property).displayRent = currentRent;
+                selectCellModel(property).buildProgress += 1;
             }
-        },
-        "buy_ack": function (data) {
-            // todo: show buy ack
-        }
-    };
+        };
+    }
+
 
     if (typeof data === "string") {
         data = JSON.parse(data);
     }
-    (parseMessage._parseTree[data["type"]])(data);
+
+    try {
+        (parseMessage._parseTree[data["type"]])(data);
+    } catch (e) {
+        console.log(e);
+        console.log(data);
+    }
 }
 
 /**
@@ -200,6 +338,10 @@ function _generateHeader(type, include) {
     }
 
     for (var each in include) {
+        if (!include.hasOwnProperty(each)) {
+            continue;
+        }
+
         switch (include[each]) {
             case "source":
                 obj.source = game.clientID;
@@ -246,6 +388,32 @@ function generateMessage(type, parameter) {
             ret.property = parameter.property;
 
             return ret;
+        },
+        "auction": function (parameter) {
+            var ret = _generateHeader("auction", ["source"]);
+            ret.property = parameter.property;
+
+            return ret;
+        },
+        "auction_bid": function (parameter) {
+            var ret = _generateHeader("auction_bid", ["source"]);
+            ret.price = parameter.price;
+
+            return ret;
+        },
+        "chat": function (parameter) {
+            var ret = _generateHeader("chat", ["source"]);
+            ret.text = parameter.text;
+
+            return ret;
+        },
+        /**
+         * Build house message
+         * @param {object} parameter
+         */
+        "build_house": function (parameter) {
+            var ret = _generateHeader("build_house", ["source"]);
+            ret.property = parameter.property
         }
     };
 

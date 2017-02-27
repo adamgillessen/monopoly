@@ -11,6 +11,12 @@
   color: #ffffff;
 }
 
+.log {
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
 #textfield {
   position: fixed;
   bottom: 0em;
@@ -37,7 +43,7 @@
   box-shadow: 0 3px 0 0 #bd4846;
   text-shadow: 0 1px 1px #000000;
   color: #ffffff;
-  width: 4.82em;
+  width: 4.87em;
   font-size: 1.1em;
   height: 4.1em;
   float: right;
@@ -59,4 +65,27 @@
 
 .player4 {
   color: #FF3C7C;
+}
+
+.server {
+  color: #ffffff;
+}
+
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #log-area::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #log-area::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #log-area::-webkit-scrollbar {-chrome-:only(;
+    display: none;
+  );}
 }

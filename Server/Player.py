@@ -9,7 +9,7 @@ class Player:
         id - player id
         money - the amount of money the player currently has
         properties - the properties which the player owns
-        postion - the postion on the board of the current player
+        position - the position on the board of the current player
         utils - the utils which the player currently owns
         transports - the transports which the player currently owns 
         free - True if the player has a get out if jail free card, else False
@@ -124,6 +124,38 @@ class Player:
         :returns: the number of utilities the player owns
         """
         return len(self._utils)
+
+    def get_assets(self):
+        """
+        Gets all the assets this player owns.
+
+        :returns: a list of assets this player owns
+        """
+        return list(self._properties) + list(self._utils) + list(self._transports)
+
+
+    @property
+    def jail_turn_count(self):
+        """
+        The number of turns which a player has been in jail. 
+        """
+        return self._jail_turn_count 
+
+    @jail_turn_count.setter
+    def jail_turn_count(self, new_val):
+        self._jail_turn_count = new_val
+
+
+    @property
+    def properties(self):
+        """
+        A set of properties which the player owns.
+        """
+        return self._properties
+
+    @properties.setter
+    def properties(self, new_val):
+        self._properties = new_val
 
 class PlayerLostError(Exception):
     """

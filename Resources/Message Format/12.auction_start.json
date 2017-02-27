@@ -1,0 +1,12 @@
+{
+    "base_price": 10,
+    "competitor": [
+        1,
+        2,
+        3,
+        4
+    ],
+    "property": 9,
+    "source": -1,
+    "type": "auction_start"
+}

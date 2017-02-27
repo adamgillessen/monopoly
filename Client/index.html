@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--Meta Tags-->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monopoly</title>
 
     <!--Libraries-->
@@ -11,14 +13,14 @@
     <!--Codes-->
     <script src="js/Helpers.js"></script>
     <script src="js/Models.js"></script>
+    <script src="js/Auction.js"></script>
     <script src="js/ViewController.js"></script>
     <script src="js/Communication.js"></script>
     <script src="js/LobbyController.js"></script>
     <script src="js/Game.js"></script>
-    <!--remove this later!-->
-    <script src="js/dev-remove-later.js"></script>
 
-
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="scss/normalize.css">
     <link rel="stylesheet" type="text/css" href="scss/main.css">
     <link rel="stylesheet" type="text/css" href="scss/board-layout.css">
     <link rel="stylesheet" type="text/css" href="scss/lobby.css">
@@ -35,6 +37,7 @@
     <div id="context-buy"></div>
 </div>
 
+<!--Game Lobby - Displayed upon site load-->
 <div id="lobby">
     <div id="main">
         <img src="images/logo.png">
@@ -50,6 +53,7 @@
     </div>
 </div>
 
+<!--Main Game Area-->
 <div id="game-area">
     <div id="main-board">
         <div id="top" class="float">
@@ -57,15 +61,15 @@
                 <span>Jail</span>
             </div>
             <div id="top_middle_container" class="h_container float">
-                <div id="cell-11" class="cell"><span>The Spire</span></div>
-                <div id="cell-12" class="cell"><span>Telecom</span></div>
-                <div id="cell-13" class="cell"><span>Phoenix Park</span></div>
-                <div id="cell-14" class="cell"><span>IFSC</span></div>
-                <div id="cell-15" class="cell"><span>Dublin Airport</span></div>
-                <div id="cell-16" class="cell"><span>The Gaiety Theatre</span></div>
+                <div id="cell-11" class="cell"><span>Pall Mall</span></div>
+                <div id="cell-12" class="cell"><span>Electric Company</span></div>
+                <div id="cell-13" class="cell"><span>Whitehall</span></div>
+                <div id="cell-14" class="cell"><span>Northumberland Avenue</span></div>
+                <div id="cell-15" class="cell"><span>Marylebone Station</span></div>
+                <div id="cell-16" class="cell"><span>Bow Street</span></div>
                 <div id="cell-17" class="cell"><span>Community Chest</span></div>
-                <div id="cell-18" class="cell"><span>The Olympia Theatre</span></div>
-                <div id="cell-19" class="cell"><span>The Abbey Theatre</span></div>
+                <div id="cell-18" class="cell"><span>Marlborough Street</span></div>
+                <div id="cell-19" class="cell"><span>Vine Street</span></div>
             </div>
             <div id="cell-20" class="corner cell top_right_corner">
                 <span>Free Parking</span>
@@ -73,26 +77,26 @@
         </div>
         <div id="middle" class="float">
             <div id="middle_left_container" class="v_container">
-                <div id="cell-9" class="cell"><span>Rathgar Road</span></div>
-                <div id="cell-8" class="cell"><span>Clontarf Road</span></div>
+                <div id="cell-9" class="cell"><span>Pentonville Road</span></div>
+                <div id="cell-8" class="cell"><span>Euston Road</span></div>
                 <div id="cell-7" class="cell"><span>Chance</span></div>
-                <div id="cell-6" class="cell"><span>Rathmines Road</span></div>
-                <div id="cell-5" class="cell"><span>The Luas</span></div>
+                <div id="cell-6" class="cell"><span>The Angel, Islington</span></div>
+                <div id="cell-5" class="cell"><span>Kings Cross Station</span></div>
                 <div id="cell-4" class="cell"><span>Income Tax</span></div>
-                <div id="cell-3" class="cell"><span>Raheny</span></div>
+                <div id="cell-3" class="cell"><span>Whitechapel Road</span></div>
                 <div id="cell-2" class="cell"><span>Community Chest</span></div>
-                <div id="cell-1" class="cell"><span>Rathfarnam</span></div>
+                <div id="cell-1" class="cell"><span>Old Kent Road</span></div>
             </div>
             <div id="middle_middle" class="middle">
             </div>
             <div id="middle_right_container" class="v_container ">
-                <div id="cell-21" class="cell"><span>Croke Park</span></div>
+                <div id="cell-21" class="cell"><span>Strand</span></div>
                 <div id="cell-22" class="cell"><span>Chance</span></div>
-                <div id="cell-23" class="cell"><span>The Point Depot</span></div>
-                <div id="cell-24" class="cell"><span>St. Stephen's Green</span></div>
-                <div id="cell-25" class="cell"><span>Dublin Bus</span></div>
-                <div id="cell-26" class="cell"><span>Jervis Street S.C</span></div>
-                <div id="cell-27" class="cell"><span>Liffey Valley S.C</span></div>
+                <div id="cell-23" class="cell"><span>Fleet Street</span></div>
+                <div id="cell-24" class="cell"><span>Trafalger Square</span></div>
+                <div id="cell-25" class="cell"><span>Fenchurch St. Station</span></div>
+                <div id="cell-26" class="cell"><span>Leicester Square</span></div>
+                <div id="cell-27" class="cell"><span>Coventry Street</span></div>
                 <div id="cell-28" class="cell"><span>Internet</span></div>
                 <div id="cell-29" class="cell"><span>Dundrum S.C</span></div>
             </div>
@@ -102,15 +106,15 @@
                 <span>GO</span>
             </div>
             <div id="bottom_middle_container" class="h_container float">
-                <div id="cell-39" class="cell"><span>Shrewsbury Road</span></div>
-                <div id="cell-38" class="cell"><span>Stamp Duty</span></div>
-                <div id="cell-37" class="cell"><span>Ailesbury Road</span></div>
+                <div id="cell-39" class="cell"><span>Mayfair</span></div>
+                <div id="cell-38" class="cell"><span>Super Tax</span></div>
+                <div id="cell-37" class="cell"><span>Park Lane</span></div>
                 <div id="cell-36" class="cell"><span>Chance</span></div>
-                <div id="cell-35" class="cell"><span>The Dart</span></div>
-                <div id="cell-34" class="cell"><span>Grafton Street</span></div>
+                <div id="cell-35" class="cell"><span>Liverpool St. Station</span></div>
+                <div id="cell-34" class="cell"><span>Bond Street</span></div>
                 <div id="cell-33" class="cell"><span>Community Chest</span></div>
-                <div id="cell-32" class="cell"><span>O'Connell Street</span></div>
-                <div id="cell-31" class="cell"><span>Henry Street</span></div>
+                <div id="cell-32" class="cell"><span>Oxford Street</span></div>
+                <div id="cell-31" class="cell"><span>Regent Street</span></div>
             </div>
             <div id="cell-30" class="corner cell bottom_right_corner">
                 <span>Go to Jail</span>
@@ -127,19 +131,25 @@
                 <div id="property-estate">
                     Estate
                 </div>
+                <div id="property-build">
+                    [XX---]︎
+                </div>
                 <div id="property-owner">
                     owner
                 </div>
-                <div id="property-price">
-                    price
+                <div id="prices">
+                    <span id="property-price">price</span>
+                    <span id="property-rent">Rent: £rent</span>
+                </div>
+                <div id="property-controls">
+                    <button id="p-c-build">Build&nbsp;(£<span id="build-cost">50</span>)</button>
+                    <button id="p-c-mortgage">Mortgage</button>
+                    <button id="p-c-sell">Sell</button>
                 </div>
             </div>
             <div id="action">
-                <div id="action-id">
-                    Action ID
-                </div>
-                <div id="action-description">
-                    Description
+                <div id="action-banner">
+                    <span id="action-id">ID</span>.&nbsp;<span id="action-description">Desc</span>
                 </div>
             </div>
         </div>
@@ -163,39 +173,20 @@
         </div>
     </div>
 
-    <!--Delete CSS here-->
+    <!--Inventory for Properties-->
+    <div id="inventory">
+        <h1>Inventory</h1>
+        <hr/>
+    </div>
+
+    <!--Chat window-->
     <div id="log-area">
-        <!--<div class="log">-->
-        <!--<div class="each-line">-->
-        <!--This is one line-->
-        <!--</div>-->
-        <!--<div class="each-line">-->
-        <!--This is another line-->
-        <!--</div>-->
-        <!--</div>-->
     </div>
     <div id="textfield">
-        <input type='text' placeholder="Type Message/Bid Here...">
+        <input id="input-chat" type='text' placeholder="Type Message/Bid Here...">
         <button id="submit">Send</button>
     </div>
 
 </div>
-
-<!--<div id="dev-control-pane" class="dev" style="width: 200px">
-    <span>To simulate message sent from server, Target ID:</span>
-    <input type="text" id="input-id" placeholder="target ID" value="0">
-    <button id="btn-player-join-ack">
-        [server]player join ack
-    </button>
-    <button id="btn-your-turn">
-        [server]your turn
-    </button>
-    <button id="btn-roll-result">
-        [server]roll result
-    </button>
-    <button id="btn-buy-ack">
-        [server]buy ack
-    </button>
-</div>-->
 </body>
 </html>

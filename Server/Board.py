@@ -1,16 +1,16 @@
 """
-This controls the Squares and Players and manages the whole game. 
+This controls the Squares and Players and manages the whole game.
 """
 
-from Squares import * 
-from Player import * 
-from Cards import * 
+from Squares import *
+from Player import *
+from Cards import *
 import random
 
 class Board:
     """
     This class represents the board state and provides functions to change the
-    board state. 
+    board state.
     """
     _NUM_SQUARES = 40
     _CHEST_POS = [2, 17, 33]
@@ -89,17 +89,22 @@ class Board:
             self._board[pos] = TransportSquare(pos, price)
 
         for pos, info in Board._PROPERTY_POS_INFO.items():
-            price, rent, estate = info 
+            price, rent, estate = info
             self._board[pos] = PropertySquare(pos, price, rent, estate)
 
         # create players
         self._players = {i:Player(i) for i in range(1, num_players + 1)}
+        self._current_turn = 1
 
         # Initialise players at position 0 (Go)
         self._player_positions = {}
         for p in self._players.values():
-            self._player_positions[p] = 0 
+            self._player_positions[p] = 0
             self._board[0].add_player(p)
+
+        self._is_in_game = {}
+        for player_id in self._players:
+            self._is_in_game[player_id] = True
 
         # initialise
         self._action_cards = {
@@ -124,15 +129,13 @@ class Board:
             GetOutOfJailFreeCard(),
             GetOutOfJailFreeCard(),
             MoveCard(Board._JAIL_POS, "Go to Jail"),
-            GainMoneyCard(15, "Pay 15 in poor tax"),
+            LoseMoneyCard(15, "Pay 15 in poor tax"),
             GainMoneyCard(150, "Your building and loan matures; collect 150"),
             GainMoneyCard(100, "You have won 100 in a crossword competition"),
             MoveCard(random.choice(list(Board._UTIL_POS_INFO)), "Move to a utility"),
         } | {
             MoveCard(i, "Move to property {}".format(i)) for i in (random.choice(list(Board._PROPERTY_POS_INFO)) for _ in range(3))
         }
-
-        self._current_player = None           
 
     def __str__(self):
         """
@@ -145,12 +148,36 @@ class Board:
             if i > 0 and not i%5:
                 s += "\n"
             s += str(square) + " "
-        return s 
+        return s
+
+    def next_player(self):
+        """
+        Increments and returns the next player whose turn it is.
+
+        :returns: the player_id of the next player
+        """
+        while True:
+            self._current_turn += 1
+            if self._current_turn == len(self._players) + 1:
+                self._current_turn = 1
+
+            if self._is_in_game[self._current_turn]:
+                break
+        return self._current_turn
+
+
+    def all_players(self):
+        """
+        A list of player ids in the game.
+
+        :returns: a list of all player ids
+        """
+        return [player_id for player_id in self._players.keys() if self._is_in_game[player_id]]
 
     def game_state(self):
         """
         Builds up a dictionary of the current game state in the format of the
-        board_sync JSON message format. 
+        board_sync JSON message format.
 
         :returns: the json dictionary
         """
@@ -160,61 +187,59 @@ class Board:
             "players": {},
         }
         for pos, info in Board._PROPERTY_POS_INFO.items():
-            price, rent, estate = info 
+            price, rent, estate = info
             property_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = property_square.owner 
-            #msg["cells"][str(pos)]["price"] =  price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = property_square.owner
+            #msg["cells"][str(pos)]["price"] =  price
 
         for pos, info in Board._TRANS_POS_INFO.items():
-            price = info 
+            price = info
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
-            transport_id = transport_square.square_id 
+            transport_id = transport_square.square_id
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            #msg["cells"][str(pos)]["price"] = price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = transport_square.owner
+            #msg["cells"][str(pos)]["price"] = price
 
         for pos, info in Board._UTIL_POS_INFO.items():
-            price = info 
+            price = info
             transport_square = self.get_square(pos)
             msg["cells"][str(pos)] = {}
-            transport_id = transport_square.square_id 
+            transport_id = transport_square.square_id
             #msg["cells"][str(pos)]["type"] = "property"
-            msg["cells"][str(pos)]["id"] = pos  
-            msg["cells"][str(pos)]["owner"] = transport_square.owner 
-            #msg["cells"][str(pos)]["price"] = price 
+            msg["cells"][str(pos)]["id"] = pos
+            msg["cells"][str(pos)]["owner"] = transport_square.owner
+            #msg["cells"][str(pos)]["price"] = price
 
         for player_id, player in self._players.items():
-            pos = self._player_positions[player]
-            msg["players"][str(player_id)] = {}
-            msg["players"][str(player_id)]["id"] = player_id
-            msg["players"][str(player_id)]["is_in_jail"] = player.jail 
-            msg["players"][str(player_id)]["money"] = player.money 
-            msg["players"][str(player_id)]["position"] = pos 
+            if self._is_in_game[player_id]:
+                pos = self._player_positions[player]
+                msg["players"][str(player_id)] = {}
+                msg["players"][str(player_id)]["id"] = player_id
+                msg["players"][str(player_id)]["is_in_jail"] = player.jail
+                msg["players"][str(player_id)]["money"] = player.money
+                msg["players"][str(player_id)]["position"] = pos
 
-        return msg 
+        return msg
 
 
     def roll_dice(self):
         """
         Simulates a dice roll. Returns a pair of integers representing the value
-        on each dice. 
+        on each dice.
 
         :returns: a tuple of ints of length 2
         """
-        while True:
-            d1, d2 = (random.randint(1, 6) for _ in range(2))
-            if d1 != d2:
-                break
-        return d1, d2 
+        d1, d2 = (random.choice(range(1, 7)) for _ in range(2))
+        return d1, d2
 
     def move_player(self, player_id, new_pos):
         """
-        Moves Player with id "player_id" from old position to "new_pos". 
+        Moves Player with id "player_id" from old position to "new_pos".
 
         :param player_id: the ID of the player being moved
         :param new_pos: the (zero indexed) position on the board the player is moving too
@@ -232,16 +257,16 @@ class Board:
         Gets all the players in the game at a location.
 
         :param pos: the location of the square ebing queried
-        :returns: a list of all players at position pos. 
+        :returns: a list of all players at position pos.
         """
         return list(self._board[pos])
 
     def get_pos(self, player_id):
         """
-        Get the position of the square a player is on. 
+        Get the position of the square a player is on.
 
         :param player_id: the id of the player being looked for
-        :returns: the position of the square which the player is on 
+        :returns: the position of the square which the player is on
         """
         return self._player_positions[self._players[player_id]]
 
@@ -255,7 +280,7 @@ class Board:
         if pos >= Board._NUM_SQUARES:
             raise IndexError(
                 "Board.get_square({}): Index {} not in Board of size {}".format(
-                    pos, pos, Board._NUM_SQUARES)) 
+                    pos, pos, Board._NUM_SQUARES))
         return self._board[pos]
 
     def take_money(self, player_id, amount):
@@ -280,12 +305,12 @@ class Board:
 
     def obtain_get_out_jail_free(self, player_id):
         """
-        Gives the Player with id "player_id" a get out of jail free card. 
+        Gives the Player with id "player_id" a get out of jail free card.
 
         :param player_id: the id of the player being given the card
         """
         player = self._players[player_id]
-        player.free = True 
+        player.free = True
 
     def go_to_jail(self, player_id):
         """
@@ -295,39 +320,134 @@ class Board:
         """
         self.move_player(player_id, Board._JAIL_POS)
         player = self._players[player_id]
-        player.jail = True 
+        player.jail = True
 
-    def leave_jail(self, player_id):
+    def leave_jail(self, player_id, free_card = False):
         """
-        Moves the player wit id "player_id" out of jail
-
-        :param player_if: the id of the player being moved out of jail
-        """
-        player = self._players[player_id]
-        player.jail = False 
-
-    def use_get_out_jail_free(self, player_id):
-        """
-        Player with id "player_id" uses their get out of jail free card. 
+        Player with id "player_id" uses their get out of jail free card.
 
         :param player_id: the id of the player using their card
         """
         player = self._players[player_id]
-        if not player.free:
-            raise ValueError(
-                "Board.use_get_out_jail_free({}): Player with id {} has no get out of jail free card".format(
-                    player_id, player_id))
-        player.free = False 
-        player.jail = False 
+        player.jail = False
+        if free_card:
+            player.free = False
+        
 
     def add_house(self, pos):
         """
-        Adds a house to the Square at position pos. 
+        Adds a house to the Square at position pos.
 
         :param pos: the position of the square the house is being added to
         """
         square = self.get_square(pos)
-        square.num_houses += 1 
+        square.num_houses += 1
+
+    def remove_player(self, player_id):
+        """
+        Gracefully removes a plyer from the game.
+
+        :param player_id: the id of the player being removed
+        """
+        player = self._players[player_id]
+        for asset in player.get_assets():
+            asset.owner = None
+            asset.is_owned = False
+        self._is_in_game[player_id] = False
+
+        current_square = self.get_square(self.get_pos(player_id))
+        current_square.remove_player(player)
+
+    def is_valid_player(self, player_id):
+        """
+        Checks of the player_id is a valid one.
+
+        :param player_id: the id of the player being queried
+        :returns: True of the player is valid, False otherwise
+        """
+        return player_id in self._is_in_game.keys() and self._is_in_game[player_id]
+
+    def build_house(self, player_id, property_id):
+        """
+        Builds a house on the property whose id is property_id, owned by player_id
+
+        :param player_id: the id of the player who owns the square
+        :param property_d: the id of the property which the house is being built on
+        """
+        player = self._players[player_id]
+        property_square = self.get_square(property_id)
+        if property_square.is_owned and property_square.owner == player_id:
+            # hinges on the fact the estate ids 0 and 7 only have two properties
+            # estate ids in between all have 3 properties in them
+            _, _, estate_id = Board._PROPERTY_POS_INFO[property_id]
+            estate_prop_count = 0
+            for owned_property in player.properties:
+                if owned_property.estate == estate_id:
+                    estate_prop_count += 1 
+
+            if (estate_id in (0, 7) and estate_prop_count == 2)\
+                or (estate_id in range(2, 7) and estate_prop_count == 3):
+                if property_square.num_houses < 5:
+                    property_square.num_houses += 1
+                    self.take_money(player_id, property_square.house_cost) 
+                    return 
+        raise BuildException
+
+    def sell_house(self, player_id, property_id):
+        """
+        Sells the house on a property and returns half of the cost of
+        buying it to the user. 
+
+        :param player_id: the id of the player who owns the square
+        :param property_d: the id of the property which the house is being built on
+        """
+        player = self._players[player_id]
+        property_square = self.get_square(property_id)
+        if property_square.is_owned and property_square.owner == player_id:
+            # hinges on the fact the estate ids 0 and 7 only have two properties
+            # estate ids in between all have 3 properties in them
+            _, _, estate_id = Board._PROPERTY_POS_INFO[property_id]
+            estate_prop_count = 0
+            for owned_property in player.properties:
+                if owned_property.estate == estate_id:
+                    estate_prop_count += 1 
+
+            if (estate_id in (0, 7) and estate_prop_count == 2)\
+                or (estate_id in range(2, 7) and estate_prop_count == 3):
+                if property_square.num_houses > 0:
+                    property_square.num_houses -= 1
+                    self.give_money(player_id, property_square.house_cost / 2) 
+                    return 
+        raise BuildException
+
+    def get_house_cost(self, property_id):
+        """
+        Returns the cost to build a new house for a property.
+
+        :param property_id: the id of the property which is being queried
+        :returns: the cost to build a house on that property
+        """
+        property_square = self.get_square(property_id)
+        return property_square.base_rent 
+
+    def get_num_houses(self, property_id):
+        """
+        Returns the number of houses on a property
+
+        :param property_id: the id of the property being queried
+        """
+        return self.get_square(property_id).num_houses
+
+    def get_current_rent(self, property_id):
+        """
+        Returns the current rent for landing on a property
+
+        :param property_id: the id of the property which is being queried
+        :returns: the current rent which a user will pay for landing on that swaure
+        """
+        property_square = self.get_square(property_id)
+        current_rent = property_square.base_rent * (2 ** property_square.num_houses)
+        return current_rent
 
     def take_turn(self, player_id, dice1, dice2):
         """
@@ -337,24 +457,30 @@ class Board:
         :param dice1: the result of dice 1
         :param dice2: the result of dice 2
 
-        This is a generator which will yield the actions a user must address. 
+        This is a generator which will yield the actions a user must address.
         The final value of the generator will be a human-readable string which
-        explains what happened in this turn. This return will also raise a 
-        StopIteration exception. 
+        explains what happened in this turn. This return will also raise a
+        StopIteration exception.
         """
-        if not self._current_player:
-            self._current_player = player_id
-            self._human_string = []
-        
+        self._human_string = []
         self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
         if dice1 == dice2:
             self._human_string.append("Player {} rolled a double.".format(player_id))
-            player.double_roll = True 
-            re_check_location = True
+            if not player.jail:
+                player.double_roll = True
+                re_check_location = True
+            else:
+                player.jail = False
+                player.double_roll = False
+                re_check_location = False
+                self._human_string.append("Player {} left jail.".format(player_id))
         else:
             re_check_location = False
+            if player.jail:
+                print(">> Player didn't roll a double and is in jail")
+                dice1, dice2 = 0, 0
 
         new_pos = self.get_pos(player_id) + dice1 + dice2
         if new_pos > 39:
@@ -367,16 +493,16 @@ class Board:
         square = self.get_square(new_pos)
 
         if square.square_type in (Square.PROPERTY, Square.UTILITY, Square.TRANSPORT):
-            print(">>Square is ownable square")
+            #print(">>Square is ownable square")
             # can be bought or may be bought already
             if square.is_owned:
-                print(">>Square is owned")
+                #print(">>Square is owned")
                 if square.owner != player_id:
                     if square.square_type == Square.PROPERTY:
-                        print(">>Square is a property square")
+                        #print(">>Square is a property square")
                         rent = square.base_rent * (2**square.num_houses)
                     elif square.square_type == Square.UTILITY:
-                        print(">>Square is a utility square")
+                        #print(">>Square is a utility square")
                         dice_roll_sum = sum(self.roll_dice())
                         owner = self._players[square.owner]
                         if owner.num_utils() == 1:
@@ -384,35 +510,37 @@ class Board:
                         else:
                             rent = dice_roll_sum * square.two_owned
                     elif square.square_type == Square.TRANSPORT:
-                        print(">>Square is a transport square")
+                        #print(">>Square is a transport square")
                         owner = self._players[square.owner]
                         rent = square.base_rent * (2**owner.num_transports())
 
-                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                        player_id, rent, square.owner))
+                    try:
+                        self.take_money(player_id, rent)
+                    except PlayerLostError:
+                        self.remove_player(player_id)
+                        raise PlayerLostError
 
+                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
+                    player_id, rent, square.owner))
                     self.give_money(square.owner, rent)
-                    self.take_money(player_id, rent)
+
                 else:
                     self._human_string.append("Player {} already owns square".format(player_id))
-                yield None
 
-            elif self._players[player_id].money < square.price:
-                print(">>Square not owned but player doesn't have enough money")
-                yield "not_enough_money"
-            
+                yield "paid_rent"
+
             else:
-                print(">>Square is not owned")
+                #print(">>Square is not owned")
                 buy_auction = yield "buy_auction"
                 if buy_auction == "buy":
-                    selling_square = True
-                    print(">>User will buy")
+                    #print(">>User will buy")
                     cost = square.price
                     square.owner = player_id
                     self.take_money(player_id, cost)
                     new_owner = self._players[player_id]
                     self._human_string.append("Player {} bought square {}.".format(
                         player_id, new_pos))
+
                     square.is_owned = True
 
                     if square.square_type == Square.PROPERTY:
@@ -421,38 +549,52 @@ class Board:
                         new_owner.add_utility(square)
                     elif square.square_type == Square.TRANSPORT:
                         new_owner.add_transport(Square)
-                    yield new_pos
-                
+
+                    yield "property_bought"
+
                 elif buy_auction == "auction":
-                    """
-                    selling_square = True
-                    print(">>User will auction")
-                    highest_bidder = yield None 
-                    bid = yield None
+                    #print(">>User will auction")
+                    highest_bidder, bid = yield None
                     square.owner = highest_bidder
                     self.take_money(highest_bidder, bid)
-                    new_owner = self._players[highest_bidder]"""
+                    new_owner = self._players[highest_bidder]
+
+                    square.is_owned = True
+
+                    if square.square_type == Square.PROPERTY:
+                        new_owner.add_property(square)
+                    elif square.square_type == Square.UTILITY:
+                        new_owner.add_utility(square)
+                    elif square.square_type == Square.TRANSPORT:
+                        new_owner.add_transport(Square)
+
+                    yield "property_auctioned"
 
                 elif buy_auction == "no_buy":
-                    print(">>User will not buy")
-                    selling_square = False
+                    #print(">>User will not buy")
                     self._human_string.append("Player {} didn't buy square {}.".format(
                         player_id, new_pos))
+
                     yield None
 
                 else:
                     print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
-                    
+
         elif square.square_type == Square.ACTION:
             # could be [chest|chance|jail|stay|tax]
-            print(">>Square is action square")
+            #print(">>Square is action square")
+            what_happened = []
             if square.action in (ActionSquare.CHEST, ActionSquare.CHANCE):
-                print(">>Square is chest | chance")
+                #print(">>Square is chest | chance")
                 if square.action == ActionSquare.CHEST:
+                    what_happened.append("Player {} drew a Chest card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chest card".format(
                         player_id))
                 elif square.action == ActionSquare.CHANCE:
+                    what_happened.append("Player {} drew a Chance card".format(
+                        player_id))
                     self._human_string.append("Player {} drew a Chance card".format(
                         player_id))
 
@@ -460,50 +602,72 @@ class Board:
                 if card.card_type == Card.MOVE:
                     new_pos = card.move_to_pos
                     self.move_player(player_id, new_pos)
-                    re_check_location = True
+                    if new_pos != Board._JAIL_POS:
+                        re_check_location = True
+                    else:
+                        player.double_roll = False
+                        re_check_location = False
+                        player.jail = True
+                        player.jail_turn_count = 0
                 elif card.card_type == Card.GAIN_MONEY:
                     amount = card.gain_amount
                     self.give_money(player_id, amount)
                 elif card.card_type == Card.LOSE_MONEY:
                     amount = card.lose_amount
-                    self.take_money(player_id, amount)
+                    try:
+                        self.take_money(player_id, amount)
+                    except PlayerLostError:
+                        self.remove_player(player_id)
+                        raise PlayerLostError
                 elif card.card_type == Card.GET_OUT_OF_JAIL:
                     player.free = True
 
                 self._human_string.append(card.text)
+                what_happened.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
-                print(">>Sqaure is Go to Jail square")
+                #print(">>Sqaure is Go to Jail square")
+                player.double_roll = False
+                re_check_location = False
+                player.jail = True
+                player.jail_turn_count = 0
                 self.move_player(player_id, Board._JAIL_POS)
                 self._human_string.append("Player {} went to jail".format(
                         player_id))
-            elif square.action == ActionSquare.STAY:
-                print(">>Sqaure is free parking")
-                self._human_string.append("Player {} got free parking".format(
+
+                what_happened.append("Player {} went to jail".format(
                         player_id))
+            elif square.action == ActionSquare.STAY:
+                #print(">>Sqaure is free parking")
+                if player.jail:
+                    self._human_string.append("Player {} is still in jail".format(
+                            player_id))
+                    what_happened.append("Player {} is still in jail".format(
+                            player_id))
+                else:
+                    self._human_string.append("Player {} got free parking".format(
+                            player_id))
+                    what_happened.append("Player {} got free parking".format(
+                            player_id))
             elif square.action == ActionSquare.TAX:
-                print(">>Sqaure is get taxed square")
+                #print(">>Sqaure is get taxed square")
                 tax = 100 * (2**Board._TAX_POS.index(new_pos))
-                self.take_money(player_id, tax)
+                try:
+                    self.take_money(player_id, tax)
+                except PlayerLostError:
+                    self.remove_player(player_id)
+                    raise PlayerLostError
                 self._human_string.append("Player {} paid {} in tax".format(
                         player_id, tax))
-            yield "action_square" # pauses generator to be in sync with server
+                what_happened.append("Player {} paid {} in tax".format(
+                        player_id, tax))
 
-        re_check_location = False # TODO double roll mechanism
-        if re_check_location:
-            if player.double_roll:
-                player.double_roll = False
-                dice1, dice2 = self.roll_dice()
-                self._human_string.append("Player {} rolled again and got {} and {}".format(
-                    player_id, dice1, dice2))
-                re_check_turn = self.take_turn(player_id, dice1, dice2)
-            else:
-                re_check_turn = self.take_turn(player_id, 0, 0)
-            yield from re_check_turn
-        self._current_player = None
-        yield "\n".join(self._human_string)
+            yield "action_square|" + "\n".join(what_happened)
 
+        new_roll = player.double_roll
+        player.double_roll = False
+        yield re_check_location, new_roll, "\n".join(self._human_string)
 
-if __name__ == "__main__":
-    b = Board(4)
-    b.take_turn(1, 1, 2).send(None)
+class BuildException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

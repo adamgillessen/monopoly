@@ -5,7 +5,7 @@
 
 /**
  * Return jQuery object selected by given id
- * @param {int} id: No.0 to No.3
+ * @param {number} id: No.0 to No.3
  * @returns {*|jQuery|HTMLElement}
  */
 function selectCell(id) {
@@ -14,11 +14,37 @@ function selectCell(id) {
 
 /**
  * Return jQuery object selected by given id
- * @param {int} id
+ * @param {number} id
  * @returns {*|jQuery|HTMLElement}
  */
 function selectPlayer(id) {
     return $("#player-" + id);
+}
+
+/**
+ * Get square by id
+ * @param {number} id
+ * @return {Property|Action}
+ */
+function selectCellModel(id) {
+    return game.model.selectCell(id);
+}
+
+/**
+ * Get player by id
+ * @param id
+ * @return {Player}
+ */
+function selectPlayerModel(id) {
+    return game.model.selectPlayer(id);
+}
+
+/**
+ * Return this client
+ * @return {Player}
+ */
+function getThisPlayerModel() {
+    return selectPlayerModel(game.clientID);
 }
 
 /**
@@ -42,17 +68,41 @@ function getContextValue(name) {
     return tmp;
 }
 
+function updateScroll() {
+    var element = document.getElementById("log-area");
+    element.scrollTop = element.scrollHeight;
+}
+
+function generateProgressBar(current, total) {
+    var FULL = "XXXXXX";
+    var EMPTY = '------';
+
+    return sprintf("[%s]", FULL.substr(0, current) + EMPTY.substr(0, total - current));
+}
+
 /**
  * Log things to log-area in HTML
  * @param {string} obj
+ * @param {number} source: Who generated this message ? If a message has a source field, pass it to this parameter
  */
-function log(obj) {
-    if ($(".log").length > 10) {
-        $(".log:first").remove();
+function log(obj, source) {
+    if (obj === null || obj === undefined || typeof obj !== "string") {
+        console.log("Invalid log parameter", obj);
+        return;
     }
 
+    // Split strings by "\n"
     var arrStrings = obj.split(/\n/);
-    var divCurrentLog = $('<div class="log"></div>');
+
+    var templateDivParent = '<div class="log %s"></div>';
+    var classTable = {
+        1: "player1",
+        2: "player2",
+        3: "player3",
+        4: "player4",
+        5: "server"
+    };
+    var divCurrentLog = $(sprintf(templateDivParent, classTable[source]));
 
     var lop = 0;
     for (; lop < arrStrings.length; lop++) {
@@ -60,47 +110,37 @@ function log(obj) {
     }
 
     divCurrentLog.appendTo("#log-area");
+
+    updateScroll();
 }
 
+
+var BUTTONS_PROPERTY = {
+    build: "#p-c-build",
+    mortgage: "#p-c-mortgage",
+    sell: "#p-c-sell"
+};
+
 /**
- * Show details of a given cell to the detail-pane section in HTML
- * @param {int} id
+ * Show given property control button
+ * @param {[BUTTONS_PROPERTY]} buttons
  */
-function showCellDetail(id) {
-    ViewController.currentSelectedSquare = id;
-
-    var name = $("#cell-" + id + " span").text();
-    var cell = game.model.selectCell(id);
-
-    if (cell.type === "property") {
-        $("#property").show();
-        $("#action").hide();
-
-        $("#property-banner").removeClass();
-        $("#property-banner").addClass("cell-" + id);
-        $("#property-id").text(cell.id);
-        $("#property-name").text(name);
-
-        if (cell.estate === -1) {
-            $("#property-estate").text(" --- ");
-        } else {
-            $("#property-estate").text("Estate: " + cell.estate);
+function showPropertyButtons(buttons) {
+    // Hide all buttons first
+    for (var key in BUTTONS_PROPERTY) {
+        if (BUTTONS_PROPERTY.hasOwnProperty(key)) {
+            $(BUTTONS_PROPERTY[key]).hide();
         }
+    }
 
-        $("#property-price").text(cell.price);
+    if (buttons === null || buttons === undefined) {
+        return;
+    }
 
-        var owner = cell.owner;
-        if (owner === -1) {
-            $("#property-owner").text("ON SALE");
-        } else {
-            $("#property-owner").text("Owner: Player " + owner);
-        }
-    } else {
-        $("#action").show();
-        $("#property").hide();
-
-        $("#action-id").text(cell.id);
-        $("#action-description").text(name);
+    // Show given ones
+    var lop = 0;
+    for (; lop < buttons.length; lop++) {
+        $(buttons[lop]).show();
     }
 }
 
@@ -137,8 +177,8 @@ function showButtons(buttons) {
 
 /**
  * Randomly generate a int from range [0, max]
- * @param {int} max: Max number allowed to be generated
- * @returns {int} integer in range [0, max)
+ * @param {number} max: Max number allowed to be generated
+ * @returns {number} integer in range [0, max)
  */
 function ranRange(max) {
     return parseInt(Math.random() * max);

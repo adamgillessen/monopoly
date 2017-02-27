@@ -85,16 +85,17 @@ class BoardTests(unittest.TestCase):
         self.assertFalse(prop_square.is_owned)
 
         turn = board.take_turn(player.id, 1, 2)
-        try:
-            message1 = turn.send(None)
-            self.assertTrue(message1 == "buy_auction")
-            message2 = turn.send("buy") # message2 = "human readable string"
-        except StopIteration:
-            pass
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("buy")
+        self.assertTrue(message2 == "property_bought")
         self.assertTrue(board.get_pos(player.id) == 3)
         self.assertTrue(prop_square.is_owned)
         self.assertTrue(prop_square.owner == player.id)
         self.assertTrue(prop_square.price + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_property_square_owned(self):
         player1 = self.players[0]
@@ -108,15 +109,15 @@ class BoardTests(unittest.TestCase):
         p1_old_money = player1.money
         p2_old_money = player2.money
 
-        try:
-            turn = board.take_turn(player1.id, 1, 2)
-            message1 = turn.send(None)
-        except StopIteration:
-            pass
-        # message1 will be human readable string"""
+        turn = board.take_turn(player1.id, 1, 2)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "paid_rent")
         self.assertTrue(p1_old_money - prop_rent == player1.money)
         self.assertTrue(p2_old_money + prop_rent == player2.money)
         self.assertTrue(board.get_pos(player1.id) == 3)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_utility_square_not_owned_buy(self):
         player = self.players[0]
@@ -126,16 +127,17 @@ class BoardTests(unittest.TestCase):
         self.assertFalse(util_square.is_owned)
 
         turn = board.take_turn(player.id, 4, 8)
-        try:
-            message1 = turn.send(None)
-            self.assertTrue(message1 == "buy_auction")
-            message2 = turn.send("buy") # message2 = "human readable string"
-        except StopIteration:
-            pass
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("buy")
+        self.assertTrue(message2 == "property_bought")
         self.assertTrue(board.get_pos(player.id) == 12)
         self.assertTrue(util_square.is_owned)
         self.assertTrue(util_square.owner == player.id)
         self.assertTrue(util_square.price + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_utility_square_owned(self):
         player1 = self.players[0]
@@ -148,16 +150,16 @@ class BoardTests(unittest.TestCase):
         p1_old_money = player1.money
         p2_old_money = player2.money
 
-        try:
-            turn = board.take_turn(player1.id, 4, 8)
-            message1 = turn.send(None)
-        except StopIteration:
-            pass
-        # message1 will be human readable string"""
+        turn = board.take_turn(player1.id, 4, 8)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "paid_rent")
         self.assertTrue(p1_old_money > player1.money)
         self.assertTrue(p2_old_money < player2.money)
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
         self.assertTrue(board.get_pos(player1.id) == 12)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_transport_square_not_owned_buy(self):
         player = self.players[0]
@@ -167,16 +169,18 @@ class BoardTests(unittest.TestCase):
         self.assertFalse(trans_square.is_owned)
 
         turn = board.take_turn(player.id, 2, 3)
-        try:
-            message1 = turn.send(None)
-            self.assertTrue(message1 == "buy_auction")
-            message2 = turn.send("buy") # message2 = "human readable string"
-        except StopIteration:
-            pass
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("buy")
+        self.assertTrue(message2 == "property_bought")
+
         self.assertTrue(board.get_pos(player.id) == 5)
         self.assertTrue(trans_square.is_owned)
         self.assertTrue(trans_square.owner == player.id)
         self.assertTrue(trans_square.price + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
 
     def test_take_turn_transport_square_owned(self):
         player1 = self.players[0]
@@ -189,17 +193,111 @@ class BoardTests(unittest.TestCase):
         p1_old_money = player1.money
         p2_old_money = player2.money
 
-        try:
-            turn = board.take_turn(player1.id, 2, 3)
-            message1 = turn.send(None)
-        except StopIteration:
-            pass
-        # message1 will be human readable string"""
+        turn = board.take_turn(player1.id, 2, 3)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "paid_rent")
         self.assertTrue(p1_old_money > player1.money)
         self.assertTrue(p2_old_money < player2.money)
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
         self.assertTrue(board.get_pos(player1.id) == 5)
 
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
+
+    def test_take_turn_property_square_owned_auction(self):
+        player = self.players[0]
+        old_money = player.money
+        board = self.board
+        prop_square = board.get_square(3)
+        self.assertFalse(prop_square.is_owned)
+
+        turn = board.take_turn(player.id, 2, 1)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("auction")
+        self.assertTrue(message2 is None)
+        highest_bidder = player.id 
+        highest_bid = 500
+        message3 = turn.send((highest_bidder, highest_bid))
+        self.assertTrue(message3 == "property_auctioned")
+
+        self.assertTrue(board.get_pos(player.id) == 3)
+        self.assertTrue(prop_square.is_owned)
+        self.assertTrue(prop_square.owner == player.id)
+        self.assertTrue(highest_bid + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
+
+
+    def test_take_turn_transport_square_owned_auction(self):
+        player = self.players[0]
+        old_money = player.money
+        board = self.board
+        trans_square = board.get_square(5)
+        self.assertFalse(trans_square.is_owned)
+
+        turn = board.take_turn(player.id, 2, 3)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("auction")
+        self.assertTrue(message2 is None)
+        highest_bidder = player.id 
+        highest_bid = 500
+        message3 = turn.send((highest_bidder, highest_bid))
+        self.assertTrue(message3 == "property_auctioned")
+
+        self.assertTrue(board.get_pos(player.id) == 5)
+        self.assertTrue(trans_square.is_owned)
+        self.assertTrue(trans_square.owner == player.id)
+        self.assertTrue(highest_bid + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
+
+
+    def test_take_turn_util_square_owned_auction(self):
+        player = self.players[0]
+        old_money = player.money
+        board = self.board
+        util_square = board.get_square(12)
+        self.assertFalse(util_square.is_owned)
+
+        turn = board.take_turn(player.id, 4, 8)
+        message1 = turn.send(None)
+        self.assertTrue(message1 == "buy_auction")
+        message2 = turn.send("auction")
+        self.assertTrue(message2 is None)
+        highest_bidder = player.id 
+        highest_bid = 500
+        message3 = turn.send((highest_bidder, highest_bid))
+        self.assertTrue(message3 == "property_auctioned")
+
+        self.assertTrue(board.get_pos(player.id) == 12)
+        self.assertTrue(util_square.is_owned)
+        self.assertTrue(util_square.owner == player.id)
+        self.assertTrue(highest_bid + player.money == old_money)
+
+        _, _, human_string = turn.send(None)
+        self.assertTrue(human_string.startswith("Player"))
+
+    def test_player_lose(self):
+        player = self.players[0]
+        board = self.board
+        player.money = 100
+        trans_square = board.get_square(5)
+        trans_square.is_owned = True 
+        trans_square.owner = player.id
+        player.add_transport(trans_square)
+
+        self.assertTrue(len(player.get_assets()) == 1)
+        turn = board.take_turn(player.id, 19, 19)  # will get taxed 200
+        def f():
+            turn.send(None)
+        self.assertRaises(PlayerLostError, f)
+
+        self.assertFalse(trans_square.is_owned)
+        self.assertTrue(trans_square.owner == -1)
 
 if __name__ == "__main__":
     unittest.main()

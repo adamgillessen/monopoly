@@ -1,0 +1,6 @@
+{
+    "type": "build_house",
+    "source": 1, //player_id of clinet which is sending the message
+    "property": 3, // id of the square which the player is building a house on
+    "sell": false, // True if you are selling the house, false is you are building one
+}

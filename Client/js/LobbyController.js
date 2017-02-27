@@ -5,8 +5,8 @@
 
 /**
  * Used to update lobby display's info
- * @param {int} current
- * @param {int} expects
+ * @param {number} current
+ * @param {number} expects
  */
 function updatePlayerNum(current, expects) {
     if (current >= 2) {
@@ -28,7 +28,7 @@ function hideLobbyShowBoard() {
     $("#game-area").show();
 
     // Show GO in detail pane
-    showCellDetail(0);
+    ViewController.showCellDetail(0);
     // Show buttons
     showButtons([]);
 }

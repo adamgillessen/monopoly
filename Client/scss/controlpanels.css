@@ -27,13 +27,137 @@
 
 #control-pane #prompt-buy {
   border: 0;
+  width: 31em;
+  position: fixed;
 }
 
 #money {
+  position: relative;
+  background-color: rgba(86, 86, 86, 0.99);
+  width: 5.85em;
+  height: 100%;
   float: right;
+  text-align: center;
+  line-height: 2.4em;
   color: #ffffff;
-  font-weight: 100;
   font-size: 2em;
-  margin-top: 0.6em;
-  margin-right: 0.6em;
+  font-weight: 100;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#inventory {
+  width: 22em;
+  height: calc(100% - 25em - 1.1em);
+  background: #ffffff;
+  position: absolute;
+  float: left;
+  box-sizing: border-box;
+  overflow: scroll;
+  top: 25em;
+  left: 50.1em;
+  padding: 1em;
+  border: 1px solid #000000;
+  background-color: rgba(39,39,39, 0.95);
+  color: #ffffff;
+}
+
+#inventory h1 {
+  font-size: 1.4em;
+  font-weight: 100;
+  text-align: center;
+}
+
+#inventory hr {
+  margin-top: 0.5em;
+  border: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.owned {
+  width: 100%;
+  height: 4.5em;
+  color: #ffffff;
+  box-sizing: border-box;
+  padding: 0.5em 0em 0.5em 0em;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.square {
+  width: 3.5em;
+  height: 3.5em;
+  float: left;
+  line-height: 3.5em;
+  text-align: center;
+  font-size: 1em;
+  text-shadow: 2px 2px 10px #000000;
+}
+
+.placename {
+  float: left;
+  font-size: 1.4em;
+  font-weight: 100;
+  padding-left: 0.75em;
+  line-height: 2.3em;
+  width: 200px;
+  white-space: nowrap;
+}
+
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #control-pane {
+    left: 4.7em;
+  }
+
+  #prompt-buy {
+    width: 32em !important;
+  }
+
+  #inventory {
+    left: 51.5em;
+  }
+
+  #inventory::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #control-pane {
+      left: 4.7em;
+    }
+
+    #prompt-buy {
+      width: 32em !important;
+    }
+
+    #inventory {
+      left: 51.5em;
+    }
+
+    #inventory::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #control-pane {-chrome-:only(;
+     left: 4.7em;
+  );}
+
+  #prompt-buy {-chrome-:only(;
+     width: 32em !important;
+  );}
+
+  #inventory {-chrome-:only(;
+    left: 51.5em;
+  );}
+
+  #inventory::-webkit-scrollbar {-chrome-:only(;
+    display: none;
+  );}
 }
