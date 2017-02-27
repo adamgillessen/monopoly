@@ -322,28 +322,17 @@ class Board:
         player = self._players[player_id]
         player.jail = True
 
-    def leave_jail(self, player_id):
-        """
-        Moves the player wit id "player_id" out of jail
-
-        :param player_if: the id of the player being moved out of jail
-        """
-        player = self._players[player_id]
-        player.jail = False
-
-    def use_get_out_jail_free(self, player_id):
+    def leave_jail(self, player_id, free_card = False):
         """
         Player with id "player_id" uses their get out of jail free card.
 
         :param player_id: the id of the player using their card
         """
         player = self._players[player_id]
-        if not player.free:
-            raise ValueError(
-                "Board.use_get_out_jail_free({}): Player with id {} has no get out of jail free card".format(
-                    player_id, player_id))
-        player.free = False
         player.jail = False
+        if free_card:
+            player.free = False
+        
 
     def add_house(self, pos):
         """

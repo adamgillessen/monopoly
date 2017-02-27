@@ -443,6 +443,13 @@ def recv_message(client, server, message):
         except BuildException:
                     pass
 
+    elif json_string["type"] == "pay_bail":
+        player_id = json_string["source"]
+        if json_string["get_out_of_jail_free"]:
+            self._board.leave_jail(player_id, free_card = True)
+        else:
+            self._board.leave_jail(player_id, free_card = False) 
+
 if __name__ == "__main__":
     try:
         hostname, portnumber = sys.argv[1:]
