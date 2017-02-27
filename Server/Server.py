@@ -500,10 +500,22 @@ def recv_message(client, server, message):
     elif json_string["type"] == "mortgage_property":
         player_id = json_string["player"]
         property_id = json_string["property"]
-        if json_string["unmortgage"]:
-            s.unmortgage_property(player_id, property_id)
-        else:
-            s.mortgage_property(player_id, property_id)
+        try:
+            if json_string["unmortgage"]:
+                s.unmortgage_property(player_id, property_id)
+            else:
+                s.mortgage_property(player_id, property_id)
+
+            response_json = {
+                "type": "mortgage_property_ack",
+                "property": property_id, 
+                "player": player_id, 
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+    
+        except MortgageException:
+            pass
 
 
 if __name__ == "__main__":
