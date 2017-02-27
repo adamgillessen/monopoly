@@ -134,7 +134,10 @@ function parseMessage(data) {
                     selectPlayerModel(current["id"]).moveTo(current["position"]);
 
                     // Is in jail?
-                    selectPlayerModel(current["id"]).is_in_jail = current["is_in_jail"];
+                    selectPlayerModel(current["id"]).inJail = current["is_in_jail"];
+
+                    // Has get out of jail card?
+                    selectPlayerModel(current["id"]).hasCard = current["has_card"];
                 }
             },
             "your_turn": function (data) {
@@ -142,7 +145,7 @@ function parseMessage(data) {
                 game.currentTurn = turnOfID;
 
                 if (game.isMyTurn()) {
-                    if (getThisPlayerModel().is_in_jail) {
+                    if (getThisPlayerModel().inJail) {
                         log("You are in jail", 5);
                     }
 
@@ -162,14 +165,14 @@ function parseMessage(data) {
                 var source = data["source"];
                 var result = data["result"];
 
-                if (game.isMyTurn() && getThisPlayerModel().is_in_jail) {
+                if (game.isMyTurn() && getThisPlayerModel().inJail) {
                     if (result[0] !== result[1]) {
                         log(sprintf("You rolled (%d %d), you're still in Jail", result[0], result[1]), source);
                         ViewController.preEndTurn();
                         return;
                     } else {
                         log(sprintf("You rolled (%d %d), you're FREE!", result[0], result[1], landedOn), source);
-                        getThisPlayerModel().is_in_jail = false;
+                        getThisPlayerModel().inJail = false;
                     }
                 }
 
@@ -311,7 +314,6 @@ function parseMessage(data) {
                 }
             },
             "textual_update": function (data) {
-                console.log(data["text"]);
                 log(data["text"], 5);
             },
             "build_ack": function (data) {
