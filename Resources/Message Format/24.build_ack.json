@@ -3,4 +3,6 @@
     "property": 3, // the id of the property which the house has been built on
     "source": 1, // the player id of the player who built the house
     "current_rent": 300, // the rent a player will now pay for landing on the square
+    "sell": false, // true if acking a sell message, false if acking a build message
+    "num_houses": 1, // the number of houses now on the property
 }
