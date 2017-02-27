@@ -48,35 +48,6 @@ class BoardTests(unittest.TestCase):
         self.board.give_money(player.id, give_amount)
         self.assertTrue(player.money == before_amount + give_amount)
 
-    def test_go_to_jail(self):
-        player = self.players[0]
-        self.assertFalse(player.jail)
-        self.board.go_to_jail(player.id)
-        self.assertTrue(player.jail)
-        self.assertTrue(self.board.get_pos(player.id) == Board._JAIL_POS)
-
-    def test_obtain_get_out_jail_free(self):
-        player = self.players[0]
-        self.assertFalse(player.free)
-        self.board.obtain_get_out_jail_free(player.id)
-        self.assertTrue(player.free)
-
-    def test_use_get_out_jail_free(self):
-        player = self.players[0] 
-        self.board.obtain_get_out_jail_free(player.id)
-        self.board.go_to_jail(player.id)
-        self.assertTrue(player.jail)
-        self.assertTrue(player.free)
-        self.board.use_get_out_jail_free(player.id)
-        self.assertFalse(player.jail)
-        self.assertFalse(player.free)
-
-    def test_add_house(self):
-        s = self.board.get_square(1)
-        self.assertTrue(s.num_houses == 0)
-        self.board.add_house(1)
-        self.assertTrue(s.num_houses == 1)
-
     def test_take_turn_property_square_not_owned_buy(self):
         player = self.players[0]
         old_money = player.money
@@ -111,7 +82,7 @@ class BoardTests(unittest.TestCase):
 
         turn = board.take_turn(player1.id, 1, 2)
         message1 = turn.send(None)
-        self.assertTrue(message1 == "paid_rent")
+        self.assertTrue((message1.startswith("paid_rent")))
         self.assertTrue(p1_old_money - prop_rent == player1.money)
         self.assertTrue(p2_old_money + prop_rent == player2.money)
         self.assertTrue(board.get_pos(player1.id) == 3)
@@ -152,7 +123,7 @@ class BoardTests(unittest.TestCase):
 
         turn = board.take_turn(player1.id, 4, 8)
         message1 = turn.send(None)
-        self.assertTrue(message1 == "paid_rent")
+        self.assertTrue((message1.startswith("paid_rent")))
         self.assertTrue(p1_old_money > player1.money)
         self.assertTrue(p2_old_money < player2.money)
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
@@ -195,7 +166,7 @@ class BoardTests(unittest.TestCase):
 
         turn = board.take_turn(player1.id, 2, 3)
         message1 = turn.send(None)
-        self.assertTrue(message1 == "paid_rent")
+        self.assertTrue(message1.startswith("paid_rent"))
         self.assertTrue(p1_old_money > player1.money)
         self.assertTrue(p2_old_money < player2.money)
         self.assertTrue(p1_old_money + p2_old_money == player1.money + player2.money)
@@ -298,6 +269,54 @@ class BoardTests(unittest.TestCase):
 
         self.assertFalse(trans_square.is_owned)
         self.assertTrue(trans_square.owner == -1)
+
+    def test_build_house_and_sell_house(self):
+        player1 = self.players[0]
+        player2 = self.players[1]
+        board = self.board
+
+        prop_square = board.get_square(1)
+        prop_square.is_owned = True 
+        prop_square.owner = player2.id
+        player2.add_property(prop_square)
+
+        # player 2 does not own all the estate
+        def f():
+            board.build_house(player2.id, prop_square.square_id)
+        self.assertRaises(BuildException, f)
+
+        prop_square = board.get_square(3)
+        prop_square.is_owned = True 
+        prop_square.owner = player2.id
+        player2.add_property(prop_square)
+        
+        # player 1 does not own house
+        def f():
+            board.build_house(player1.id, prop_square.square_id)
+        self.assertRaises(BuildException, f)
+
+
+        self.assertTrue(prop_square.num_houses == 0)
+        self.assertTrue(prop_square.base_rent == board.get_current_rent(prop_square.square_id))
+
+        before_money = player2.money 
+        board.build_house(player2.id, prop_square.square_id)
+        after_money = player2.money
+
+        self.assertTrue(after_money + prop_square.house_cost == before_money)
+        self.assertTrue(prop_square.num_houses == 1)
+        self.assertTrue(prop_square.base_rent != board.get_current_rent(prop_square.square_id))
+
+        # player 1 does not own house
+        def f():
+            board.sell_house(player1.id, prop_square.square_id)
+        self.assertRaises(BuildException, f)
+
+        before_money = player2.money 
+        board.sell_house(player2.id, prop_square.square_id)
+        after_money = player2.money
+
+        self.assertTrue(before_money + (prop_square.house_cost // 2) == after_money)
 
 if __name__ == "__main__":
     unittest.main()
