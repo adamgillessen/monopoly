@@ -456,7 +456,7 @@ class Board:
         self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
-        if dice1 == dice2:
+        if dice1 == dice2 and dice1 + dice2 != 0:
             self._human_string.append("Player {} rolled a double.".format(player_id))
             if not player.jail:
                 player.double_roll = True
