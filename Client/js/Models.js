@@ -3,6 +3,18 @@
  */
 "use strict";
 
+var SQUARE_TYPE = {
+    action: "Action-square",
+    property: "Property-square",
+    others: "Utility or transportation-square"
+};
+
+var FULLT_BUILT_TIMES = 5;
+
+function defaultCallback() {
+    throw new Error("Callback not implemented");
+}
+
 /**
  * Layer: Model
  * Store info of the entire board game
@@ -12,7 +24,7 @@
 function Board() {
     /**
      * A dict holds all squares info
-     * @type {{int:Property|Action}}
+     * @type {{number:Square}}
      */
     this.squares = {};
 
@@ -47,19 +59,22 @@ Board.prototype.initCells = function () {
 
     for (var lop = 0; lop < 40; lop++) {
         if (cellsData[lop].type === "property") {
-            // is a property
-            this.squares[lop] = new Property(lop, cellsData[lop].estate, cellsData[lop].price, cellsData[lop].rent);
-
-            var estate = cellsData[lop].estate;
+            // Is Property
             if (cellsData[lop].estate !== -1) {
+                var estate = cellsData[lop].estate;
+
+                this.squares[lop] = new Square(lop, SQUARE_TYPE.property).initProperty(estate, cellsData[lop].price, cellsData[lop].rent);
+
                 if (this.propertyEstate[estate] === undefined) {
                     this.propertyEstate[estate] = [];
                 }
                 this.propertyEstate[estate].push(lop);
+            } else {
+                // Is UTIL or TRANS
+                this.squares[lop] = new Square(lop, SQUARE_TYPE.others).initUtilOrTrans(cellsData[lop].price);
             }
-
         } else {
-            this.squares[lop] = new Action(lop);
+            this.squares[lop] = new Square(lop, SQUARE_TYPE.action);
         }
     }
 };
@@ -79,17 +94,16 @@ Board.prototype.addPlayer = function (id) {
  * Initalize players, create new Player() and set money
  * @param num
  */
-Board.prototype.initPlayer = function (num) {
+Board.prototype.initPlayers = function (num) {
     for (var lop = 1; lop <= num; lop++) {
-        this.addPlayer(lop);
-        this.selectPlayer(lop).setMoney(2000);
+        this.players[lop] = new Player(lop).initPlayer(2000);
     }
 };
 
 /**
  * Return square by id
  * @param {number} id
- * @return {Property | Action}
+ * @return {Square}
  */
 Board.prototype.selectCell = function (id) {
     return this.squares[id];
@@ -130,7 +144,7 @@ Board.prototype.canBuildHouse = function (propertyID) {
     for (lop = 0; lop < properties.length; lop++) {
         // If not all owned by this player
         // Return false
-        if (!game.isSource(this.squares[properties[lop]].owner)) {
+        if (!game.isThisClient(this.squares[properties[lop]].owner)) {
             return false;
         }
 
@@ -166,135 +180,345 @@ Board.prototype.movePlayer = function (source, result) {
     }, 0));
 };
 
+
 /**
- * Layer: Model
- * Property Class
- * @param {number} cell_id
+ * Square class
+ * @param {number} id
+ * @param {string} type
+ * @constructor
+ */
+function Square(id, type) {
+    this.id = id;
+    this.type = type;
+
+    //////////////////////////////////////////////////////
+    // Shared properties among Property, UTIL and TRANS
+    //////////////////////////////////////////////////////
+    this.estate = undefined;
+    this.price = undefined;
+    this.owner = undefined;
+
+    ///////////////////////
+    // Only for Property
+    ///////////////////////
+    /**
+     * Costs to build this property
+     * This is fixed
+     * @type {number}
+     */
+    this.buildCost = undefined;
+    this.buildProgress = undefined;
+
+    /**
+     * Amount of tax others should pay when lands on this
+     * This could change when you build houses on this property
+     * @type {number}
+     */
+    this.rent = undefined;
+}
+
+//////////////////
+// Constructors //
+//////////////////
+/**
+ * Initilize Property's properties
  * @param {number} estate
  * @param {number} price
  * @param {number} rent
- * @constructor
+ * @return {Square}
  */
-function Property(cell_id, estate, price, rent) {
-    // An unique ID for every cell
-    // Also represents the position on board
-    this.id = cell_id;
-    this.type = "property";
-
-    // Property specific fields
+Square.prototype.initProperty = function (estate, price, rent) {
     this.estate = estate;
     this.price = price;
+    this.owner = -1;
 
-    /**
-     * Progress of build
-     * @type {number}
-     */
+    this.buildCost = rent;
     this.buildProgress = 0;
-
-    /**
-     * Base rent
-     * @type {number}
-     */
     this.rent = rent;
 
-    /**
-     * Rent info that actually being displayed to players
-     * Because rent could change if you build house on a property
-     * @type {number}
-     */
-    this.displayRent = this.rent;
+    return this;
+};
 
-    /**
-     * Who owns this property
-     * -1: Nobody
-     * 1 -> 4: Player 1 to 4
-     * @type {number}
-     */
+/**
+ * Initilize Util or TRANS's properties
+ * @param {number} price
+ * @return {Square}
+ */
+Square.prototype.initUtilOrTrans = function (price) {
+    this.estate = -1;
+    this.price = price;
     this.owner = -1;
-}
-/**
- * Call back to on owner change event
- * @param {number} owner
- */
-Property.prototype.onOwnerChange = function (owner) {
+
+    return this;
 };
 
-/**
- * Callback on build progress change
- * @param {number} newProgress
- */
-Property.prototype.onBuildProgressChange = function (newProgress) {
-};
+////////////////
+// Callbacks //
+///////////////
+Square.prototype.onOwnerChange = defaultCallback;
 
-/**
- * Change
- * @param owner
- */
-Property.prototype.changeOwner = function (owner) {
+Square.prototype.onBuildCostChange = defaultCallback;
+
+Square.prototype.onBuildProgressChange = defaultCallback;
+
+Square.prototype.onRentChange = defaultCallback;
+
+////////////
+// Setter //
+////////////
+Square.prototype.setOwner = function (owner) {
+    if (!this.isBaseProperty()) {
+        throw new Error(this.type + " has no owner");
+    }
+
+    var prev = this.owner;
     this.owner = owner;
 
-    this.onOwnerChange(owner);
+    if (prev !== this.owner) {
+        this.onOwnerChange();
+    }
 };
 
-Property.prototype.build = function () {
-    this.buildProgress += 1;
+Square.prototype.setBuildCost = function (buildCost) {
+    if (!this.isProperty()) {
+        throw new Error(this.type + " has no build cost");
+    }
 
-    this.onBuildProgressChange(this.buildProgress);
+    var prev = this.buildCost;
+    this.buildCost = buildCost;
+
+    if (prev !== this.buildCost) {
+        this.onBuildCostChange();
+    }
 };
 
-Property.prototype.setBuildProgress = function (progress) {
+Square.prototype.setBuildProgress = function (progress) {
+    if (!this.isProperty()) {
+        throw new Error(this.type + " has no build progress");
+    }
+
+    var prev = this.buildProgress;
     this.buildProgress = progress;
 
-    this.onBuildProgressChange(progress);
+    if (prev !== this.buildProgress) {
+        this.onBuildProgressChange();
+    }
+};
+
+Square.prototype.setRent = function (rent) {
+    if (this.isBaseProperty()) {
+        throw new Error(this.type + " has no rent");
+    }
+
+    var prev = this.rent;
+    this.rent = rent;
+
+    if (prev !== this.rent) {
+        this.onRentChange();
+    }
+};
+
+
+/**
+ * Is this square Property, UTIL or TRANS?
+ * @return {boolean} true if this sqaure is one of the 3 type
+ */
+Square.prototype.isBaseProperty = function () {
+    return this.type !== SQUARE_TYPE.action;
 };
 
 /**
- * Layer: Model
- * Action Class
- * @param {number} cell_id
- * @constructor
+ * Is this square property?
+ * @return {boolean}
  */
-function Action(cell_id) {
-    // An unique ID for every cell
-    // Also represents the position on board
-    this.id = cell_id;
-    this.type = "action";
-}
-
+Square.prototype.isProperty = function () {
+    return this.type === SQUARE_TYPE.property;
+};
 
 /**
- * Player Class
- * Model, stores data only
- * @param {number} id: should always starts from 0, or error might occur
+ * Things to do when given player lands on this square
+ * @param {number} id
+ */
+Square.prototype.onLandOn = function (id) {
+    // todo: onLandOn function
+};
+
+Square.prototype.build = function () {
+    if (!this.isProperty()) {
+        throw new Error("Cannot build on" + this.type);
+    }
+
+    var prevProgress = this.buildProgress;
+
+    this.setBuildProgress(prevProgress + 1);
+};
+
+Square.prototype.showDetail = function () {
+    ViewController.currentSelectedSquare = this.id;
+    var squareName = ViewController.tableName[this.id];
+
+    switch (this.type) {
+        case SQUARE_TYPE.action:
+            $("#property").hide();
+            $("#action").show();
+
+            // Add class to DOM
+            $("#action-banner").removeClass();
+            $("#action-banner").addClass("cell-" + this.id);
+
+            $("#action-id").text(this.id);
+            $("#action-description").text(squareName);
+            break;
+
+        case SQUARE_TYPE.property:
+            $("#property").show();
+            $("#property-controls").hide();
+            $("#action").hide();
+
+            // Add class to DOM
+            $("#property-banner").removeClass();
+            $("#property-banner").addClass("cell-" + this.id);
+
+            // ID
+            $("#property-id").text(this.id);
+            // Name
+            $("#property-name").text(squareName);
+            // Estate
+            $("#property-estate").text("Estate: " + this.estate);
+            // Build Progress
+            $("#property-build").text(generateProgressBar(this.buildProgress, FULLT_BUILT_TIMES));
+            // Owner
+            if (this.owner === -1) {
+                $("#property-owner").text("ON SALE");
+            } else {
+                if (game.isThisClient(this.owner)) {
+                    $("#property-owner").text("Owner: You");
+                } else {
+                    $("#property-owner").text("Owner: Player " + this.owner);
+                }
+            }
+            // Price
+            $("#property-price").text("Price: £" + this.price);
+            // Rent
+            $("#property-rent").text("Rent: £" + this.rent);
+            // Control Pane
+            if (game.isThisClient(this.owner)) {
+                $("#property-controls").show();
+                if (game.model.canBuildHouse(this.id)) {
+                    showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                    // Build Cost
+                    $("#build-cost").text(this.buildCost);
+                } else {
+                    showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                }
+            }
+            break;
+
+        case SQUARE_TYPE.others:
+            // ID
+            $("#property-id").text(this.id);
+            // Name
+            $("#property-name").text(squareName);
+            // Estate
+            $("#property-estate").text(" --- ");
+            // Build Progress
+            $("#property-build").text(" --- ");
+            // Owner
+            if (this.owner === -1) {
+                $("#property-owner").text("ON SALE");
+            } else {
+                if (game.isThisClient(this.owner)) {
+                    $("#property-owner").text("Owner: You");
+                } else {
+                    $("#property-owner").text("Owner: Player " + this.owner);
+                }
+            }
+            // Price
+            $("#property-price").text("Price: £:" + this.price);
+            // Rent
+            $("#property-rent").text(" --- ");
+            // Control Pane
+            if (game.isThisClient(this.owner)) {
+                $("#property-controls").show();
+                showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+            }
+            break;
+
+        default:
+            throw new Error("Type Error: " + this.type);
+    }
+};
+
+/**
+ * Player class
+ * @param {number} id
  * @constructor
  */
 function Player(id) {
     this.id = id;
-    this.position = 0;
+    this.position = undefined;
     this.money = undefined;
-    this.inJail = false;
-    this.hasCard = false;
+    this.inJail = undefined;
+    this.hasCard = undefined;
 }
 
-/**
- * Callback on money change
- * @param money
- */
-Player.prototype.onMoneyChange = function (money) {
+Player.prototype.initPlayer = function (money) {
+    this.position = 0;
+    this.money = money;
+    this.inJail = false;
+    this.hasCard = false;
+
+    return this;
 };
 
-/**
- * Callback on position change
- * @param from
- * @param to
- */
-Player.prototype.onPositionChange = function (from, to) {
+Player.prototype.onGoPassed = defaultCallback;
+
+Player.prototype.onPositionChange = defaultCallback;
+
+Player.prototype.onMoneyChange = defaultCallback;
+
+Player.prototype.onJailChange = defaultCallback;
+
+Player.prototype.onCardChange = defaultCallback;
+
+Player.prototype.setPosition = function (pos) {
+    var prev = this.position;
+    this.position = pos;
+
+    if (prev !== this.position) {
+        this.onPositionChange();
+    }
 };
 
-/**
- * Callback on pass GO
- */
-Player.prototype.onGoPassed = function () {
+Player.prototype.setMoney = function (money) {
+    var prev = this.money;
+    this.money = money;
+
+    if (prev !== this.money) {
+        this.onMoneyChange();
+    }
+};
+
+Player.prototype.changeMoney = function (amount) {
+    this.setMoney(this.money + amount);
+};
+
+Player.prototype.setJail = function (isInJail) {
+    var prev = this.inJail;
+    this.inJail = isInJail;
+
+    if (prev !== this.inJail) {
+        this.onJailChange();
+    }
+};
+
+Player.prototype.setCard = function (hasCard) {
+    var prev = this.hasCard;
+    this.hasCard = hasCard;
+
+    if (prev !== this.hasCard) {
+        this.onCardChange();
+    }
 };
 
 /**
@@ -302,7 +526,7 @@ Player.prototype.onGoPassed = function () {
  * @param {number} propertyIndex: range from 0 - 39
  */
 Player.prototype.canBuyProperty = function (propertyIndex) {
-    return (this.hasEnoughMoneyThan(selectCellModel(propertyIndex).price)) && (selectCellModel(propertyIndex).owner === -1);
+    return (this.hasEnoughMoneyThan(selectSquareModel(propertyIndex).price)) && (selectSquareModel(propertyIndex).owner === -1);
 };
 
 /**
@@ -314,57 +538,20 @@ Player.prototype.hasEnoughMoneyThan = function (money) {
     return this.money >= money;
 };
 
-/**
- * Modify this player's balance by given amount of money
- * Can be negative or positive value
- * @param {number} amount
- * @return {number} money left
- */
-Player.prototype.changeMoney = function (amount) {
-    this.money += amount;
-
-    // Only call if its THIS player
-    if (this.id === game.clientID) {
-        this.onMoneyChange(this.money);
+Player.prototype.moveByStep = function (steps) {
+    if (steps === 0) {
+        return;
     }
 
-    return this.money;
-};
+    this.position = this.position + steps;
 
-/**
- * Set Money
- * @param {number} money
- * @return {number} money left
- */
-Player.prototype.setMoney = function (money) {
-    this.money = money;
-
-    // Only call if its THIS player
-    if (this.id === game.clientID) {
-        this.onMoneyChange(money);
-    }
-
-    return this.money;
-};
-
-Player.prototype.moveTo = function (destination) {
-    this.onPositionChange(this.id, this.position, destination);
-
-    this.position = destination;
-
-    return this.position;
-};
-
-Player.prototype.moveByStep = function (step) {
-    var from = this.position;
-
-    this.position = this.position + step;
     if (this.position >= 40) {
         this.position -= 40;
 
         this.onGoPassed();
     }
 
-    this.onPositionChange(from, this.position);
+    this.onPositionChange();
+
     return this.position;
 };
