@@ -132,6 +132,9 @@ function parseMessage(data) {
 
                     // Update position
                     selectPlayerModel(current["id"]).moveTo(current["position"]);
+
+                    // Is in jail?
+                    selectPlayerModel(current["id"]).is_in_jail = current["is_in_jail"];
                 }
             },
             "your_turn": function (data) {
@@ -139,12 +142,17 @@ function parseMessage(data) {
                 game.currentTurn = turnOfID;
 
                 if (game.isMyTurn()) {
+                    if (getThisPlayerModel().is_in_jail) {
+                        log("You are in jail", 5);
+                    }
+
                     if (game.doubleRoll) {
                         game.doubleRoll = false;
                         log("You rolled double\nKeep rolling!", turnOfID);
                     } else {
                         log("Your turn!", turnOfID);
                     }
+
                     ViewController.yourTurn();
                 } else {
                     log(sprintf("Player %d's turn!", turnOfID), turnOfID);
@@ -154,14 +162,27 @@ function parseMessage(data) {
                 var source = data["source"];
                 var result = data["result"];
 
+                if (game.isMyTurn() && getThisPlayerModel().is_in_jail) {
+                    if (result[0] !== result[1]) {
+                        log(sprintf("You rolled (%d %d), you're still in Jail", result[0], result[1]), source);
+                        ViewController.preEndTurn();
+                        return;
+                    } else {
+                        log(sprintf("You rolled (%d %d), you're FREE!", result[0], result[1], landedOn), source);
+                        getThisPlayerModel().is_in_jail = false;
+                    }
+                }
+
                 // Update model
                 var landedOn = game.model.movePlayer(source, result);
 
-                // Log result to chat window
-                if (game.isMyTurn()) {
-                    log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
-                } else {
-                    log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
+                if (result[0] + result[1] !== 0) {
+                    // Log result to chat window
+                    if (game.isMyTurn()) {
+                        log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
+                    } else {
+                        log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
+                    }
                 }
 
                 // Do nothing if its not your turn
@@ -170,7 +191,7 @@ function parseMessage(data) {
                 }
 
                 // Rolled double?
-                if (result[0] === result[1]) {
+                if (result[0] === result[1] && result[0] + result[1] !== 0) {
                     game.doubleRoll = true;
                 }
 
@@ -195,7 +216,7 @@ function parseMessage(data) {
                             break;
                         default:
                             // Others
-                            // Do nothing, Proceed to EOT
+                            // Pay tax
                             ViewController.preEndTurn();
                             break;
                     }
@@ -214,9 +235,9 @@ function parseMessage(data) {
 
 
                 if (game.isSource(source)) {
-                    log(sprintf("You have bought Property %d for £%d", property, price), 5);
+                    log(sprintf("You have bought Property %d for £%d", property, price), source);
                 } else {
-                    log(sprintf("Player %d has bought Property %d for £%d", source, property, price), 5);
+                    log(sprintf("Player %d has bought Property %d for £%d", source, property, price), source);
                 }
             },
             "auction_start": function (data) {
@@ -250,7 +271,7 @@ function parseMessage(data) {
                 var source = data["source"];
 
                 if (!game.isSource(source)) {
-                    log("Player " + source + " has placed his bid", 5);
+                    log("Player " + source + " has placed his bid", source);
                 }
             },
             "auction_finished": function (data) {
@@ -259,9 +280,9 @@ function parseMessage(data) {
                 var price = data["price"];
 
                 if (game.isSource(winner)) {
-                    log(sprintf("You have bought Property %d for £%d", property, price), 5);
+                    log(sprintf("You have bought Property %d for £%d", property, price), winner);
                 } else {
-                    log(sprintf("Player %s has bought Property %d for £%d", winner, property, price), 5);
+                    log(sprintf("Player %s has bought Property %d for £%d", winner, property, price), winner);
                 }
 
                 // Change price and property's owner
@@ -284,10 +305,13 @@ function parseMessage(data) {
             "player_lose": function (data) {
                 var player = data["player"];
 
-                // todo: player lose
-                alert("GAME OVER!\nYou lose!");
+                if (game.isSource(player)) {
+                    // todo: player lose, do something
+                    alert("GAME OVER!\nYou lose!");
+                }
             },
             "textual_update": function (data) {
+                console.log(data["text"]);
                 log(data["text"], 5);
             },
             "build_ack": function (data) {
@@ -296,9 +320,9 @@ function parseMessage(data) {
                 var currentRent = data["current_rent"];
 
                 if (game.isSource(source)) {
-                    log("You have built a house on Property " + property, 5);
+                    log("You have built a house on Property " + property, source);
                 } else {
-                    log(sprintf("Player %d has built a house on Property %d", source, property), 5);
+                    log(sprintf("Player %d has built a house on Property %d", source, property), source);
                 }
 
 
@@ -413,7 +437,9 @@ function generateMessage(type, parameter) {
          */
         "build_house": function (parameter) {
             var ret = _generateHeader("build_house", ["source"]);
-            ret.property = parameter.property
+            ret.property = parameter.property;
+
+            return ret;
         }
     };
 

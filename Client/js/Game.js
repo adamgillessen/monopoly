@@ -3,6 +3,10 @@
  */
 "use strict";
 
+/**
+ * Useless for now
+ * @type {{OTHERS_TURN: string, ROLL: string, BUY: string, AUCTION: string, EOT: string}}
+ */
 var GAME_STATE = {
     OTHERS_TURN: "OTHERS_TURN",
     ROLL: "ROLL",

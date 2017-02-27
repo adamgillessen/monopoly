@@ -149,14 +149,14 @@ ViewController.addCallbacksToButtons = function () {
 
     // Build property
     $("#p-c-build").click(function () {
-        var propertyTuBuild = ViewController.currentSelectedSquare;
+        var propertyToBuild = ViewController.currentSelectedSquare;
         // Check if all properties of same estate are owned by this player
-        if (game.model.canBuildHouse(propertyTuBuild)) {
+        if (game.model.canBuildHouse(propertyToBuild)) {
             // Check if this player has enough money to build
-            if (getThisPlayerModel().hasEnoughMoneyThan(selectCellModel(propertyTuBuild).rent)) {
+            if (getThisPlayerModel().hasEnoughMoneyThan(selectCellModel(propertyToBuild).rent)) {
                 // Send build message
                 game.connector.sendMessage(generateMessage("build_house", {
-                    property: propertyTuBuild
+                    property: propertyToBuild
                 }));
             } else {
                 alert("You don't have enough money to build!");
