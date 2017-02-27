@@ -47,23 +47,22 @@ class BuildingTest(unittest.TestCase):
             round_no_roll = True
             for player in keys:
                 if player != None:
-                    print(">> Check if player ",player, "lost")
-                    try :
-                        players[player].switch_to.alert.accept()
-                        lost = True
-                        print(">> Player ",player, " lost")
-                        keys[keys.index(player)] = None
-                        continue
-                    except NoAlertPresentException:
-                        if keys.count(None)==len(keys)-1:
-                            return
-                        print(">> Player ",player,"'s turn") 
-                        while players[player].find_element_by_id("btn-roll").is_displayed():
-                            bid = False
-                            print(">> Player ",player, " rolled")
-                            players[player].find_element_by_id("btn-roll").click()
-                            round_no_roll =False
-                                                  
+                    if keys.count(None)==len(keys)-1:
+                        return
+                    print(">> Player ",player,"'s turn") 
+                    while players[player].find_element_by_id("btn-roll").is_displayed():
+                        bid = False
+                        print(">> Player ",player, " rolled")
+                        players[player].find_element_by_id("btn-roll").click()
+                        round_no_roll =False
+                        print(">> Check if player ",player, "lost")
+                        try :
+                            players[player].switch_to.alert.accept()
+                            lost = True
+                            print(">> Player ",player, " lost")
+                            keys[keys.index(player)] = None
+                            continue
+                        except NoAlertPresentException:    
                             if players[player].find_element_by_id("prompt-buy").is_displayed():
                                 print(">> Player ",player, "landed on a property")    
                                 print(">> Player ",player, "choice to auction")
