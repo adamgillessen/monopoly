@@ -106,16 +106,15 @@ function parseMessage(data) {
 
                     current = listProperties[lop];
 
-                    // This is not a property
-                    if (selectCellModel(current["id"]).type !== "property") {
+                    // This is not a property or UTIL or TRANS
+                    if (!selectSquareModel(current["id"]).isBaseProperty()) {
                         continue;
                     }
 
                     // Update owner
-                    selectCellModel(current["id"]).owner = current.owner;
+                    selectSquareModel(current["id"]).setOwner(current.owner);
 
-
-                    if (game.isSource(current.owner)) {
+                    if (game.isThisClient(current.owner)) {
                         game.model.propertiesOwnedByThisPlayer.push(current["id"]);
                     }
                 }
@@ -131,13 +130,13 @@ function parseMessage(data) {
                     selectPlayerModel(current["id"]).setMoney(current["money"]);
 
                     // Update position
-                    selectPlayerModel(current["id"]).moveTo(current["position"]);
+                    selectPlayerModel(current["id"]).setPosition(current["position"]);
 
                     // Is in jail?
-                    selectPlayerModel(current["id"]).inJail = current["is_in_jail"];
+                    selectPlayerModel(current["id"]).setJail(current["is_in_jail"]);
 
                     // Has get out of jail card?
-                    selectPlayerModel(current["id"]).hasCard = current["has_card"];
+                    selectPlayerModel(current["id"]).setCard(current["has_card"]);
                 }
             },
             "your_turn": function (data) {
@@ -171,8 +170,8 @@ function parseMessage(data) {
                         ViewController.preEndTurn();
                         return;
                     } else {
-                        log(sprintf("You rolled (%d %d), you're FREE!", result[0], result[1], landedOn), source);
-                        getThisPlayerModel().inJail = false;
+                        log(sprintf("You're FREE!", result[0], result[1]), source);
+                        getThisPlayerModel().setJail(false);
                     }
                 }
 
@@ -199,14 +198,14 @@ function parseMessage(data) {
                 }
 
                 // What type of square player lands on?
-                if (selectCellModel(landedOn).type === "action") {
+                if (!selectSquareModel(landedOn).isBaseProperty()) {
                     // Lands on Action square
                     ViewController.preEndTurn();
                 } else {
                     // Lands on Property square
 
                     // Who owns this property?
-                    switch (selectCellModel(landedOn).owner) {
+                    switch (selectSquareModel(landedOn).owner) {
                         case -1:
                             // Nobody
                             // Prompt buy options
@@ -229,15 +228,15 @@ function parseMessage(data) {
                 var source = data["source"];
                 var property = data["property"];
 
-                var price = selectCellModel(property).price;
+                var price = selectSquareModel(property).price;
 
                 // Change money value first
-                selectPlayerModel(source).changeMoney(-selectCellModel(property).price);
+                selectPlayerModel(source).changeMoney(-selectSquareModel(property).price);
                 // Change property owner, too
-                selectCellModel(property).changeOwner(source);
+                selectSquareModel(property).setOwner(source);
 
 
-                if (game.isSource(source)) {
+                if (game.isThisClient(source)) {
                     log(sprintf("You have bought Property %d for £%d", property, price), source);
                 } else {
                     log(sprintf("Player %d has bought Property %d for £%d", source, property, price), source);
@@ -251,7 +250,7 @@ function parseMessage(data) {
 
                 if (source === -1) {
                     log("Two or more players have placed the same bid, Auction starts over again", 5);
-                } else if (game.isSource(source)) {
+                } else if (game.isThisClient(source)) {
                     log(sprintf("You have started an Auction on Property %d!", property), source);
                 } else {
                     log(sprintf("Player %d has started an Auction on Property %d!", source, property), source);
@@ -273,7 +272,7 @@ function parseMessage(data) {
             "auction_bid_ack": function (data) {
                 var source = data["source"];
 
-                if (!game.isSource(source)) {
+                if (!game.isThisClient(source)) {
                     log("Player " + source + " has placed his bid", source);
                 }
             },
@@ -282,7 +281,7 @@ function parseMessage(data) {
                 var property = data["property"];
                 var price = data["price"];
 
-                if (game.isSource(winner)) {
+                if (game.isThisClient(winner)) {
                     log(sprintf("You have bought Property %d for £%d", property, price), winner);
                 } else {
                     log(sprintf("Player %s has bought Property %d for £%d", winner, property, price), winner);
@@ -290,7 +289,7 @@ function parseMessage(data) {
 
                 // Change price and property's owner
                 selectPlayerModel(winner).changeMoney(-price);
-                selectCellModel(property).changeOwner(winner);
+                selectSquareModel(property).setOwner(winner);
 
                 game.endAuction(data);
             },
@@ -298,7 +297,7 @@ function parseMessage(data) {
                 var source = data.source;
                 var text = data.text;
 
-                if (game.isSource(source)) {
+                if (game.isThisClient(source)) {
                     log("You:\n" + text, source);
                 } else {
                     var template = "Player %d:\n%s";
@@ -308,7 +307,7 @@ function parseMessage(data) {
             "player_lose": function (data) {
                 var player = data["player"];
 
-                if (game.isSource(player)) {
+                if (game.isThisClient(player)) {
                     // todo: player lose, do something
                     alert("GAME OVER!\nYou lose!");
                 }
@@ -321,15 +320,14 @@ function parseMessage(data) {
                 var property = data["property"];
                 var currentRent = data["current_rent"];
 
-                if (game.isSource(source)) {
+                if (game.isThisClient(source)) {
                     log("You have built a house on Property " + property, source);
                 } else {
                     log(sprintf("Player %d has built a house on Property %d", source, property), source);
                 }
 
-
-                selectCellModel(property).displayRent = currentRent;
-                selectCellModel(property).build();
+                selectSquareModel(property).setRent(currentRent);
+                selectSquareModel(property).build();
             }
         };
     }

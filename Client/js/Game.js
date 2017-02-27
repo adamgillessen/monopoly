@@ -67,7 +67,7 @@ function Game() {
  */
 Game.prototype.initGame = function (num) {
     this.model.initCells();
-    this.model.initPlayer(num);
+    this.model.initPlayers(num);
 
     ViewController.addCallbacksToButtons();
     ViewController.addCallbacksToEvents();
@@ -87,7 +87,7 @@ Game.prototype.isMyTurn = function () {
  * @param {number} source
  * @return {boolean}
  */
-Game.prototype.isSource = function (source) {
+Game.prototype.isThisClient = function (source) {
     return this.clientID === source;
 };
 

@@ -36,16 +36,18 @@ ViewController.createPlayers = function (num) {
 };
 
 ViewController.addCallbacksToEvents = function () {
-    Player.prototype.onMoneyChange = function (money) {
-        $("#money").text("£" + money);
+    Player.prototype.onMoneyChange = function () {
+        if (game.isThisClient(this.id)) {
+            $("#money").text("£" + this.money);
+        }
     };
 
-    Player.prototype.onPositionChange = function (from, to) {
-        ViewController.movePlayer(this.id, to);
+    Player.prototype.onPositionChange = function () {
+        ViewController.movePlayer(this.id, this.position);
     };
 
     Player.prototype.onGoPassed = function () {
-        if (game.isSource(this.id)) {
+        if (game.isThisClient(this.id)) {
             log("You have passed GO, got 200", this.id);
         } else {
             log(sprintf("Player %d has passed GO, got 200", this.id), this.id);
@@ -54,20 +56,20 @@ ViewController.addCallbacksToEvents = function () {
         selectPlayerModel(this.id).changeMoney(200);
     };
 
-    Property.prototype.onOwnerChange = function (owner) {
+    Square.prototype.onOwnerChange = function () {
         if (this.id === ViewController.currentSelectedSquare) {
-            ViewController.showCellDetail(this.id);
+            selectSquareModel(this.id).showDetail();
         }
 
         // If this player gets new property, add it to inventory
-        if (game.isSource(owner)) {
+        if (game.isThisClient(this.owner)) {
             ViewController.addToInventory(this.id);
         }
     };
 
-    Property.prototype.onBuildProgressChange = function (progress) {
+    Square.prototype.onBuildProgressChange = function () {
         if (this.id === ViewController.currentSelectedSquare) {
-            ViewController.showCellDetail(this.id);
+            selectSquareModel(this.id).showDetail();
         }
     };
 };
@@ -140,7 +142,7 @@ ViewController.addCallbacksToButtons = function () {
     // Show detail pane of a selected cell
     $(".cell").click(function () {
         var id = parseInt($(this)[0].id.replace("cell-", ""));
-        ViewController.showCellDetail(id);
+        selectSquareModel(id).showDetail();
     });
 
     /////////////////
@@ -153,7 +155,7 @@ ViewController.addCallbacksToButtons = function () {
         // Check if all properties of same estate are owned by this player
         if (game.model.canBuildHouse(propertyToBuild)) {
             // Check if this player has enough money to build
-            if (getThisPlayerModel().hasEnoughMoneyThan(selectCellModel(propertyToBuild).rent)) {
+            if (getThisPlayerModel().hasEnoughMoneyThan(selectSquareModel(propertyToBuild).rent)) {
                 // Send build message
                 game.connector.sendMessage(generateMessage("build_house", {
                     property: propertyToBuild
@@ -196,7 +198,7 @@ ViewController.addToInventory = function (id) {
         // Click item in Inventory Pane
         current.click(function () {
             var id = parseInt($(this).children(".square").text());
-            ViewController.showCellDetail(id);
+            selectSquareModel(id).showDetail();
         });
     }
 
@@ -243,10 +245,12 @@ ViewController.chatButtonClicked = function () {
     }
 };
 
+// todo: remove this
 /**
  * Show details of a given cell to the detail-pane section in HTML
  * @param {number} id
  */
+/*
 ViewController.showCellDetail = function (id) {
     if (typeof id !== "number") {
         id = parseInt(id);
@@ -259,7 +263,7 @@ ViewController.showCellDetail = function (id) {
     var name = ViewController.tableName[id];
     var cell = game.model.selectCell(id);
 
-    if (cell.type === "property") {
+    if (cell.isBaseProperty()) {
         // Hide action pane
         // Show property pane
         $("#property").show();
@@ -291,7 +295,7 @@ ViewController.showCellDetail = function (id) {
         if (cell.rent === -1) {
             $("#property-rent").text("");
         } else {
-            $("#property-rent").text(sprintf("Rent: £%d", cell.displayRent));
+            $("#property-rent").text(sprintf("Rent: £%d", cell.rent));
         }
 
         // Control pane hide.
@@ -302,7 +306,7 @@ ViewController.showCellDetail = function (id) {
         if (owner === -1) {
             $("#property-owner").text("ON SALE");
         } else {
-            if (game.isSource(owner)) {
+            if (game.isThisClient(owner)) {
                 $("#property-owner").text("Owner: You");
                 $("#property-controls").show();
 
@@ -335,6 +339,7 @@ ViewController.showCellDetail = function (id) {
         $("#action-description").text(name);
     }
 };
+*/
 
 /**
  * Move circle that represents player to the given cell by id

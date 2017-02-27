@@ -24,9 +24,9 @@ function selectPlayer(id) {
 /**
  * Get square by id
  * @param {number} id
- * @return {Property|Action}
+ * @return {Square}
  */
-function selectCellModel(id) {
+function selectSquareModel(id) {
     return game.model.selectCell(id);
 }
 
