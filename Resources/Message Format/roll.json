@@ -1,5 +1,5 @@
 {
     "type": "roll",
     // ID of client request to roll
-    "source": 1,
+    "source": 1
 }

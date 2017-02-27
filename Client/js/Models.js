@@ -119,20 +119,39 @@ Board.prototype.playerAtByID = function (id) {
  * @return {Boolean}
  */
 Board.prototype.canBuildHouse = function (propertyID) {
+    // todo: bug fix
     var estate = this.squares[propertyID].estate;
 
-    var lop = 0;
-    for (; lop < game.model.propertyEstate[estate].length; lop++) {
+    var properties = game.model.propertyEstate[estate];
+    var lop;
+    var iHigh = 0;
+    var iLow = 0;
+
+    for (lop = 0; lop < properties.length; lop++) {
         // If not all owned by this player
         // Return false
-        if (!game.isSource(this.squares[game.model.propertyEstate[estate][lop]].owner)) {
+        if (!game.isSource(this.squares[properties[lop]].owner)) {
             return false;
         }
 
-        // todo:Check if is evenly built
+        // Find index of biggest number
+        if (properties[iHigh] < properties[lop]) {
+            iHigh = lop;
+        }
+
+        // Find index of smallest number
+        if (properties[iLow] > properties[lop]) {
+            iLow = lop;
+        }
     }
 
-    return true;
+    // All properties are evenly built, so you can build new one on top of them
+    if (properties[iHigh] === properties[iLow]) {
+        return true;
+    }
+
+    // Not evenly built, you can only build on lower one
+    return properties[iLow] === properties[propertyID];
 };
 
 /**
@@ -195,18 +214,16 @@ function Property(cell_id, estate, price, rent) {
 }
 /**
  * Call back to on owner change event
- * @param {number} id
  * @param {number} owner
  */
-Property.onOwnerChange = function (id, owner) {
+Property.prototype.onOwnerChange = function (owner) {
 };
 
 /**
  * Callback on build progress change
- * @param {number} id
  * @param {number} newProgress
  */
-Property.onBuildProgressChange = function (id, newProgress) {
+Property.prototype.onBuildProgressChange = function (newProgress) {
 };
 
 /**
@@ -216,19 +233,19 @@ Property.onBuildProgressChange = function (id, newProgress) {
 Property.prototype.changeOwner = function (owner) {
     this.owner = owner;
 
-    Property.onOwnerChange(this.id, owner);
+    this.onOwnerChange(owner);
 };
 
 Property.prototype.build = function () {
     this.buildProgress += 1;
 
-    Property.onBuildProgressChange(this.id, this.buildProgress);
+    this.onBuildProgressChange(this.buildProgress);
 };
 
 Property.prototype.setBuildProgress = function (progress) {
     this.buildProgress = progress;
 
-    Property.onBuildProgressChange(this.id, progress);
+    this.onBuildProgressChange(progress);
 };
 
 /**
@@ -255,31 +272,29 @@ function Player(id) {
     this.id = id;
     this.position = 0;
     this.money = undefined;
-    this.is_in_jail = false;
+    this.inJail = false;
+    this.hasCard = false;
 }
 
 /**
  * Callback on money change
- * @param id
  * @param money
  */
-Player.onMoneyChange = function (id, money) {
+Player.prototype.onMoneyChange = function (money) {
 };
 
 /**
  * Callback on position change
- * @param id
  * @param from
  * @param to
  */
-Player.onPositionChange = function (id, from, to) {
+Player.prototype.onPositionChange = function (from, to) {
 };
 
 /**
  * Callback on pass GO
- * @param id
  */
-Player.onGoPassed = function (id) {
+Player.prototype.onGoPassed = function () {
 };
 
 /**
@@ -310,7 +325,7 @@ Player.prototype.changeMoney = function (amount) {
 
     // Only call if its THIS player
     if (this.id === game.clientID) {
-        Player.onMoneyChange(this.id, this.money);
+        this.onMoneyChange(this.money);
     }
 
     return this.money;
@@ -326,14 +341,14 @@ Player.prototype.setMoney = function (money) {
 
     // Only call if its THIS player
     if (this.id === game.clientID) {
-        Player.onMoneyChange(this.id, money);
+        this.onMoneyChange(money);
     }
 
     return this.money;
 };
 
 Player.prototype.moveTo = function (destination) {
-    Player.onPositionChange(this.id, this.position, destination);
+    this.onPositionChange(this.id, this.position, destination);
 
     this.position = destination;
 
@@ -347,9 +362,9 @@ Player.prototype.moveByStep = function (step) {
     if (this.position >= 40) {
         this.position -= 40;
 
-        Player.onGoPassed(this.id);
+        this.onGoPassed();
     }
 
-    Player.onPositionChange(this.id, from, this.position);
+    this.onPositionChange(from, this.position);
     return this.position;
 };

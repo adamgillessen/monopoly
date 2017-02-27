@@ -36,38 +36,38 @@ ViewController.createPlayers = function (num) {
 };
 
 ViewController.addCallbacksToEvents = function () {
-    Player.onMoneyChange = function (id, money) {
+    Player.prototype.onMoneyChange = function (money) {
         $("#money").text("£" + money);
     };
 
-    Player.onPositionChange = function (id, from, to) {
-        ViewController.movePlayer(id, to);
+    Player.prototype.onPositionChange = function (from, to) {
+        ViewController.movePlayer(this.id, to);
     };
 
-    Player.onGoPassed = function (id) {
-        if (game.isSource(id)) {
-            log("You have passed GO, got 200", id);
+    Player.prototype.onGoPassed = function () {
+        if (game.isSource(this.id)) {
+            log("You have passed GO, got 200", this.id);
         } else {
-            log(sprintf("Player %d has passed GO, got 200", id), id);
+            log(sprintf("Player %d has passed GO, got 200", this.id), this.id);
         }
 
-        game.model.selectPlayer(id).changeMoney(200);
+        selectPlayerModel(this.id).changeMoney(200);
     };
 
-    Property.onOwnerChange = function (id, owner) {
-        if (id === ViewController.currentSelectedSquare) {
-            ViewController.showCellDetail(id);
+    Property.prototype.onOwnerChange = function (owner) {
+        if (this.id === ViewController.currentSelectedSquare) {
+            ViewController.showCellDetail(this.id);
         }
 
         // If this player gets new property, add it to inventory
         if (game.isSource(owner)) {
-            ViewController.addToInventory(id);
+            ViewController.addToInventory(this.id);
         }
     };
 
-    Property.onBuildProgressChange = function (id, progress) {
-        if (id === ViewController.currentSelectedSquare) {
-            ViewController.showCellDetail(id);
+    Property.prototype.onBuildProgressChange = function (progress) {
+        if (this.id === ViewController.currentSelectedSquare) {
+            ViewController.showCellDetail(this.id);
         }
     };
 };

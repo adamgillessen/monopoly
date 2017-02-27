@@ -223,6 +223,7 @@ class Board:
                 msg["players"][str(player_id)]["is_in_jail"] = player.jail
                 msg["players"][str(player_id)]["money"] = player.money
                 msg["players"][str(player_id)]["position"] = pos
+                msg["players"][str(player_id)]["has_card"] = player.free 
 
         return msg
 
@@ -439,6 +440,43 @@ class Board:
         current_rent = property_square.base_rent * (2 ** property_square.num_houses)
         return current_rent
 
+    def mortgage_property(self, player_id, property_id):
+        """
+        Mortgages a property so that the player gets the mortgage value of the
+        property. The player then collects no rent until they buy back the
+        property for the mortgage value +10%.
+
+        :param player_id: the id of the player who owns the property
+        :param property_d: the id of the property which is being mortgaged
+        """
+        property_square = self.get_square(property_id)
+        if property_square.owner == player_id and not property_square.is_mortgaged:
+            property_square.is_mortgaged = True
+            self.give_money(player_id, property_square.mortgage_value)
+        else:
+            raise MortgageException
+
+    def unmortgage_property(self, player_id, property_id):
+        """
+        Buys a property back from the bank. Costs a player the mortgage
+        value + 10%.
+
+        :param player_id: the id of the player who owns the property
+        :param property_d: the id of the property which is mortgaged
+        """
+        property_square = self.get_square(property_id)
+        player = self._players[player_id]
+        cost = int(property_square.mortgage_value * 1.1)
+        if property_square.owner == player_id and property_square.is_mortgaged \
+            and player.money > cost:
+
+            property_square.is_mortgaged = False
+            self.take_money(player_id, cost)
+        else:
+            raise MortgageException
+
+
+
     def take_turn(self, player_id, dice1, dice2):
         """
         Runs the specified player's turn based on their dice roll result.
@@ -488,33 +526,36 @@ class Board:
             if square.is_owned:
                 #print(">>Square is owned")
                 if square.owner != player_id:
-                    if square.square_type == Square.PROPERTY:
-                        #print(">>Square is a property square")
-                        rent = square.base_rent * (2**square.num_houses)
-                    elif square.square_type == Square.UTILITY:
-                        #print(">>Square is a utility square")
-                        dice_roll_sum = sum(self.roll_dice())
-                        owner = self._players[square.owner]
-                        if owner.num_utils() == 1:
-                            rent = dice_roll_sum * square.one_owned
-                        else:
-                            rent = dice_roll_sum * square.two_owned
-                    elif square.square_type == Square.TRANSPORT:
-                        #print(">>Square is a transport square")
-                        owner = self._players[square.owner]
-                        rent = square.base_rent * (2**owner.num_transports())
+                    if square.is_mortgaged:
+                        what_happened = "This property is mortgaged - no rent"
+                    else:
+                        if square.square_type == Square.PROPERTY:
+                            #print(">>Square is a property square")
+                            rent = square.base_rent * (2**square.num_houses)
+                        elif square.square_type == Square.UTILITY:
+                            #print(">>Square is a utility square")
+                            dice_roll_sum = sum(self.roll_dice())
+                            owner = self._players[square.owner]
+                            if owner.num_utils() == 1:
+                                rent = dice_roll_sum * square.one_owned
+                            else:
+                                rent = dice_roll_sum * square.two_owned
+                        elif square.square_type == Square.TRANSPORT:
+                            #print(">>Square is a transport square")
+                            owner = self._players[square.owner]
+                            rent = square.base_rent * (2**owner.num_transports())
 
-                    try:
-                        self.take_money(player_id, rent)
-                    except PlayerLostError:
-                        self.remove_player(player_id)
-                        raise PlayerLostError
+                        try:
+                            self.take_money(player_id, rent)
+                        except PlayerLostError:
+                            self.remove_player(player_id)
+                            raise PlayerLostError
 
-                    self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                        player_id, rent, square.owner))
-                    what_happened = "Player {} paid ${} to {} in rent.".format(
-                        player_id, rent, square.owner)
-                    self.give_money(square.owner, rent)
+                        self._human_string.append("Player {} paid ${} to {} in rent.".format(
+                            player_id, rent, square.owner))
+                        what_happened = "Player {} paid ${} to {} in rent.".format(
+                            player_id, rent, square.owner)
+                        self.give_money(square.owner, rent)
 
                 else:
                     what_happened = "Player {} already owns square".format(player_id)
@@ -662,5 +703,9 @@ class Board:
         yield re_check_location, new_roll, "\n".join(self._human_string)
 
 class BuildException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+class MortgageException(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

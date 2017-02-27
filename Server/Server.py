@@ -182,6 +182,52 @@ class Server:
     def new_roll(self, new_new_roll):
         self._new_roll = new_new_roll
 
+    def mortgage_property(self, player_id, property_id):
+        """
+        Mortgaes a property so that the player gets the mortage value of the property
+        but they collect no rent on it and must buy it back for 10% extra. 
+        """
+        self._board.mortgage_property(player_id, property_id)
+
+    def unmortgage_property(self, player_id, property_id):
+        """
+        Buys the property back from the bank, paying an additional
+        10% of what the mortage value is. 
+        """
+        self._board.unmortgage_property(player_id, property_id)
+
+    def sell_house(self, player_id, property_id):
+        """
+        Sells the house which is owned by player-id and id'd by property id
+        """
+        self._board.sell_house(player_id, property_id)
+
+    def build_house(self, player_id, property_id):
+        """
+        Builds a house on property_id owned by playe_id
+        """
+        self._board.build_house(self, player_id, property_id)
+
+    def get_current_rent(self, property_id):
+        """
+        The rent which a player will be charged if they land on the square.
+        """
+        self._board.get_current_rent(property_id)
+
+    def get_num_houses(self, property_id):
+        """
+        Returns the number of houses which are currently on property_id
+        """
+        self._board.get_num_houses(property_id)
+
+    def leave_jail(self, player_id, free_card = False):
+        """
+        Has player_id leave jail and continue the game as normal
+        """
+        self._board.leave_jail(self, player_id, free_card)
+
+        
+
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
@@ -413,9 +459,9 @@ def recv_message(client, server, message):
         property_id = json_string["property"]
         try:
             if json_string["sell"]:
-                self._board.sell_house(player_id, property_id)
-                current_rent = self._board.get_current_rent(property_id)
-                num_houses = self._board.get_num_houses(property_id)
+                s.sell_house(player_id, property_id)
+                current_rent = s.get_current_rent(property_id)
+                num_houses = s.get_num_houses(property_id)
                 response_json = {
                     "type" : "build_ack",
                     "property": json_string["property"],
@@ -428,9 +474,9 @@ def recv_message(client, server, message):
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
                 
             else:
-                self._board.build_house(player_id, property_id)
-                current_rent = self._board.get_current_rent(property_id)
-                num_houses = self._board.get_num_houses(property_id)
+                s.build_house(player_id, property_id)
+                current_rent = s.get_current_rent(property_id)
+                num_houses = s.get_num_houses(property_id)
                 response_json = {
                     "type" : "build_ack",
                     "property": json_string["property"],
@@ -447,9 +493,30 @@ def recv_message(client, server, message):
     elif json_string["type"] == "pay_bail":
         player_id = json_string["source"]
         if json_string["get_out_of_jail_free"]:
-            self._board.leave_jail(player_id, free_card = True)
+            s.leave_jail(player_id, free_card = True)
         else:
-            self._board.leave_jail(player_id, free_card = False) 
+            s.leave_jail(player_id, free_card = False) 
+
+    elif json_string["type"] == "mortgage_property":
+        player_id = json_string["player"]
+        property_id = json_string["property"]
+        try:
+            if json_string["unmortgage"]:
+                s.unmortgage_property(player_id, property_id)
+            else:
+                s.mortgage_property(player_id, property_id)
+
+            response_json = {
+                "type": "mortgage_property_ack",
+                "property": property_id, 
+                "player": player_id, 
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+    
+        except MortgageException:
+            pass
+
 
 if __name__ == "__main__":
     try:

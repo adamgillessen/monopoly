@@ -1,0 +1,7 @@
+{
+    "type": "mortgage_property",
+    "property": 3, // the id of the property being mortgaged
+    "player": 1, // the id of the player who is sending the message
+    "unmortgage": false, // False is a player is mortgaging a property
+                        // True if the are unmortgaging a property
+}

@@ -198,6 +198,8 @@ class PropertySquare(OwnableSquare):
         self._square_type = Square.PROPERTY
         self._num_houses = 0
         self._house_cost = base_rent
+        self._is_mortgaged = False
+        self._mortgage_value = price // 2
 
     def __str__(self):
         """
@@ -224,6 +226,18 @@ class PropertySquare(OwnableSquare):
     @property
     def house_cost(self):
         return self._house_cost
+
+    @property
+    def is_mortgaged(self):
+        return self._is_mortgaged
+
+    @is_mortgaged.setter
+    def is_mortgaged(self, new_is_mortgaged):
+        self._is_mortgaged = new_is_mortgaged 
+
+    @property
+    def mortgage_value(self):
+        return self._mortgage_value
 
 class UtilitySquare(OwnableSquare):
     """
