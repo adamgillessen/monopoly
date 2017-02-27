@@ -22,7 +22,6 @@ Resources - assorted development information
 1. Add mortgaging property
 1. Add unit tests for house building to server
 1. Add Jail turn functionality to Client
-1. Add selling houses
 1. Define a "pay\_bail" json message which a clinet sends to the server to say that the user is paying their bail
 
 
