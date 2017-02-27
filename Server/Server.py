@@ -277,7 +277,7 @@ def recv_message(client, server, message):
         s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
         try:
             msg = s.current_turn_generator.send(None)
-            if msg.startswith("action_square"):
+            if msg.startswith("action_square") or msg.startswith("paid_rent"):
                 what_happened = msg.split("|")[1]
                 response_json = {
                     "type": "textual_update",
@@ -286,6 +286,7 @@ def recv_message(client, server, message):
 
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
         except PlayerLostError:
             response_json = {
                 "type": "player_lose",

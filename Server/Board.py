@@ -333,16 +333,6 @@ class Board:
         if free_card:
             player.free = False
         
-
-    def add_house(self, pos):
-        """
-        Adds a house to the Square at position pos.
-
-        :param pos: the position of the square the house is being added to
-        """
-        square = self.get_square(pos)
-        square.num_houses += 1
-
     def remove_player(self, player_id):
         """
         Gracefully removes a plyer from the game.
@@ -416,7 +406,7 @@ class Board:
                 or (estate_id in range(2, 7) and estate_prop_count == 3):
                 if property_square.num_houses > 0:
                     property_square.num_houses -= 1
-                    self.give_money(player_id, property_square.house_cost / 2) 
+                    self.give_money(player_id, property_square.house_cost // 2) 
                     return 
         raise BuildException
 
@@ -466,7 +456,7 @@ class Board:
         self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
-        if dice1 == dice2:
+        if dice1 == dice2 and dice1 + dice2 != 0:
             self._human_string.append("Player {} rolled a double.".format(player_id))
             if not player.jail:
                 player.double_roll = True
@@ -521,13 +511,16 @@ class Board:
                         raise PlayerLostError
 
                     self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                    player_id, rent, square.owner))
+                        player_id, rent, square.owner))
+                    what_happened = "Player {} paid ${} to {} in rent.".format(
+                        player_id, rent, square.owner)
                     self.give_money(square.owner, rent)
 
                 else:
+                    what_happened = "Player {} already owns square".format(player_id)
                     self._human_string.append("Player {} already owns square".format(player_id))
 
-                yield "paid_rent"
+                yield "paid_rent|" + what_happened
 
             else:
                 #print(">>Square is not owned")
