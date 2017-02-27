@@ -223,6 +223,7 @@ class Board:
                 msg["players"][str(player_id)]["is_in_jail"] = player.jail
                 msg["players"][str(player_id)]["money"] = player.money
                 msg["players"][str(player_id)]["position"] = pos
+                msg["players"][str(player_id)]["has_card"] = player.free 
 
         return msg
 
