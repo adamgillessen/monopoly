@@ -182,6 +182,20 @@ class Server:
     def new_roll(self, new_new_roll):
         self._new_roll = new_new_roll
 
+    def mortgage_property(self, player_id, property_id):
+        """
+        Mortgaes a property so that the player gets the mortage value of the property
+        but they collect no rent on it and must buy it back for 10% extra. 
+        """
+        self._board.mortgage_property(player_id, property_id)
+
+    def unmortgage_property(self, player_id, property_id):
+        """
+        Buys the property back from the bank, paying an additional
+        10% of what the mortage value is. 
+        """
+        self._board.unmortgage_property(player_id, property_id)
+
 def new_client(client, server):
     """
     This function will be run when a new client connects to the server. 
@@ -450,6 +464,15 @@ def recv_message(client, server, message):
             self._board.leave_jail(player_id, free_card = True)
         else:
             self._board.leave_jail(player_id, free_card = False) 
+
+    elif json_string["type"] == "mortgage_property":
+        player_id = json_string["player"]
+        property_id = json_string["property"]
+        if json_string["unmortgage"]:
+            s.unmortgage_property(player_id, property_id)
+        else:
+            s.mortgage_property(player_id, property_id)
+
 
 if __name__ == "__main__":
     try:
