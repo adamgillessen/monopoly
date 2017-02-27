@@ -149,23 +149,23 @@ Board.prototype.canBuildHouse = function (propertyID) {
         }
 
         // Find index of biggest number
-        if (properties[iHigh] < properties[lop]) {
+        if (properties[iHigh].buildProgress < properties[lop].buildProgress) {
             iHigh = lop;
         }
 
         // Find index of smallest number
-        if (properties[iLow] > properties[lop]) {
+        if (properties[iLow].buildProgress > properties[lop].buildProgress) {
             iLow = lop;
         }
     }
 
     // All properties are evenly built, so you can build new one on top of them
-    if (properties[iHigh] === properties[iLow]) {
+    if (properties[iHigh].buildProgress === properties[iLow].buildProgress) {
         return true;
     }
 
     // Not evenly built, you can only build on lower one
-    return properties[iLow] === properties[propertyID];
+    return properties[iLow].buildProgress === properties[propertyID].buildProgress;
 };
 
 /**
