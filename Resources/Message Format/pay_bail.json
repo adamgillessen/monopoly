@@ -3,5 +3,5 @@
     "source": 1,
     // False: He paid bail
     // True: He used card
-    "get_out_of_jail_free": false,
+    "get_out_of_jail_free": false
 }

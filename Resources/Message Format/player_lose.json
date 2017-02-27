@@ -1,0 +1,4 @@
+{
+    "type": "player_lose",
+    "player": 1 // the player which has been knocked out
+}
