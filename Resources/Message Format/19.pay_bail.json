@@ -1,0 +1,5 @@
+{
+    "type": "pay_bail",
+    "source": 1,
+    "get_out_of_jail_free": false,
+}
