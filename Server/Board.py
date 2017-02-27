@@ -378,7 +378,7 @@ class Board:
         """
         return player_id in self._is_in_game.keys() and self._is_in_game[player_id]
 
-    def build_house(player_id, property_id):
+    def build_house(self, player_id, property_id):
         """
         Builds a house on the property whose id is property_id, owned by player_id
 
@@ -404,6 +404,33 @@ class Board:
                     return 
         raise BuildException
 
+    def sell_house(self, player_id, property_id):
+        """
+        Sells the house on a property and returns half of the cost of
+        buying it to the user. 
+
+        :param player_id: the id of the player who owns the square
+        :param property_d: the id of the property which the house is being built on
+        """
+        player = self._players[player_id]
+        property_square = self.get_square(property_id)
+        if property_square.is_owned and property_square.owner == player_id:
+            # hinges on the fact the estate ids 0 and 7 only have two properties
+            # estate ids in between all have 3 properties in them
+            _, _, estate_id = Board._PROPERTY_POS_INFO[property_id]
+            estate_prop_count = 0
+            for owned_property in player.properties:
+                if owned_property.estate == estate_id:
+                    estate_prop_count += 1 
+
+            if (estate_id in (0, 7) and estate_prop_count == 2)\
+                or (estate_id in range(2, 7) and estate_prop_count == 3):
+                if property_square.num_houses > 0:
+                    property_square.num_houses -= 1
+                    self.give_money(player_id, property_square.house_cost / 2) 
+                    return 
+        raise BuildException
+
     def get_house_cost(self, property_id):
         """
         Returns the cost to build a new house for a property.
@@ -413,6 +440,14 @@ class Board:
         """
         property_square = self.get_square(property_id)
         return property_square.base_rent 
+
+    def get_num_houses(self, property_id):
+        """
+        Returns the number of houses on a property
+
+        :param property_id: the id of the property being queried
+        """
+        return self.get_square(property_id).num_houses
 
     def get_current_rent(self, property_id):
         """
