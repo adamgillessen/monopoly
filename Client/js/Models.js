@@ -219,6 +219,18 @@ Property.prototype.changeOwner = function (owner) {
     Property.onOwnerChange(this.id, owner);
 };
 
+Property.prototype.build = function () {
+    this.buildProgress += 1;
+
+    Property.onBuildProgressChange(this.id, this.buildProgress);
+};
+
+Property.prototype.setBuildProgress = function (progress) {
+    this.buildProgress = progress;
+
+    Property.onBuildProgressChange(this.id, progress);
+};
+
 /**
  * Layer: Model
  * Action Class

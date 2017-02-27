@@ -301,9 +301,9 @@ function parseMessage(data) {
                     log(sprintf("Player %d has built a house on Property %d", source, property), 5);
                 }
 
-                // todo: update model
+
                 selectCellModel(property).displayRent = currentRent;
-                selectCellModel(property).buildProgress += 1;
+                selectCellModel(property).build();
             }
         };
     }
