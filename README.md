@@ -17,10 +17,8 @@ Resources - assorted development information
 
 ## Todos:  
 1. Update the games cross browser compatibility. CSS currently renders different in several browsers.
-1. Add graceful disconnection of players to server.
 1. Add mortgaging property to client and server
-1. Add Jail turn functionality to Client
-
+1. Send a board\_sync message after a player has built a house or sold a house so they can see the money go down as the do it
 
 ## Presentation 1:
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)
