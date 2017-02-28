@@ -338,6 +338,13 @@ function parseMessage(data) {
                 var source = data["source"];
                 var property = data["property"];
                 var currentRent = data["current_rent"];
+                var numHouses = data["num_houses"];
+                var isSell = data["sell"];
+
+                if (isSell) {
+                    // todo: sell logic
+                    return;
+                }
 
                 if (game.isThisClient(source)) {
                     log("You have built a house on Property " + property, source);
@@ -346,7 +353,7 @@ function parseMessage(data) {
                 }
 
                 selectSquareModel(property).setRent(currentRent);
-                selectSquareModel(property).build();
+                selectSquareModel(property).setBuildProgress(numHouses);
             }
         };
     }

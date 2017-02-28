@@ -169,7 +169,7 @@ Board.prototype.canBuildHouse = function (propertyID) {
     }
 
     // Not evenly built, you can only build on lower one
-    return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(properties[propertyID]).buildProgress;
+    return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(propertyID).buildProgress;
 };
 
 /**
