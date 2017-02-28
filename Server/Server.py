@@ -254,6 +254,7 @@ class ClientCount():
     """
     def __init__(self):
         self._c = 0
+        self._game_started = False
 
     def __str__(self):
         return str(self._c)
@@ -277,6 +278,17 @@ class ClientCount():
         :returns: the current counter value
         """
         return self._c 
+
+    @property
+    def game_started(self):
+        """
+        True if the game has already begun, false if players can still join
+        """
+        return self._game_started
+
+    @game_started.setter
+    def game_started(self, new_val):
+        self._game_started = new_val
 
         
 
