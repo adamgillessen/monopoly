@@ -3,6 +3,12 @@
  */
 "use strict";
 
+function valid(arg) {
+    if (arg === undefined || arg === null) {
+        throw new Error("Invalid");
+    }
+}
+
 /**
  * Return jQuery object selected by given id
  * @param {number} id: No.0 to No.3

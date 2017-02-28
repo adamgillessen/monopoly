@@ -111,8 +111,8 @@ ViewController.addCallbacksToButtons = function () {
             useCard: false
         }));
 
-        // EOT
-        ViewController.preEndTurn();
+        // You can still roll the dice
+        ViewController.yourTurn();
     });
 
     $("#btn-use-card").click(function () {
@@ -132,8 +132,8 @@ ViewController.addCallbacksToButtons = function () {
             useCard: true
         }));
 
-        // EOT
-        ViewController.preEndTurn();
+        // You can still roll the dice
+        ViewController.yourTurn();
     });
 
     /**
