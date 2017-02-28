@@ -121,4 +121,21 @@
   border-top: 1px solid #565656;
 }
 
-/*# sourceMappingURL=board-layout.css.map */
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #main-board {
+    margin: 3em auto;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #main-board {
+      margin: 3em auto;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #main-board {-chrome-:only(;
+     margin: 3em auto;
+  );}
+}
