@@ -211,13 +211,13 @@ class Server:
         """
         The rent which a player will be charged if they land on the square.
         """
-        self._board.get_current_rent(property_id)
+        return self._board.get_current_rent(property_id)
 
     def get_num_houses(self, property_id):
         """
         Returns the number of houses which are currently on property_id
         """
-        self._board.get_num_houses(property_id)
+        return self._board.get_num_houses(property_id)
 
     def leave_jail(self, player_id, free_card = False):
         """
