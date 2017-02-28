@@ -122,20 +122,20 @@
 }
 
 @media and (-webkit-min-device-pixel-ratio:0) {
-  #main-board {
+  #game-area #main-board {
     margin: 3em auto;
   }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
   and (min-resolution:.001dpcm) {
-    #main-board {
+    #game-area #main-board {
       margin: 3em auto;
     }
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
-  #main-board {-chrome-:only(;
+  #game-area #main-board {-chrome-:only(;
      margin: 3em auto;
   );}
 }
