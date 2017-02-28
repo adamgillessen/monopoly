@@ -41,6 +41,7 @@ function initUI() {
 
     // Hide Get out of jail free card
     $("#free-card").hide();
+    $("#btn-use-card").hide();
 }
 
 $(document).ready(function () {
