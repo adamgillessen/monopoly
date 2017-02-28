@@ -8,11 +8,10 @@ import json
 import random
 from Board import * 
 import sys 
+from multiprocessing import Process, SimpleQueue
 
 #Run to install the websocket server:
 #    sudo pip3 install websocket-server
-
-s = None
 
 class Server:
     """
@@ -226,50 +225,113 @@ class Server:
         """
         self._board.leave_jail(player_id, free_card)
 
+class ClientCount():
+    def __init__(self):
+        self._c = 0
+
+    def __str__(self):
+        return str(self._c)
+
+    def inc(self):
+        self._c += 1 
+
+    def dec(self):
+        self._c -= 1 
+
+    def val(self):
+        return self._c 
+
         
 
-def new_client(client, server):
-    """
-    This function will be run when a new client connects to the server. 
+def new_game_board(hostname, portnumber, queue, game_id):
 
-    :param client: the new client dictionary
-    :param server: a reference to the WebSocket Server
-    """
-    pass # print(">> Client {} has joined".format(client))
+    s = Server()
+    num_clients = ClientCount()
+    ws = websocket_server.WebsocketServer(portnumber, hostname)
+    
+
+    def client_leave(client, server):
+        """
+        This function will be run when a client disconnects from the server. 
+
+        :param client: the new client dictionary
+        :param server: a reference to the WebSocket Server
+        """
+        num_clients.dec()
+        if num_clients.val() == 0:
+            queue.put(("exit", game_id))
+
+    def new_client(client, server):
+        """
+        This function will be run when a new client connects to the server. 
+
+        :param client: the new client dictionary
+        :param server: a reference to the WebSocket Server
+        """
+        num_clients.inc()
 
 
+    def recv_message(client, server, message):
+        """
+        This function will be run when a message is recieved from one of
+        the connected clients.
 
-def recv_message(client, server, message):
-    """
-    This function will be run when a message is recieved from one of
-    the connected clients.
+        :param client: the client dictionary which the message came from
+        :param server: a reference to the WebSocket Server
+        :param message: the message which has been received
+        """
+        print("Received: {}".format(message))
+        json_string = json.loads(message)
 
-    :param client: the client dictionary which the message came from
-    :param server: a reference to the WebSocket Server
-    :param message: the message which has been received
-    """
-    global s 
-    print("Received: {}".format(message))
-    json_string = json.loads(message)
+        if json_string["type"] == "player_join":
+            new_id =  s.next_id()
+            """client_ids[client["id"]] = new_id"""
 
-    if json_string["type"] == "player_join":
-        response_json = {
-            "type" : "player_join_ack",
-            "key" : json_string["key"],
-            "your_id" : s.next_id(),
-            "current_player" : s.num_players(),
-            "expects" : 4,
-            "game_start" : False if s.num_players() < 4 else True,
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-        if s.num_players() == 4:
+            response_json = {
+                "type" : "player_join_ack",
+                "key" : json_string["key"],
+                "your_id" :new_id,
+                "current_player" : s.num_players(),
+                "expects" : 4,
+                "game_start" : False if s.num_players() < 4 else True,
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            if s.num_players() == 4:
+                s.start_game()
+
+                board_sync_json = s.game_state()
+                board_sync_string = json.dumps(board_sync_json)
+                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
+
+                response_json = {
+                    "type": "your_turn",
+                    "source": 1,
+                }
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+                queue.put(("new_board", game_id))
+
+
+        elif json_string["type"] == "start_game_now":
             s.start_game()
+            response_json = {
+                "type": "player_join_ack",
+                "key" : -1,
+                "your_id": -1,
+                "current_player" : s.num_players(),
+                "expects" : 4,
+                "game_start" : True,
 
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            
             board_sync_json = s.game_state()
             board_sync_string = json.dumps(board_sync_json)
             server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-
 
             response_json = {
                 "type": "your_turn",
@@ -278,244 +340,225 @@ def recv_message(client, server, message):
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
 
-
-    elif json_string["type"] == "start_game_now":
-        s.start_game()
-        response_json = {
-            "type": "player_join_ack",
-            "key" : -1,
-            "your_id": -1,
-            "current_player" : s.num_players(),
-            "expects" : 4,
-            "game_start" : True,
-
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            queue.put(("new_board", game_id))
         
-        board_sync_json = s.game_state()
-        board_sync_string = json.dumps(board_sync_json)
-        server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-
-        response_json = {
-            "type": "your_turn",
-            "source": 1,
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-    
-    elif json_string["type"] == "roll":
-        player_id = json_string["source"]
-        if s.new_roll:
-            dice1, dice2 = s.roll_dice()
-        else:
-            dice1, dice2 = 0, 0
-            s.new_roll = False
-        response_json = {
-            "type": "roll_result",
-            "source": player_id,
-            "result": [dice1, dice2],
-        }
-
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-        s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
-        try:
-            msg = s.current_turn_generator.send(None)
-            if msg.startswith("action_square") or msg.startswith("paid_rent"):
-                what_happened = msg.split("|")[1]
-                response_json = {
-                    "type": "textual_update",
-                    "text": what_happened,
-                }
-
-                response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-        except PlayerLostError:
-            response_json = {
-                "type": "player_lose",
-                "player": s.current_player(),
-            }
-            response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-            board_sync_json = s.game_state()
-            board_sync_string = json.dumps(board_sync_json)
-            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-                        
-            s.next_player()
-            new_current_player_id = s.current_player()
-            response_json = {
-                "type": "your_turn",
-                "source": new_current_player_id,
-            }
-            response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-
-        
-    elif json_string["type"] == "buy":
-        if json_string["property"] == -1:
-            s.current_turn_generator.send("no_buy")
-        
-        else:
-            s.current_turn_generator.send("buy")
-            response_json = {
-                "type": "buy_ack",
-                "source": s.current_player(),
-                "property": json_string["property"],
-            }
-
-            response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-    elif json_string["type"] == "auction":
-        response_json = {
-            "type" : "auction_start",
-            "competitor": s.get_all_players(),
-            "source": json_string["source"],
-            "property": json_string["property"],
-            "base_price": 10,
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-        s.current_bidders = s.get_all_players()
-        s.bids = {}
-        s.auction_property = json_string["property"]
-        s.current_turn_generator.send("auction")
-
-    elif json_string["type"] == "auction_bid":
-        player_id = json_string["source"]
-        bid_amount = json_string["price"]
-        s.bids[player_id] = bid_amount
-
-        response_json = {
-            "type": "auction_bid_ack",
-            "source": json_string["source"],
-        }
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-        
-        if len(s.bids) == len(s.current_bidders):
-            max_bid_players, max_bid = s.get_auction_result()
-            if len(max_bid_players) == 1:
-                response_json = {
-                    "type": "auction_finished",
-                    "property": s.auction_property,
-                    "price": max_bid,
-                    "winner": max_bid_players[0],
-                }
-                response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-            
-                s.current_turn_generator.send((max_bid_players[0], max_bid))
-
+        elif json_string["type"] == "roll":
+            player_id = json_string["source"]
+            if s.new_roll:
+                dice1, dice2 = s.roll_dice()
             else:
+                dice1, dice2 = 0, 0
+                s.new_roll = False
+            response_json = {
+                "type": "roll_result",
+                "source": player_id,
+                "result": [dice1, dice2],
+            }
+
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+            s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
+            try:
+                msg = s.current_turn_generator.send(None)
+                if msg.startswith("action_square") or msg.startswith("paid_rent"):
+                    what_happened = msg.split("|")[1]
+                    response_json = {
+                        "type": "textual_update",
+                        "text": what_happened,
+                    }
+
+                    response_json_string = json.dumps(response_json)
+                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+            except PlayerLostError:
                 response_json = {
-                    "type" : "auction_start",
-                    "competitor": max_bid_players,
-                    "source": -1,
-                    "property": s.auction_property,
-                    "base_price": max_bid,
+                    "type": "player_lose",
+                    "player": s.current_player(),
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-                s.current_bidders = max_bid_players
-                s.bids = {}
 
-    elif json_string["type"] == "end_turn":
-        if s.is_valid_player(json_string["source"]):
-            board_sync_json = s.game_state()
-            re_check_location, new_roll, human_string = s.current_turn_generator.send(None)
-            board_sync_json["text"] = human_string
-            board_sync_string = json.dumps(board_sync_json)
-            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-            print(human_string)
-            
-            if not re_check_location:
+                board_sync_json = s.game_state()
+                board_sync_string = json.dumps(board_sync_json)
+                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                            
                 s.next_player()
-                s.new_roll = True 
-            else:
-                s.new_roll = new_roll
-
-            new_current_player_id = s.current_player()
-            response_json = {
-                "type": "your_turn",
-                "source": new_current_player_id,
-            }
-            response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-    elif json_string["type"] == "chat":
-        response_json = json_string
-        response_json["type"] = "chat_sync"
-        response_json_string = json.dumps(response_json)
-        server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-
-    elif json_string["type"] == "build_house":
-        player_id = json_string["source"]
-        property_id = json_string["property"]
-        try:
-            if json_string["sell"]:
-                s.sell_house(player_id, property_id)
-                current_rent = s.get_current_rent(property_id)
-                num_houses = s.get_num_houses(property_id)
+                new_current_player_id = s.current_player()
                 response_json = {
-                    "type" : "build_ack",
-                    "property": json_string["property"],
-                    "source": json_string["source"],
-                    "current_rent": current_rent,
-                    "sell": True,
-                    "num_houses": num_houses,
+                    "type": "your_turn",
+                    "source": new_current_player_id,
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+
+            
+        elif json_string["type"] == "buy":
+            if json_string["property"] == -1:
+                s.current_turn_generator.send("no_buy")
+            
+            else:
+                s.current_turn_generator.send("buy")
+                response_json = {
+                    "type": "buy_ack",
+                    "source": s.current_player(),
+                    "property": json_string["property"],
+                }
+
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+        elif json_string["type"] == "auction":
+            response_json = {
+                "type" : "auction_start",
+                "competitor": s.get_all_players(),
+                "source": json_string["source"],
+                "property": json_string["property"],
+                "base_price": 10,
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            s.current_bidders = s.get_all_players()
+            s.bids = {}
+            s.auction_property = json_string["property"]
+            s.current_turn_generator.send("auction")
+
+        elif json_string["type"] == "auction_bid":
+            player_id = json_string["source"]
+            bid_amount = json_string["price"]
+            s.bids[player_id] = bid_amount
+
+            response_json = {
+                "type": "auction_bid_ack",
+                "source": json_string["source"],
+            }
+            response_json_string = json.dumps(response_json)
+            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            
+            if len(s.bids) == len(s.current_bidders):
+                max_bid_players, max_bid = s.get_auction_result()
+                if len(max_bid_players) == 1:
+                    response_json = {
+                        "type": "auction_finished",
+                        "property": s.auction_property,
+                        "price": max_bid,
+                        "winner": max_bid_players[0],
+                    }
+                    response_json_string = json.dumps(response_json)
+                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
                 
-            else:
-                s.build_house(player_id, property_id)
-                current_rent = s.get_current_rent(property_id)
-                num_houses = s.get_num_houses(property_id)
+                    s.current_turn_generator.send((max_bid_players[0], max_bid))
+
+                else:
+                    response_json = {
+                        "type" : "auction_start",
+                        "competitor": max_bid_players,
+                        "source": -1,
+                        "property": s.auction_property,
+                        "base_price": max_bid,
+                    }
+                    response_json_string = json.dumps(response_json)
+                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    s.current_bidders = max_bid_players
+                    s.bids = {}
+
+        elif json_string["type"] == "end_turn":
+            if s.is_valid_player(json_string["source"]):
+                board_sync_json = s.game_state()
+                re_check_location, new_roll, human_string = s.current_turn_generator.send(None)
+                board_sync_json["text"] = human_string
+                board_sync_string = json.dumps(board_sync_json)
+                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                print(human_string)
+                
+                if not re_check_location:
+                    s.next_player()
+                    s.new_roll = True 
+                else:
+                    s.new_roll = new_roll
+
+                new_current_player_id = s.current_player()
                 response_json = {
-                    "type" : "build_ack",
-                    "property": json_string["property"],
-                    "source": json_string["source"],
-                    "current_rent": current_rent,
-                    "sell": False,
-                    "num_houses": num_houses,
+                    "type": "your_turn",
+                    "source": new_current_player_id,
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-        except BuildException:
-                    pass
 
-    elif json_string["type"] == "pay_bail":
-        player_id = json_string["source"]
-        if json_string["get_out_of_jail_free"]:
-            s.leave_jail(player_id, free_card = True)
-        else:
-            s.leave_jail(player_id, free_card = False) 
-
-    elif json_string["type"] == "mortgage_property":
-        player_id = json_string["player"]
-        property_id = json_string["property"]
-        try:
-            if json_string["unmortgage"]:
-                s.unmortgage_property(player_id, property_id)
-            else:
-                s.mortgage_property(player_id, property_id)
-
-            response_json = {
-                "type": "mortgage_property_ack",
-                "property": property_id, 
-                "player": player_id, 
-            }
+        elif json_string["type"] == "chat":
+            response_json = json_string
+            response_json["type"] = "chat_sync"
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
-    
-        except MortgageException:
-            pass
+
+        elif json_string["type"] == "build_house":
+            player_id = json_string["source"]
+            property_id = json_string["property"]
+            try:
+                if json_string["sell"]:
+                    s.sell_house(player_id, property_id)
+                    current_rent = s.get_current_rent(property_id)
+                    num_houses = s.get_num_houses(property_id)
+                    response_json = {
+                        "type" : "build_ack",
+                        "property": json_string["property"],
+                        "source": json_string["source"],
+                        "current_rent": current_rent,
+                        "sell": True,
+                        "num_houses": num_houses,
+                    }
+                    response_json_string = json.dumps(response_json)
+                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    
+                else:
+                    s.build_house(player_id, property_id)
+                    current_rent = s.get_current_rent(property_id)
+                    num_houses = s.get_num_houses(property_id)
+                    response_json = {
+                        "type" : "build_ack",
+                        "property": json_string["property"],
+                        "source": json_string["source"],
+                        "current_rent": current_rent,
+                        "sell": False,
+                        "num_houses": num_houses,
+                    }
+                    response_json_string = json.dumps(response_json)
+                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            except BuildException:
+                        pass
+
+        elif json_string["type"] == "pay_bail":
+            player_id = json_string["source"]
+            if json_string["get_out_of_jail_free"]:
+                s.leave_jail(player_id, free_card = True)
+            else:
+                s.leave_jail(player_id, free_card = False) 
+
+        elif json_string["type"] == "mortgage_property":
+            player_id = json_string["player"]
+            property_id = json_string["property"]
+            try:
+                if json_string["unmortgage"]:
+                    s.unmortgage_property(player_id, property_id)
+                else:
+                    s.mortgage_property(player_id, property_id)
+
+                response_json = {
+                    "type": "mortgage_property_ack",
+                    "property": property_id, 
+                    "player": player_id, 
+                }
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+        
+            except MortgageException:
+                pass
+
+    ws.set_fn_new_client(new_client)
+    ws.set_fn_message_received(recv_message)
+    ws.set_fn_client_left(client_leave)
+    ws.run_forever()
 
 
 if __name__ == "__main__":
@@ -525,8 +568,21 @@ if __name__ == "__main__":
     except ValueError:
         hostname = "localhost"
         portnumber = 4444
-    s = Server()
-    ws = websocket_server.WebsocketServer(portnumber, hostname)
-    ws.set_fn_new_client(new_client)
-    ws.set_fn_message_received(recv_message)
-    ws.run_forever()
+
+    ps = {}
+    comms_queue = SimpleQueue()
+    game_id = 0
+    while True:
+        p = Process(target=new_game_board, args = (
+            hostname, portnumber, comms_queue, game_id))
+        p.start()
+        ps[game_id] = p 
+
+
+        result, game_id = comms_queue.get()
+        if result == "exit":
+            ps[game_id].terminate()
+        elif result == "new_board":
+            print("Creating new board..")
+
+        portnumber += 1
