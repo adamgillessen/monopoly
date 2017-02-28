@@ -603,6 +603,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
             else:
                 s.leave_jail(player_id, free_card = False) 
 
+            board_sync_json = s.game_state()
+            board_sync_string = json.dumps(board_sync_json)
+            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+
         elif json_string["type"] == "mortgage_property":
             player_id = json_string["player"]
             property_id = json_string["property"]
@@ -619,6 +623,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+                board_sync_json = s.game_state()
+                board_sync_string = json.dumps(board_sync_json)
+                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
         
             except MortgageException:
                 pass
