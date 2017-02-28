@@ -10,6 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
 import time
 
+from testGame import * 
+
 class BuildingTest(unittest.TestCase):
     """
     Test for building houses
@@ -31,7 +33,7 @@ class BuildingTest(unittest.TestCase):
         self.keys = [1,2]
         self.players = { i: webdriver.Chrome() for i in self.keys}
         for player in self.players:
-            self.players[player].get("file:///Users/caoifedavis/Documents/monopoly/Client/index.html")
+            self.players[player].get(GameTest.client_location)
             WebDriverWait(self.players[player], 5).until(EC.element_to_be_clickable((By.ID, "btn-connect")))
             print(">> Player ",player,"has connected")
             WebDriverWait(self.players[player], 5).until(EC.element_to_be_clickable((By.ID, "btn-connect"))).click()

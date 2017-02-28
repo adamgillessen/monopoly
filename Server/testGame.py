@@ -108,9 +108,9 @@ class GameTest(unittest.TestCase):
             self.players[player].close()
         self.server.kill()
 
+cwd = os.getcwd()
+client_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "index.html"))
+GameTest.client_location = "file://"  + client_path
+
 if __name__ == "__main__":
-    cwd = os.getcwd()
-    client_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "index.html"))
-    
-    GameTest.client_location = "file://"  + client_path
     unittest.main()
