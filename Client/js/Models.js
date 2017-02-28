@@ -1,5 +1,5 @@
 /**
- * Created by nooje on 2/8/2017.
+ * Created by Zijie Wu on 2/8/2017.
  */
 "use strict";
 
@@ -9,10 +9,10 @@ var SQUARE_TYPE = {
     others: "Utility or transportation-square"
 };
 
-var FULLT_BUILT_TIMES = 5;
+var FULL_BUILT_TIMES = 5;
 
 function defaultCallback() {
-    throw new Error("Callback not implemented");
+    console.log("Callback not implemented");
 }
 
 /**
@@ -306,7 +306,7 @@ Square.prototype.setBuildProgress = function (progress) {
 };
 
 Square.prototype.setRent = function (rent) {
-    if (this.isBaseProperty()) {
+    if (!this.isBaseProperty()) {
         throw new Error(this.type + " has no rent");
     }
 
@@ -340,7 +340,24 @@ Square.prototype.isProperty = function () {
  * @param {number} id
  */
 Square.prototype.onLandOn = function (id) {
-    // todo: onLandOn function
+    if (!game.isThisClient(id)) {
+        return;
+    }
+
+    if (this.isBaseProperty()) {
+        // Lands on Property or UTIL or TRANS
+        // Show buy
+        if (this.owner === -1) {
+            // Show buy option
+            ViewController.promptBuyWindow(this.id);
+        } else {
+            ViewController.preEndTurn();
+        }
+    } else {
+        // Lands on Action
+        // Do nothing
+        ViewController.preEndTurn();
+    }
 };
 
 Square.prototype.build = function () {
@@ -386,7 +403,7 @@ Square.prototype.showDetail = function () {
             // Estate
             $("#property-estate").text("Estate: " + this.estate);
             // Build Progress
-            $("#property-build").text(generateProgressBar(this.buildProgress, FULLT_BUILT_TIMES));
+            $("#property-build").text(generateProgressBar(this.buildProgress, FULL_BUILT_TIMES));
             // Owner
             if (this.owner === -1) {
                 $("#property-owner").text("ON SALE");
@@ -434,7 +451,7 @@ Square.prototype.showDetail = function () {
                 }
             }
             // Price
-            $("#property-price").text("Price: £:" + this.price);
+            $("#property-price").text("Price: £" + this.price);
             // Rent
             $("#property-rent").text(" --- ");
             // Control Pane
@@ -540,7 +557,7 @@ Player.prototype.hasEnoughMoneyThan = function (money) {
 
 Player.prototype.moveByStep = function (steps) {
     if (steps === 0) {
-        return;
+        return this.position;
     }
 
     this.position = this.position + steps;
