@@ -91,6 +91,8 @@ class Server:
     def current_turn_generator(self):
         """
         This is the generator which is handling the current turn on the board.
+
+        :returns: the generator which is keeping track of the current turn
         """
         return self._current_turn_generator
 
@@ -185,6 +187,9 @@ class Server:
         """
         Mortgaes a property so that the player gets the mortage value of the property
         but they collect no rent on it and must buy it back for 10% extra. 
+
+        :param player_id: the id of the player performing the action
+        :param proeprty_id: the id of the property which is being acted on
         """
         self._board.mortgage_property(player_id, property_id)
 
@@ -192,40 +197,61 @@ class Server:
         """
         Buys the property back from the bank, paying an additional
         10% of what the mortage value is. 
+
+        :param player_id: the id of the player performing the action
+        :param proeprty_id: the id of the property which is being acted on
         """
         self._board.unmortgage_property(player_id, property_id)
 
     def sell_house(self, player_id, property_id):
         """
         Sells the house which is owned by player-id and id'd by property id
+
+        :param player_id: the id of the player performing the action
+        :param proeprty_id: the id of the property which is being acted on
         """
         self._board.sell_house(player_id, property_id)
 
     def build_house(self, player_id, property_id):
         """
         Builds a house on property_id owned by playe_id
+
+        :param player_id: the id of the player performing the action
+        :param proeprty_id: the id of the property which is being acted on
         """
         self._board.build_house(player_id, property_id)
 
     def get_current_rent(self, property_id):
         """
         The rent which a player will be charged if they land on the square.
+
+        :param property_id: the id of the property being queried
+        :returns: the current rent of the property
         """
         return self._board.get_current_rent(property_id)
 
     def get_num_houses(self, property_id):
         """
         Returns the number of houses which are currently on property_id
+
+        :param property_id: the id of the property being queried
+        :returns: the number of houses on the property
         """
         return self._board.get_num_houses(property_id)
 
     def leave_jail(self, player_id, free_card = False):
         """
         Has player_id leave jail and continue the game as normal
+
+        :param player_id: the id of the player leaving jail
         """
         self._board.leave_jail(player_id, free_card)
 
 class ClientCount():
+    """
+    A counter object which is used by each Game Board to count
+    the number of clients currently connected to the game.
+    """
     def __init__(self):
         self._c = 0
 
@@ -233,17 +259,36 @@ class ClientCount():
         return str(self._c)
 
     def inc(self):
+        """
+        Increments the counter
+        """
         self._c += 1 
 
     def dec(self):
+        """
+        Decrements the counter
+        """
         self._c -= 1 
 
     def val(self):
+        """
+        Gets the current number of connected clients
+
+        :returns: the current counter value
+        """
         return self._c 
 
         
 
 def new_game_board(hostname, portnumber, queue, game_id):
+    """
+    This holds the environment for a new game board process.
+
+    :param hostname: the hostname which the game board whill run on
+    :param portnumber: the port-number which the web socket will listen on
+    :param  queue: the process queue which is used for inter process communication
+    :param game_id: the id number of the current game environment
+    """
 
     s = Server()
     num_clients = ClientCount()

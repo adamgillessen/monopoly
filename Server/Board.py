@@ -328,6 +328,7 @@ class Board:
         Player with id "player_id" uses their get out of jail free card.
 
         :param player_id: the id of the player using their card
+        :param free_card: True if using a get out of jail free card to leave jail
         """
         player = self._players[player_id]
         player.jail = False
@@ -447,7 +448,8 @@ class Board:
         property for the mortgage value +10%.
 
         :param player_id: the id of the player who owns the property
-        :param property_d: the id of the property which is being mortgaged
+        :param property_id: the id of the property which is being mortgaged
+        :raises: a MortgageException if the player cannot perform the action
         """
         property_square = self.get_square(property_id)
         if property_square.owner == player_id and not property_square.is_mortgaged:
@@ -463,6 +465,7 @@ class Board:
 
         :param player_id: the id of the player who owns the property
         :param property_d: the id of the property which is mortgaged
+        :raises: a MortgageException if the player cannot perform the action
         """
         property_square = self.get_square(property_id)
         player = self._players[player_id]
@@ -484,11 +487,6 @@ class Board:
         :param player_id: The id of the player whose turn it is
         :param dice1: the result of dice 1
         :param dice2: the result of dice 2
-
-        This is a generator which will yield the actions a user must address.
-        The final value of the generator will be a human-readable string which
-        explains what happened in this turn. This return will also raise a
-        StopIteration exception.
         """
         self._human_string = []
         self._human_string.append("Player {}'s turn.".format(player_id))
@@ -703,9 +701,17 @@ class Board:
         yield re_check_location, new_roll, "\n".join(self._human_string)
 
 class BuildException(Exception):
+    """
+    An exception which occurs when a player attempts to 
+    either build or sell a house when they are not allowed to
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
 class MortgageException(Exception):
+    """
+    An exception which will be raised when a player trys to Mortgage 
+    a property when they are not allowed to. 
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
