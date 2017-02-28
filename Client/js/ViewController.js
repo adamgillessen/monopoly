@@ -232,7 +232,10 @@ ViewController.addCallbacksToButtons = function () {
 
     // Sell property
     $("#p-c-sell").click(function () {
-        // todo: sell
+        game.connector.sendMessage(generateMessage("build_house", {
+            property: ViewController.currentSelectedSquare,
+            sell: true
+        }));
     });
 };
 

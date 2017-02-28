@@ -342,7 +342,13 @@ function parseMessage(data) {
                 var isSell = data["sell"];
 
                 if (isSell) {
-                    // todo: sell logic
+                    // Log
+                    log("Sell house", 5);
+                    console.log(data);
+
+                    selectSquareModel(property).sell();
+
+                    // todo: Update money
                     return;
                 }
 

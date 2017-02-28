@@ -164,7 +164,8 @@ Board.prototype.canBuildHouse = function (propertyID) {
     }
 
     // All properties are evenly built, so you can build new one on top of them
-    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress) {
+    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress
+        && selectSquareModel(propertyID).buildProgress !== FULL_BUILT_TIMES) {
         return true;
     }
 
@@ -372,6 +373,12 @@ Square.prototype.build = function () {
     this.setBuildProgress(this.buildProgress + 1);
 };
 
+Square.prototype.sell = function () {
+    this.setOwner(-1);
+    this.setBuildProgress(0);
+    this.setBuildCost(this.rent);
+};
+
 Square.prototype.showDetail = function () {
     ViewController.currentSelectedSquare = this.id;
     var squareName = ViewController.tableName[this.id];
@@ -434,6 +441,14 @@ Square.prototype.showDetail = function () {
             break;
 
         case SQUARE_TYPE.others:
+            $("#property").show();
+            $("#property-controls").hide();
+            $("#action").hide();
+
+            // Add class to DOM
+            $("#property-banner").removeClass();
+            $("#property-banner").addClass("cell-" + this.id);
+
             // ID
             $("#property-id").text(this.id);
             // Name
