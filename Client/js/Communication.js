@@ -452,12 +452,23 @@ function generateMessage(type, parameter) {
         },
         /**
          * Build house message
-         * @param {object} parameter
+         * @param {{property: number, sell: Boolean}} parameter
          */
         "build_house": function (parameter) {
             var ret = _generateHeader("build_house", ["source"]);
             ret.property = parameter.property;
             ret.sell = parameter.sell;
+
+            return ret;
+        },
+        /**
+         * Generate pay_bail message
+         * @param {{useCard: Boolean}} parameter
+         * @returns {{}}
+         */
+        "pay_bail": function (parameter) {
+            var ret = _generateHeader("pay_bail", ["source"]);
+            ret.get_out_of_jail_free = parameter.useCard;
 
             return ret;
         }

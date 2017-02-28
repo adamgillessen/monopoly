@@ -136,6 +136,10 @@ Board.prototype.canBuildHouse = function (propertyID) {
     // todo: bug fix
     var estate = this.squares[propertyID].estate;
 
+    /**
+     * ID of properties in this Estate
+     * @type {[number]}
+     */
     var properties = game.model.propertyEstate[estate];
     var lop;
     var iHigh = 0;
@@ -149,23 +153,23 @@ Board.prototype.canBuildHouse = function (propertyID) {
         }
 
         // Find index of biggest number
-        if (properties[iHigh].buildProgress < properties[lop].buildProgress) {
+        if (selectSquareModel(properties[iHigh]).buildProgress < selectSquareModel(properties[lop]).buildProgress) {
             iHigh = lop;
         }
 
         // Find index of smallest number
-        if (properties[iLow].buildProgress > properties[lop].buildProgress) {
+        if (selectSquareModel(properties[iLow]).buildProgress > selectSquareModel(properties[lop]).buildProgress) {
             iLow = lop;
         }
     }
 
     // All properties are evenly built, so you can build new one on top of them
-    if (properties[iHigh].buildProgress === properties[iLow].buildProgress) {
+    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress) {
         return true;
     }
 
     // Not evenly built, you can only build on lower one
-    return properties[iLow].buildProgress === properties[propertyID].buildProgress;
+    return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(properties[propertyID]).buildProgress;
 };
 
 /**
@@ -365,9 +369,7 @@ Square.prototype.build = function () {
         throw new Error("Cannot build on" + this.type);
     }
 
-    var prevProgress = this.buildProgress;
-
-    this.setBuildProgress(prevProgress + 1);
+    this.setBuildProgress(this.buildProgress + 1);
 };
 
 Square.prototype.showDetail = function () {

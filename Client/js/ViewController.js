@@ -84,6 +84,29 @@ ViewController.addCallbacksToButtons = function () {
         showButtons(null);
     });
 
+    $("#btn-pay-bail").click(function () {
+        // No enough money to pay bail
+        if (!getThisPlayerModel().hasEnoughMoneyThan(50)) {
+            alert("You don't have enough money to pay bail!");
+            return;
+        }
+
+        // Log
+        log("You have got out of Jail by paying bail", 5);
+
+        // Set Model
+        getThisPlayerModel().setJail(false);
+        getThisPlayerModel().changeMoney(-50);
+
+        // Send message
+        game.connector.sendMessage(generateMessage("pay_bail", {
+            useCard: false
+        }));
+
+        // EOT
+        ViewController.preEndTurn();
+    });
+
     /**
      * On click:
      * 1. Get the index of property that player is going to buy
@@ -246,102 +269,6 @@ ViewController.chatButtonClicked = function () {
     }
 };
 
-// todo: remove this
-/**
- * Show details of a given cell to the detail-pane section in HTML
- * @param {number} id
- */
-/*
-ViewController.showCellDetail = function (id) {
-    if (typeof id !== "number") {
-        id = parseInt(id);
-    }
-
-    var notProperties = [5, 12, 15, 25, 28, 35];
-
-    ViewController.currentSelectedSquare = id;
-
-    var name = ViewController.tableName[id];
-    var cell = game.model.selectCell(id);
-
-    if (cell.isBaseProperty()) {
-        // Hide action pane
-        // Show property pane
-        $("#property").show();
-        $("#action").hide();
-
-        // Add class
-        $("#property-banner").removeClass();
-        $("#property-banner").addClass("cell-" + id);
-
-        // ID
-        $("#property-id").text(cell.id);
-        // Property Name
-        $("#property-name").text(name);
-
-        // Estate info
-        if (cell.estate === -1) {
-            // This is UTIL or TRANS
-            $("#property-estate").text(" --- ");
-            $("#property-build").text(" --- ");
-        } else {
-            // This is Property
-            $("#property-estate").text("Estate: " + cell.estate);
-            $("#property-build").text(generateProgressBar(cell.buildProgress, 5));
-        }
-
-        // Price info
-        $("#property-price").text("Price: £" + cell.price);
-        // Rent info
-        if (cell.rent === -1) {
-            $("#property-rent").text("");
-        } else {
-            $("#property-rent").text(sprintf("Rent: £%d", cell.rent));
-        }
-
-        // Control pane hide.
-        $("#property-controls").hide();
-
-        // Owner info
-        var owner = cell.owner;
-        if (owner === -1) {
-            $("#property-owner").text("ON SALE");
-        } else {
-            if (game.isThisClient(owner)) {
-                $("#property-owner").text("Owner: You");
-                $("#property-controls").show();
-
-                // Show or hide "Build" button base on this is property or other
-                // If this is property
-                if (notProperties.indexOf(id) < 0) {
-                    if (game.model.canBuildHouse(id)) {
-                        showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
-                    } else {
-                        showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
-                    }
-                    // Change rent info
-                    $("#build-cost").text(cell.rent);
-                } else {
-                    // This is util or transp
-                    showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
-                }
-            } else {
-                $("#property-owner").text("Owner: Player " + owner);
-            }
-        }
-    } else {
-        $("#action").show();
-        $("#property").hide();
-
-        $("#action-banner").removeClass();
-        $("#action-banner").addClass("cell-" + id);
-
-        $("#action-id").text(cell.id);
-        $("#action-description").text(name);
-    }
-};
-*/
-
 /**
  * Move circle that represents player to the given cell by id
  * @param {number} to: id of cell to
@@ -356,7 +283,11 @@ ViewController.movePlayer = function (player, to) {
  * Show control pane
  */
 ViewController.yourTurn = function () {
-    showButtons([BUTTONS.roll]);
+    if (getThisPlayerModel().inJail) {
+        showButtons([BUTTONS.roll, BUTTONS.pay_bail]);
+    } else {
+        showButtons([BUTTONS.roll]);
+    }
 };
 
 /**
