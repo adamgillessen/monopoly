@@ -247,6 +247,16 @@ class Server:
         """
         self._board.leave_jail(player_id, free_card)
 
+    def get_sell_value(self, property_id):
+        """
+        Gets the money which you would get from selling
+        a house on property property_id.
+
+        :returns: the selling value of a house 
+        """
+        return self._board.get_sell_value(property_id)
+
+
 class ClientCount():
     """
     A counter object which is used by each Game Board to count
@@ -523,10 +533,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
         elif json_string["type"] == "end_turn":
             if s.is_valid_player(json_string["source"]):
                 board_sync_json = s.game_state()
-                re_check_location, new_roll = s.current_turn_generator.send(None)
                 board_sync_string = json.dumps(board_sync_json)
                 server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
                 
+                re_check_location, new_roll = s.current_turn_generator.send(None)
                 if not re_check_location:
                     s.next_player()
                     s.new_roll = True 
@@ -555,6 +565,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     s.sell_house(player_id, property_id)
                     current_rent = s.get_current_rent(property_id)
                     num_houses = s.get_num_houses(property_id)
+                    gained_money = s.get_sell_value(property_id)
+
                     response_json = {
                         "type" : "build_ack",
                         "property": json_string["property"],
@@ -562,6 +574,7 @@ def new_game_board(hostname, portnumber, queue, game_id):
                         "current_rent": current_rent,
                         "sell": True,
                         "num_houses": num_houses,
+                        "gained_money": gained_money,
                     }
                     response_json_string = json.dumps(response_json)
                     server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))

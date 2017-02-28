@@ -5,4 +5,6 @@
     "current_rent": 300, // the rent a player will now pay for landing on the square
     "sell": false, // true if acking a sell message, false if acking a build message
     "num_houses": 1, // the number of houses now on the property
+    "gained_money": 20, // this is the amount of money a player has gained from
+                        // selling the house. THis is only included if "sell" == True
 }

@@ -478,6 +478,15 @@ class Board:
         else:
             raise MortgageException
 
+    def get_sell_value(self, property_id):
+        """
+        Gets the money which you would get from selling
+        a house on property property_id.
+
+        :returns: the selling value of a house 
+        """
+        return self.get_house_cost(property_id) // 2 
+
 
 
     def take_turn(self, player_id, dice1, dice2):
