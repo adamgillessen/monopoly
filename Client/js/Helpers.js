@@ -79,11 +79,11 @@ function updateScroll() {
     element.scrollTop = element.scrollHeight;
 }
 
-function generateProgressBar(current, total) {
-    var FULL = "XXXXXX";
-    var EMPTY = '------';
+function generateProgressBar(current) {
+    var FULL = "🏠🏠🏠🏠🏠";
 
-    return sprintf("[%s]", FULL.substr(0, current) + EMPTY.substr(0, total - current));
+    // Multiply by 2 because its unicode
+    return sprintf("[%s]", FULL.substr(0, 2 * current));
 }
 
 /**
