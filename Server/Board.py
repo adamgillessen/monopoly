@@ -488,12 +488,9 @@ class Board:
         :param dice1: the result of dice 1
         :param dice2: the result of dice 2
         """
-        self._human_string = []
-        self._human_string.append("Player {}'s turn.".format(player_id))
         player = self._players[player_id]
 
         if dice1 == dice2 and dice1 + dice2 != 0:
-            self._human_string.append("Player {} rolled a double.".format(player_id))
             if not player.jail:
                 player.double_roll = True
                 re_check_location = True
@@ -501,7 +498,6 @@ class Board:
                 player.jail = False
                 player.double_roll = False
                 re_check_location = False
-                self._human_string.append("Player {} left jail.".format(player_id))
         else:
             re_check_location = False
             if player.jail:
@@ -512,8 +508,6 @@ class Board:
         if new_pos > 39:
             self.give_money(player_id, Board._GO_AMOUNT)
             new_pos %= 40
-            self._human_string.append("Player {} passed go and got $200.".format(player_id))
-        self._human_string.append("Player {} landed on position {}.".format(player_id, new_pos))
         self.move_player(player_id, new_pos)
 
         square = self.get_square(new_pos)
@@ -548,16 +542,12 @@ class Board:
                         except PlayerLostError:
                             self.remove_player(player_id)
                             raise PlayerLostError
-
-                        self._human_string.append("Player {} paid ${} to {} in rent.".format(
-                            player_id, rent, square.owner))
                         what_happened = "Player {} paid ${} to {} in rent.".format(
                             player_id, rent, square.owner)
                         self.give_money(square.owner, rent)
 
                 else:
                     what_happened = "Player {} already owns square".format(player_id)
-                    self._human_string.append("Player {} already owns square".format(player_id))
 
                 yield "paid_rent|" + what_happened
 
@@ -570,9 +560,7 @@ class Board:
                     square.owner = player_id
                     self.take_money(player_id, cost)
                     new_owner = self._players[player_id]
-                    self._human_string.append("Player {} bought square {}.".format(
-                        player_id, new_pos))
-
+                    
                     square.is_owned = True
 
                     if square.square_type == Square.PROPERTY:
@@ -602,13 +590,6 @@ class Board:
 
                     yield "property_auctioned"
 
-                elif buy_auction == "no_buy":
-                    #print(">>User will not buy")
-                    self._human_string.append("Player {} didn't buy square {}.".format(
-                        player_id, new_pos))
-
-                    yield None
-
                 else:
                     print(">>Expecting buy, auction or no_buy but got '%s'"%(str(buy_auction)))
                     raise Exception("Out of turn message")
@@ -622,12 +603,8 @@ class Board:
                 if square.action == ActionSquare.CHEST:
                     what_happened.append("Player {} drew a Chest card".format(
                         player_id))
-                    self._human_string.append("Player {} drew a Chest card".format(
-                        player_id))
                 elif square.action == ActionSquare.CHANCE:
                     what_happened.append("Player {} drew a Chance card".format(
-                        player_id))
-                    self._human_string.append("Player {} drew a Chance card".format(
                         player_id))
 
                 card = random.choice(list(self._action_cards))
@@ -654,7 +631,6 @@ class Board:
                 elif card.card_type == Card.GET_OUT_OF_JAIL:
                     player.free = True
 
-                self._human_string.append(card.text)
                 what_happened.append(card.text)
 
             elif square.action == ActionSquare.JAIL:
@@ -664,21 +640,15 @@ class Board:
                 player.jail = True
                 player.jail_turn_count = 0
                 self.move_player(player_id, Board._JAIL_POS)
-                self._human_string.append("Player {} went to jail".format(
-                        player_id))
 
                 what_happened.append("Player {} went to jail".format(
                         player_id))
             elif square.action == ActionSquare.STAY:
                 #print(">>Sqaure is free parking")
                 if player.jail:
-                    self._human_string.append("Player {} is still in jail".format(
-                            player_id))
                     what_happened.append("Player {} is still in jail".format(
                             player_id))
                 else:
-                    self._human_string.append("Player {} got free parking".format(
-                            player_id))
                     what_happened.append("Player {} got free parking".format(
                             player_id))
             elif square.action == ActionSquare.TAX:
@@ -689,8 +659,6 @@ class Board:
                 except PlayerLostError:
                     self.remove_player(player_id)
                     raise PlayerLostError
-                self._human_string.append("Player {} paid {} in tax".format(
-                        player_id, tax))
                 what_happened.append("Player {} paid {} in tax".format(
                         player_id, tax))
 
@@ -698,7 +666,7 @@ class Board:
 
         new_roll = player.double_roll
         player.double_roll = False
-        yield re_check_location, new_roll, "\n".join(self._human_string)
+        yield re_check_location, new_roll
 
 class BuildException(Exception):
     """

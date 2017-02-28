@@ -62,7 +62,7 @@ class Server:
         """
         turn = self._board.take_turn(player_id, dice1, dice2)
         yield from turn
-        
+                
 
 
     def current_player(self):
@@ -511,11 +511,9 @@ def new_game_board(hostname, portnumber, queue, game_id):
         elif json_string["type"] == "end_turn":
             if s.is_valid_player(json_string["source"]):
                 board_sync_json = s.game_state()
-                re_check_location, new_roll, human_string = s.current_turn_generator.send(None)
-                board_sync_json["text"] = human_string
+                re_check_location, new_roll = s.current_turn_generator.send(None)
                 board_sync_string = json.dumps(board_sync_json)
                 server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
-                print(human_string)
                 
                 if not re_check_location:
                     s.next_player()
