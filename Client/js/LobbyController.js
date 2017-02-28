@@ -38,6 +38,9 @@ function initUI() {
     $("#lobby").show();
     $("#waiting").hide();
     showButtons([BUTTONS.connect]);
+
+    // Hide Get out of jail free card
+    $("#free-card").hide();
 }
 
 $(document).ready(function () {

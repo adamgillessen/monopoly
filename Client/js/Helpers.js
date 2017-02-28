@@ -149,7 +149,8 @@ var BUTTONS = {
     start_game_now: "#btn-start-now",
     roll: "#btn-roll",
     end_turn: "#btn-end-turn",
-    buy_options: "#prompt-buy"
+    buy_options: "#prompt-buy",
+    pay_bail: "#btn-pay-bail"
 };
 
 /**
