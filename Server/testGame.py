@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
+import os
+
 
 class GameTest(unittest.TestCase):
     """
@@ -23,13 +25,14 @@ class GameTest(unittest.TestCase):
     Edit line 32 to your to the client index.html file
 
     """
-
+    client_location = "file:///Users/caoifedavis/Documents/monopoly/Client/index.html"
+    
     def setUp(self):
         self.server = subprocess.Popen(["python3", "Server.py"])
         self.keys = [1,2,3,4]
         self.players = { i: webdriver.Chrome() for i in self.keys}
         for player in self.players:
-            self.players[player].get("file:///Users/caoifedavis/Documents/monopoly/Client/index.html")
+            self.players[player].get(GameTest.client_location)
             self.players[player].find_element_by_id("btn-connect").click()
         WebDriverWait(self.players[player], 5).until(EC.visibility_of_element_located((By.ID, "game-area")))
    
@@ -106,4 +109,8 @@ class GameTest(unittest.TestCase):
         self.server.kill()
 
 if __name__ == "__main__":
+    cwd = os.getcwd()
+    client_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "index.html"))
+    
+    GameTest.client_location = "file://"  + client_path
     unittest.main()
