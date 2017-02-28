@@ -164,64 +164,83 @@ function parseMessage(data) {
                 var source = data["source"];
                 var result = data["result"];
 
-                if (game.isMyTurn() && getThisPlayerModel().inJail) {
-                    if (result[0] !== result[1]) {
-                        log(sprintf("You rolled (%d %d), you're still in Jail", result[0], result[1]), source);
-                        ViewController.preEndTurn();
-                        return;
-                    } else {
-                        log(sprintf("You're FREE!", result[0], result[1]), source);
-                        getThisPlayerModel().setJail(false);
-                    }
-                }
+                var landedOn = -1;
 
-                // Update model
-                var landedOn = game.model.movePlayer(source, result);
-
-                if (result[0] + result[1] !== 0) {
-                    // Log result to chat window
-                    if (game.isMyTurn()) {
-                        log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
-                    } else {
-                        log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
-                    }
-                }
-
-                // Do nothing if its not your turn
+                // Only log and update board
                 if (!game.isMyTurn()) {
+                    // Situation:
+                    // Other players get moved to a new square so its still their turn
+                    if (result[0] + result[1] === 0) {
+                        // Log nothing
+                        // EOT
+                        return;
+                    }
+
+                    // If is normal roll result
+                    // Update model
+                    landedOn = game.model.movePlayer(source, result);
+                    // Calls onLandOn event
+                    selectSquareModel(landedOn).onLandOn(source);
+
+                    // Log
+                    log(sprintf("Player %d rolled (%d %d), landed on %d", source, result[0], result[1], landedOn), source);
+
+                    // EOT
                     return;
                 }
 
-                // Rolled double?
-                if (result[0] === result[1] && result[0] + result[1] !== 0) {
-                    game.doubleRoll = true;
+                // Its "my" turn, and roll results are 0
+                // Situation:
+                // This client gets moved to a new Square so its still "my" turn
+                if (result[0] + result[1] === 0) {
+                    // Don't log
+
+                    // Position is not changed
+                    landedOn = selectPlayerModel(source).position;
+                    selectSquareModel(landedOn).onLandOn(source);
+
+                    // EOT
+                    return;
                 }
 
-                // What type of square player lands on?
-                if (!selectSquareModel(landedOn).isBaseProperty()) {
-                    // Lands on Action square
-                    ViewController.preEndTurn();
-                } else {
-                    // Lands on Property square
+                // If "I" am in Jail
+                // Situation:
+                // I chose to try to ROLL DOUBLE
+                if (getThisPlayerModel().inJail) {
+                    if (result[0] === result[1]) {
+                        // DOUBLE!
 
-                    // Who owns this property?
-                    switch (selectSquareModel(landedOn).owner) {
-                        case -1:
-                            // Nobody
-                            // Prompt buy options
-                            ViewController.promptBuyWindow(landedOn);
-                            break;
-                        case game.clientID:
-                            // Me
-                            // Do nothing, Proceed to EOT
-                            ViewController.preEndTurn();
-                            break;
-                        default:
-                            // Others
-                            // Pay tax
-                            ViewController.preEndTurn();
-                            break;
+                        // Set Model
+                        getThisPlayerModel().setJail(false);
+                        // Log
+                        log(sprintf("You rolled (%d %d), YOU'RE FREE!", result[0], result[1]), source);
+                        // Move player
+                        landedOn = game.model.movePlayer(source, result);
+                        selectSquareModel(landedOn).onLandOn(source);
+                    } else {
+                        // Not Double, still in Jail
+
+                        // Log
+                        log(sprintf("You rolled (%d %d), you're still in Jail", result[0], result[1]), source);
+                        ViewController.preEndTurn();
                     }
+
+                    // EOT
+                    return;
+                }
+
+                // Situation:
+                // I'm not in Jail, I don't roll a double in the previous turn
+                // Its "my" normal turn
+                landedOn = game.model.movePlayer(source, result);
+                selectSquareModel(landedOn).onLandOn(source);
+
+                // Log
+                log(sprintf("You rolled (%d %d), landed on %d", result[0], result[1], landedOn), source);
+
+                // Rolled double?
+                if (result[0] === result[1]) {
+                    game.doubleRoll = true;
                 }
             },
             "buy_ack": function (data) {
@@ -433,12 +452,23 @@ function generateMessage(type, parameter) {
         },
         /**
          * Build house message
-         * @param {object} parameter
+         * @param {{property: number, sell: Boolean}} parameter
          */
         "build_house": function (parameter) {
             var ret = _generateHeader("build_house", ["source"]);
             ret.property = parameter.property;
             ret.sell = parameter.sell;
+
+            return ret;
+        },
+        /**
+         * Generate pay_bail message
+         * @param {{useCard: Boolean}} parameter
+         * @returns {{}}
+         */
+        "pay_bail": function (parameter) {
+            var ret = _generateHeader("pay_bail", ["source"]);
+            ret.get_out_of_jail_free = parameter.useCard;
 
             return ret;
         }

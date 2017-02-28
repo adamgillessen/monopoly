@@ -1,5 +1,5 @@
 /**
- * Created by nooje on 2/8/2017.
+ * Created by Zijie Wu on 2/8/2017.
  */
 "use strict";
 
@@ -9,10 +9,10 @@ var SQUARE_TYPE = {
     others: "Utility or transportation-square"
 };
 
-var FULLT_BUILT_TIMES = 5;
+var FULL_BUILT_TIMES = 5;
 
 function defaultCallback() {
-    throw new Error("Callback not implemented");
+    console.log("Callback not implemented");
 }
 
 /**
@@ -136,6 +136,10 @@ Board.prototype.canBuildHouse = function (propertyID) {
     // todo: bug fix
     var estate = this.squares[propertyID].estate;
 
+    /**
+     * ID of properties in this Estate
+     * @type {[number]}
+     */
     var properties = game.model.propertyEstate[estate];
     var lop;
     var iHigh = 0;
@@ -149,23 +153,23 @@ Board.prototype.canBuildHouse = function (propertyID) {
         }
 
         // Find index of biggest number
-        if (properties[iHigh].buildProgress < properties[lop].buildProgress) {
+        if (selectSquareModel(properties[iHigh]).buildProgress < selectSquareModel(properties[lop]).buildProgress) {
             iHigh = lop;
         }
 
         // Find index of smallest number
-        if (properties[iLow].buildProgress > properties[lop].buildProgress) {
+        if (selectSquareModel(properties[iLow]).buildProgress > selectSquareModel(properties[lop]).buildProgress) {
             iLow = lop;
         }
     }
 
     // All properties are evenly built, so you can build new one on top of them
-    if (properties[iHigh].buildProgress === properties[iLow].buildProgress) {
+    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress) {
         return true;
     }
 
     // Not evenly built, you can only build on lower one
-    return properties[iLow].buildProgress === properties[propertyID].buildProgress;
+    return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(properties[propertyID]).buildProgress;
 };
 
 /**
@@ -306,7 +310,7 @@ Square.prototype.setBuildProgress = function (progress) {
 };
 
 Square.prototype.setRent = function (rent) {
-    if (this.isBaseProperty()) {
+    if (!this.isBaseProperty()) {
         throw new Error(this.type + " has no rent");
     }
 
@@ -340,7 +344,24 @@ Square.prototype.isProperty = function () {
  * @param {number} id
  */
 Square.prototype.onLandOn = function (id) {
-    // todo: onLandOn function
+    if (!game.isThisClient(id)) {
+        return;
+    }
+
+    if (this.isBaseProperty()) {
+        // Lands on Property or UTIL or TRANS
+        // Show buy
+        if (this.owner === -1) {
+            // Show buy option
+            ViewController.promptBuyWindow(this.id);
+        } else {
+            ViewController.preEndTurn();
+        }
+    } else {
+        // Lands on Action
+        // Do nothing
+        ViewController.preEndTurn();
+    }
 };
 
 Square.prototype.build = function () {
@@ -348,9 +369,7 @@ Square.prototype.build = function () {
         throw new Error("Cannot build on" + this.type);
     }
 
-    var prevProgress = this.buildProgress;
-
-    this.setBuildProgress(prevProgress + 1);
+    this.setBuildProgress(this.buildProgress + 1);
 };
 
 Square.prototype.showDetail = function () {
@@ -386,7 +405,7 @@ Square.prototype.showDetail = function () {
             // Estate
             $("#property-estate").text("Estate: " + this.estate);
             // Build Progress
-            $("#property-build").text(generateProgressBar(this.buildProgress, FULLT_BUILT_TIMES));
+            $("#property-build").text(generateProgressBar(this.buildProgress, FULL_BUILT_TIMES));
             // Owner
             if (this.owner === -1) {
                 $("#property-owner").text("ON SALE");
@@ -434,7 +453,7 @@ Square.prototype.showDetail = function () {
                 }
             }
             // Price
-            $("#property-price").text("Price: £:" + this.price);
+            $("#property-price").text("Price: £" + this.price);
             // Rent
             $("#property-rent").text(" --- ");
             // Control Pane
@@ -540,7 +559,7 @@ Player.prototype.hasEnoughMoneyThan = function (money) {
 
 Player.prototype.moveByStep = function (steps) {
     if (steps === 0) {
-        return;
+        return this.position;
     }
 
     this.position = this.position + steps;

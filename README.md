@@ -16,8 +16,8 @@ Server - the server which will run the game for all clients
 Resources - assorted development information
 
 ## Todos:  
-1. Update the games cross browser compatability. CSS currently renders different in several browsers. 
-1. Add graceful disconection of players to server.
+1. Update the games cross browser compatibility. CSS currently renders different in several browsers.
+1. Add graceful disconnection of players to server.
 1. Add mortgaging property to client and server
 1. Add Jail turn functionality to Client
 
