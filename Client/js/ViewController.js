@@ -36,6 +36,14 @@ ViewController.createPlayers = function (num) {
 };
 
 ViewController.addCallbacksToEvents = function () {
+    Player.prototype.onCardChange = function () {
+        this.hasCard ? $("#free-card").show() : $("#free-card").hide();
+    };
+
+    Player.prototype.onJailChange = function () {
+        this.inJail ? $("#btn-use-card").show() : $("#btn-use-card").hide();
+    };
+
     Player.prototype.onMoneyChange = function () {
         if (game.isThisClient(this.id)) {
             $("#money").text("£" + this.money);
@@ -101,6 +109,27 @@ ViewController.addCallbacksToButtons = function () {
         // Send message
         game.connector.sendMessage(generateMessage("pay_bail", {
             useCard: false
+        }));
+
+        // EOT
+        ViewController.preEndTurn();
+    });
+
+    $("#btn-use-card").click(function () {
+        if (!getThisPlayerModel().hasCard || !getThisPlayerModel().inJail) {
+            throw new Error("This button shouldn't be clicked");
+        }
+
+        // log
+        log("You have got out of Jail by using\nGet Our of Jail Free Card", 5);
+
+        // Set model
+        getThisPlayerModel().setJail(false);
+        getThisPlayerModel().setCard(false);
+
+        // Send message
+        game.connector.sendMessage(generateMessage("pay_bail", {
+            useCard: true
         }));
 
         // EOT
