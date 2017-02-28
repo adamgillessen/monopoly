@@ -73,3 +73,22 @@
   cursor: pointer;
   margin-bottom: 1em;
 }
+
+@media and (-webkit-min-device-pixel-ratio:0) {
+  #detail-pane::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    #detail-pane::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+@media screen and(-webkit-min-device-pixel-ratio:0) {
+  #detail-pane::-webkit-scrollbar {-chrome-:only(;
+     display: none;
+  );}
+}
