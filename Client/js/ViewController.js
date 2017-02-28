@@ -37,11 +37,15 @@ ViewController.createPlayers = function (num) {
 
 ViewController.addCallbacksToEvents = function () {
     Player.prototype.onCardChange = function () {
-        this.hasCard ? $("#free-card").show() : $("#free-card").hide();
+        if (game.isThisClient(this.id)) {
+            this.hasCard ? $("#free-card").show() : $("#free-card").hide();
+        }
     };
 
     Player.prototype.onJailChange = function () {
-        this.inJail ? $("#btn-use-card").show() : $("#btn-use-card").hide();
+        if (game.isThisClient(this.id)) {
+            this.inJail ? $("#btn-use-card").show() : $("#btn-use-card").hide();
+        }
     };
 
     Player.prototype.onMoneyChange = function () {
