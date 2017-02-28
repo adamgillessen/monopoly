@@ -158,7 +158,8 @@ ViewController.addCallbacksToButtons = function () {
             if (getThisPlayerModel().hasEnoughMoneyThan(selectSquareModel(propertyToBuild).rent)) {
                 // Send build message
                 game.connector.sendMessage(generateMessage("build_house", {
-                    property: propertyToBuild
+                    property: propertyToBuild,
+                    sell: false
                 }));
             } else {
                 alert("You don't have enough money to build!");

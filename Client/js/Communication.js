@@ -438,6 +438,7 @@ function generateMessage(type, parameter) {
         "build_house": function (parameter) {
             var ret = _generateHeader("build_house", ["source"]);
             ret.property = parameter.property;
+            ret.sell = parameter.sell;
 
             return ret;
         }
