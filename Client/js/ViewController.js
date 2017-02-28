@@ -45,6 +45,18 @@ ViewController.addCallbacksToEvents = function () {
     Player.prototype.onJailChange = function () {
         if (game.isThisClient(this.id)) {
             this.inJail ? $("#btn-use-card").show() : $("#btn-use-card").hide();
+
+            if (this.inJail) {
+                // You goes to jail
+                // doubleRoll is invalid
+                // because u cant roll anymore
+                game.doubleRoll = false;
+            }
+        } else {
+            // Others get out of jail
+            if (!this.inJail) {
+                log(sprintf("Player %d has been set free", this.id), 5);
+            }
         }
     };
 

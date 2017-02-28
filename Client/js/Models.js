@@ -503,7 +503,7 @@ Square.prototype.showDetail = function () {
             // Control Pane
             if (game.isThisClient(this.owner)) {
                 $("#property-controls").show();
-                showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
+                showPropertyButtons([BUTTONS_PROPERTY.mortgage]);
             }
             break;
 
