@@ -20,7 +20,7 @@ class Player:
         self._position = 0
         self._utils = set()
         self._transports = set() 
-        self._free = False 
+        self._free = True 
         self._jail = False 
         self._double_roll = False 
 
