@@ -207,7 +207,7 @@ ViewController.addCallbacksToButtons = function () {
         // Check if all properties of same estate are owned by this player
         if (game.model.canBuildHouse(propertyToBuild)) {
             // Check if this player has enough money to build
-            if (getThisPlayerModel().hasEnoughMoneyThan(selectSquareModel(propertyToBuild).rent)) {
+            if (getThisPlayerModel().hasEnoughMoneyThan(selectSquareModel(propertyToBuild).buildCost)) {
                 // Send build message
                 game.connector.sendMessage(generateMessage("build_house", {
                     property: propertyToBuild,
@@ -243,7 +243,6 @@ ViewController.addToInventory = function (id) {
             '<div class="square cell-%d">%d</div>' +
             '<div class="placename">%s</div>' +
             '</div>';
-        // todo: Get out of jail card
 
         var current = $(sprintf(templateProperty, id, id, ViewController.tableName[id]));
         current.appendTo('#inventory');
@@ -257,7 +256,11 @@ ViewController.addToInventory = function (id) {
 
     game.model.propertiesOwnedByThisPlayer.push(id);
     game.model.propertiesOwnedByThisPlayer.sort(function (a, b) {
-        return a > b;
+        if (a === b) {
+            return 0;
+        }
+
+        return a > b ? 1 : -1;
     });
 
     // Clear all items in Inventory pane
