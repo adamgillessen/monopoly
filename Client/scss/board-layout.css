@@ -120,22 +120,3 @@
 #bottom_middle_container .cell {
   border-top: 1px solid #565656;
 }
-
-@media and (-webkit-min-device-pixel-ratio:0) {
-  #game-area #main-board {
-    margin: 3em 4em;
-  }
-}
-
-@media screen and (-webkit-min-device-pixel-ratio:0)
-  and (min-resolution:.001dpcm) {
-    #game-area #main-board {
-      margin: 3em 4em;
-    }
-}
-
-@media screen and(-webkit-min-device-pixel-ratio:0) {
-  #game-area #main-board {-chrome-:only(;
-     margin: 3em 4em;
-  );}
-}
