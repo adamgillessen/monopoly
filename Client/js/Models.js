@@ -164,13 +164,27 @@ Board.prototype.canBuildHouse = function (propertyID) {
     }
 
     // All properties are evenly built, so you can build new one on top of them
-    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress
-        && selectSquareModel(propertyID).buildProgress !== FULL_BUILT_TIMES) {
-        return true;
+    if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress) {
+        // 5 max houses allowed
+        return selectSquareModel(propertyID).buildProgress !== FULL_BUILT_TIMES;
     }
 
     // Not evenly built, you can only build on lower one
     return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(propertyID).buildProgress;
+};
+
+Board.prototype.canSellHouse = function (propertyID) {
+    // Only property may have "Sell" option
+    if (!this.squares[propertyID].isProperty()) {
+        return false;
+    }
+
+    // You can only sell if you built houses before
+    if (this.squares[propertyID].buildProgress > 0) {
+        return true;
+    }
+
+    return false;
 };
 
 /**
@@ -345,6 +359,12 @@ Square.prototype.isProperty = function () {
  * @param {number} id
  */
 Square.prototype.onLandOn = function (id) {
+    // Lands on GO
+    if (this.id === 0) {
+        log("Landed on GO, Got 200", id);
+        selectPlayerModel(id).changeMoney(200);
+    }
+
     if (!game.isThisClient(id)) {
         return;
     }
@@ -359,7 +379,7 @@ Square.prototype.onLandOn = function (id) {
             ViewController.preEndTurn();
         }
     } else {
-        // Lands on Action
+        // Lands on action
         // Do nothing
         ViewController.preEndTurn();
     }
@@ -373,10 +393,9 @@ Square.prototype.build = function () {
     this.setBuildProgress(this.buildProgress + 1);
 };
 
-Square.prototype.sell = function () {
-    this.setOwner(-1);
-    this.setBuildProgress(0);
-    this.setBuildCost(this.rent);
+Square.prototype.sell = function (buildProgress, rent) {
+    this.setBuildProgress(buildProgress);
+    this.setRent(rent);
 };
 
 Square.prototype.showDetail = function () {
@@ -430,13 +449,23 @@ Square.prototype.showDetail = function () {
             // Control Pane
             if (game.isThisClient(this.owner)) {
                 $("#property-controls").show();
+                var btnToDisplay = [];
+                // Build button
                 if (game.model.canBuildHouse(this.id)) {
-                    showPropertyButtons([BUTTONS_PROPERTY.build, BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
-                    // Build Cost
+                    btnToDisplay.push(BUTTONS_PROPERTY.build);
+                    // Update Build Cost
                     $("#build-cost").text(this.buildCost);
-                } else {
-                    showPropertyButtons([BUTTONS_PROPERTY.mortgage, BUTTONS_PROPERTY.sell]);
                 }
+
+                // Mortgage button
+                btnToDisplay.push(BUTTONS_PROPERTY.mortgage);
+
+                // Sell button
+                if (game.model.canSellHouse(this.id)) {
+                    btnToDisplay.push(BUTTONS_PROPERTY.sell);
+                }
+
+                showPropertyButtons(btnToDisplay);
             }
             break;
 

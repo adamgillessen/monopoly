@@ -341,17 +341,25 @@ function parseMessage(data) {
                 var numHouses = data["num_houses"];
                 var isSell = data["sell"];
 
+                // Sell house
                 if (isSell) {
+                    var moneyGained = data["gained_money"];
                     // Log
-                    log("Sell house", 5);
-                    console.log(data);
+                    if (game.isThisClient(source)) {
+                        log(sprintf("You have sold 1 house on Property %d for £%d", property, moneyGained), source);
+                    } else {
+                        log(sprintf("Player %d have sold 1 house on Property %d for £%d", source, property, moneyGained), source);
+                    }
 
-                    selectSquareModel(property).sell();
+                    // Update house
+                    selectSquareModel(property).sell(numHouses, currentRent);
 
-                    // todo: Update money
+                    // Update money
+                    selectPlayerModel(source).changeMoney(moneyGained);
                     return;
                 }
 
+                // Build house
                 // Update Model
                 selectPlayerModel(source).changeMoney(-selectSquareModel(property).buildCost);
 
