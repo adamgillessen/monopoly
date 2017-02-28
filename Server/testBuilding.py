@@ -27,7 +27,7 @@ class BuildingTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.server = subprocess.Popen(["python3.6", "Server.py"])
+        self.server = subprocess.Popen(["python3", "Server.py"])
         self.keys = [1,2]
         self.players = { i: webdriver.Chrome() for i in self.keys}
         for player in self.players:
