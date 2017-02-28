@@ -18,9 +18,7 @@ Resources - assorted development information
 ## Todos:  
 1. Update the games cross browser compatability. CSS currently renders different in several browsers. 
 1. Add graceful disconection of players to server.
-1. Add player loss stuff to client
 1. Add mortgaging property to client and server
-1. Add unit tests for house building to server
 1. Add Jail turn functionality to Client
 
 
