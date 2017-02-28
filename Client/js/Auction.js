@@ -45,7 +45,7 @@ Auction.prototype.bid = function (price) {
     var finalPrice = price >= this.basePrice ? price : this.basePrice;
 
     // Base price is greater than what player has
-    if (this.basePrice > game.model.selectPlayer(game.clientID).money) {
+    if (this.basePrice >= game.model.selectPlayer(game.clientID).money) {
         log("Invalid bid:\nYou don't have enough money to place minimal bid", 5);
         finalPrice = 0;
     } else if (finalPrice >= game.model.selectPlayer(game.clientID).money) {

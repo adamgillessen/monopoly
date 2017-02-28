@@ -346,6 +346,9 @@ function parseMessage(data) {
                     return;
                 }
 
+                // Update Model
+                selectPlayerModel(source).changeMoney(-selectSquareModel(property).buildCost);
+
                 if (game.isThisClient(source)) {
                     log("You have built a house on Property " + property, source);
                 } else {

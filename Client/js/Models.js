@@ -405,7 +405,7 @@ Square.prototype.showDetail = function () {
             // Estate
             $("#property-estate").text("Estate: " + this.estate);
             // Build Progress
-            $("#property-build").text(generateProgressBar(this.buildProgress, FULL_BUILT_TIMES));
+            $("#property-build").text(generateProgressBar(this.buildProgress));
             // Owner
             if (this.owner === -1) {
                 $("#property-owner").text("ON SALE");
