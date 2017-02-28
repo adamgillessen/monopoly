@@ -8,14 +8,24 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
 
-class GameUnitTest(unittest.TestCase):
+class GameTest(unittest.TestCase):
     """
-    UnitTests for gameplay
-    
+    Test for gameplay
+
+    http://selenium-python.readthedocs.io/
+
+    Install instructions to run:
+
+        pip install selenium
+        Download Chrome driver : https://sites.google.com/a/chromium.org/chromedriver/downloads
+        Place driver in PATH
+
+    Edit line 32 to your to the client index.html file
+
     """
 
     def setUp(self):
-        self.server = subprocess.Popen(["python3.6", "Server.py", "localhost", "4444"])
+        self.server = subprocess.Popen(["python3", "Server.py"])
         self.keys = [1,2,3,4]
         self.players = { i: webdriver.Chrome() for i in self.keys}
         for player in self.players:
@@ -33,22 +43,22 @@ class GameUnitTest(unittest.TestCase):
             round_no_roll = True
             for player in keys:
                 if player != None:
-                    print(">> Check if player ",player, "lost")
-                    try :
-                        players[player].switch_to.alert.accept()
-                        lost = True
-                        print(">> Player ",player, " lost")
-                        keys[keys.index(player)] = None
-                        continue
-                    except NoAlertPresentException:
-                        if keys.count(None)==3:
-                                return
-                        print(">> Player ",player,"'s turn") 
-                        while players[player].find_element_by_id("btn-roll").is_displayed():
-                            round_no_roll =False
-                            print(">> Player ",player, " rolled")
-                            players[player].find_element_by_id("btn-roll").click()
-                                                  
+                    if keys.count(None)==len(keys)-1:
+                        return
+                    print(">> Player ",player,"'s turn") 
+                    while players[player].find_element_by_id("btn-roll").is_displayed():
+                        round_no_roll =False
+                        print(">> Player ",player, " rolled")
+                        players[player].find_element_by_id("btn-roll").click()
+                                              
+                        print(">> Check if player ",player, "lost")
+                        try :
+                            players[player].switch_to.alert.accept()
+                            lost = True
+                            print(">> Player ",player, " lost")
+                            keys[keys.index(player)] = None
+                            continue
+                        except NoAlertPresentException:
                             if players[player].find_element_by_id("prompt-buy").is_displayed():
                                 print(">> Player ",player, "landed on a property")
                                 if random.choice([True, False]):

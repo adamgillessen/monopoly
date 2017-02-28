@@ -206,7 +206,7 @@ class Server:
         """
         Builds a house on property_id owned by playe_id
         """
-        self._board.build_house(self, player_id, property_id)
+        self._board.build_house(player_id, property_id)
 
     def get_current_rent(self, property_id):
         """
@@ -224,7 +224,7 @@ class Server:
         """
         Has player_id leave jail and continue the game as normal
         """
-        self._board.leave_jail(self, player_id, free_card)
+        self._board.leave_jail(player_id, free_card)
 
         
 
