@@ -80,7 +80,7 @@
 
 .owned {
   width: 100%;
-  height: 4.5em;
+  height: 10vh;
   color: #ffffff;
   box-sizing: border-box;
   padding: 0.5em 0em 0.5em 0em;
@@ -89,8 +89,8 @@
 }
 
 .square {
-  width: 3.5em;
-  height: 3.5em;
+  width: calc(10vh - 1em);
+  height: calc(10vh - 1em);
   float: left;
   line-height: 3.5em;
   text-align: center;
@@ -127,6 +127,7 @@
 
   #inventory {
     left: calc(80vh + 4em + 2em);
+    height: calc(100vh - 35vh - 8em);
   }
 
   #inventory::-webkit-scrollbar {
@@ -146,6 +147,7 @@
 
     #inventory {
       left: calc(80vh + 4em + 2em);
+      height: calc(100vh - 35vh - 8em);
     }
 
     #inventory::-webkit-scrollbar {
