@@ -1,7 +1,7 @@
 #control-pane {
   position: fixed;
   height: 4.25em;
-  width: 85vh;
+  width: 80vh;
   background-color: rgba(39,39,39, 0.95);
   bottom: 1em;
   border-radius: 3px;
@@ -117,11 +117,11 @@
 }
 
 @media and (-webkit-min-device-pixel-ratio:0) {
-  /*#control-pane {
-    left: 4.7em;
+  #control-pane {
+    left: 3.3em;
   }
 
-  #prompt-buy {
+  /*#prompt-buy {
     width: 32em !important;
   }
 
@@ -136,11 +136,11 @@
 
 @media screen and (-webkit-min-device-pixel-ratio:0)
   and (min-resolution:.001dpcm) {
-    /*#control-pane {
-      left: 4.7em;
+    #control-pane {
+      left: 3.3em;
     }
 
-    #prompt-buy {
+    /*#prompt-buy {
       width: 32em !important;
     }
 
@@ -154,11 +154,11 @@
 }
 
 @media screen and(-webkit-min-device-pixel-ratio:0) {
-  /*#control-pane {-chrome-:only(;
-     left: 4.7em;
+  #control-pane {-chrome-:only(;
+     left: 3.3em;
   );}
 
-  #prompt-buy {-chrome-:only(;
+  /*#prompt-buy {-chrome-:only(;
      width: 32em !important;
   );}
 
