@@ -2,16 +2,16 @@
 This is the server which will control the Monopoly game and interface 
 with the Clients. 
 """
-
-import websocket_server
+try:
+    import websocket_server
+except ImportError:
+    print("You need to install websocket-server")
+    print("Run:\n\tpip3 install websocket-server")
 import json
 import random
 from Board import * 
 import sys 
 from multiprocessing import Process, SimpleQueue
-
-#Run to install the websocket server:
-#    sudo pip3 install websocket-server
 
 class Server:
     """
