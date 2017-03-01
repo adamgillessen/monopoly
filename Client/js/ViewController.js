@@ -311,7 +311,7 @@ ViewController.chatButtonClicked = function () {
 
         var bid = game.auctionHandler.bid(price);
 
-        log("You have placed bid: " + bid, game.clientID);
+        log("You have placed bid: £" + bid, game.clientID);
     } else {
         // Send Chat
         game.connector.sendMessage(generateMessage("chat", {

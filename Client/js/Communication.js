@@ -52,6 +52,8 @@ Connector.prototype.connect = function (ip, port) {
  * @param {string|Object} msg
  */
 Connector.prototype.sendMessage = function (msg) {
+    valid(msg);
+
     if (typeof msg === "string") {
         this.webSocket.send(msg);
     } else {
@@ -327,8 +329,7 @@ function parseMessage(data) {
                 var player = data["player"];
 
                 if (game.isThisClient(player)) {
-                    // todo: player lose, do something
-                    alert("GAME OVER!\nYou lose!");
+                    game.gameOver();
                 }
             },
             "textual_update": function (data) {
@@ -375,6 +376,7 @@ function parseMessage(data) {
         };
     }
 
+    valid(data);
 
     if (typeof data === "string") {
         data = JSON.parse(data);
@@ -424,7 +426,7 @@ function _generateHeader(type, include) {
 /**
  * Generate messages, given type and parameter to be included in the message
  * @param {string} type
- * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no addtional parameter
+ * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no additional parameter
  * @returns {*} message object
  */
 function generateMessage(type, parameter) {
