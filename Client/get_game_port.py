@@ -1,7 +1,8 @@
 #!/usr/bin python3
 
 if __name__ == "__main__":
-    with open("current_game_port.dat") as f:
+    dat_file_location = "current_game_port.dat" # TODO decide on where to put stuff permanently
+    with open(dat_file_location) as f:
         try:
             portnumber = f.read().strip()
             print(portnumber)
