@@ -14,8 +14,8 @@
   border-right: 1px solid black;
   box-sizing: border-box;
   margin: 4em auto;
-  width: 600px;
-  height: 600px;
+  width: 85vh;
+  height: 85vh;
   -webkit-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
   box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);

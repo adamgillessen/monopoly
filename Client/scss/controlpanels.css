@@ -1,7 +1,7 @@
 #control-pane {
   position: fixed;
   height: 4.25em;
-  width: 37.5em;
+  width: 85vh;
   background-color: rgba(39,39,39, 0.95);
   bottom: 1em;
   border-radius: 3px;
