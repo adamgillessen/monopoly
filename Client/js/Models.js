@@ -120,7 +120,10 @@ Board.prototype.selectPlayer = function (id) {
 
 /**
  * Check if this client can build a house on given property
- * Return true if all properties in the same estate is owned by this player
+ * Return true if
+ * All properties in the same estate is owned by this player
+ * And none of them is mortgaged
+ * And they are evenly built
  * @param {number} propertyID
  * @return {Boolean}
  */
@@ -138,9 +141,9 @@ Board.prototype.canBuildHouse = function (propertyID) {
 
     for (lop = 0; lop < properties.length; lop++) {
         // If not all owned by this player
+        // All property must be un-mortgaged
         // Return false
-        // todo: Mortgage
-        if (!game.isThisClient(this.squares[properties[lop]].owner) /*|| selectSquareModel(propertyID).isMortgaged*/) {
+        if (!game.isThisClient(this.squares[properties[lop]].owner) || selectSquareModel(properties[lop]).mortgaged) {
             return false;
         }
 
@@ -165,6 +168,37 @@ Board.prototype.canBuildHouse = function (propertyID) {
     return selectSquareModel(properties[iLow]).buildProgress === selectSquareModel(propertyID).buildProgress;
 };
 
+/**
+ * Check if this client can mortgage this property
+ * Return true if
+ * Not mortgaged
+ * And client owns this property
+ * And it has no houses built on top of this property
+ * @param {number} propertyID
+ * @return {Boolean}
+ */
+Board.prototype.canMortgageProperty = function (propertyID) {
+    var property = selectSquareModel(propertyID);
+    if (property.isProperty()) {
+        return !property.mortgaged && game.isThisClient(property.owner) && property.buildProgress === 0;
+    }
+    // This is UTIL or TRANS
+    return !property.mortgaged && game.isThisClient(property.owner);
+};
+
+/**
+ * Check if this client can un-mortgage this property
+ * Return true if
+ * Client owns this property
+ * And mortgaged
+ * @param {number} propertyID
+ * @return {Boolean}
+ */
+Board.prototype.canUnmortgageProperty = function (propertyID) {
+    var property = selectSquareModel(propertyID);
+    return property.mortgaged && game.isThisClient(property.owner);
+};
+
 Board.prototype.canSellHouse = function (propertyID) {
     // Only property may have "Sell" option
     if (!this.squares[propertyID].isProperty()) {
@@ -172,11 +206,7 @@ Board.prototype.canSellHouse = function (propertyID) {
     }
 
     // You can only sell if you built houses before
-    if (this.squares[propertyID].buildProgress > 0) {
-        return true;
-    }
-
-    return false;
+    return this.squares[propertyID].buildProgress > 0;
 };
 
 /**
@@ -205,16 +235,31 @@ function Square(id, type) {
     //////////////////////////////////////////////////////
     // Shared properties among Property, UTIL and TRANS
     //////////////////////////////////////////////////////
+    /**
+     * Estate this property is in
+     * Fixed
+     * @type {number}
+     */
     this.estate = undefined;
+    /**
+     * Price to buy this propety
+     * Fixed
+     * @type {number}
+     */
     this.price = undefined;
     this.owner = undefined;
+    /**
+     * Is this property mortgaged or not
+     * @type {Boolean}
+     */
+    this.mortgaged = undefined;
 
     ///////////////////////
     // Only for Property
     ///////////////////////
     /**
      * Costs to build this property
-     * This is fixed
+     * Fixed
      * @type {number}
      */
     this.buildCost = undefined;
@@ -242,6 +287,7 @@ Square.prototype.initProperty = function (estate, price, rent) {
     this.estate = estate;
     this.price = price;
     this.owner = -1;
+    this.mortgaged = false;
 
     this.buildCost = rent;
     this.buildProgress = 0;
@@ -259,6 +305,7 @@ Square.prototype.initUtilOrTrans = function (price) {
     this.estate = -1;
     this.price = price;
     this.owner = -1;
+    this.mortgaged = false;
 
     return this;
 };
@@ -267,6 +314,8 @@ Square.prototype.initUtilOrTrans = function (price) {
 // Callbacks //
 ///////////////
 Square.prototype.onOwnerChange = defaultCallback;
+
+Square.prototype.onMortgageChange = defaultCallback;
 
 Square.prototype.onBuildCostChange = defaultCallback;
 
@@ -282,11 +331,24 @@ Square.prototype.setOwner = function (owner) {
         throw new Error(this.type + " has no owner");
     }
 
-    var prev = this.owner;
-    this.owner = owner;
+    // Only calls if the value get modified
+    if (this.owner !== owner) {
+        this.owner = owner;
 
-    if (prev !== this.owner) {
         this.onOwnerChange();
+    }
+};
+
+Square.prototype.setMortgage = function (mortgage) {
+    if (!this.isBaseProperty()) {
+        throw new Error(this.type + " has no mortgage flag");
+    }
+
+    // Only calls if the value get modified
+    if (this.mortgaged !== mortgage) {
+        this.mortgaged = mortgage;
+
+        this.onMortgageChange();
     }
 };
 
@@ -295,10 +357,10 @@ Square.prototype.setBuildCost = function (buildCost) {
         throw new Error(this.type + " has no build cost");
     }
 
-    var prev = this.buildCost;
-    this.buildCost = buildCost;
+    // Only calls if the value get modified
+    if (this.buildCost !== buildCost) {
+        this.buildCost = buildCost;
 
-    if (prev !== this.buildCost) {
         this.onBuildCostChange();
     }
 };
@@ -308,10 +370,10 @@ Square.prototype.setBuildProgress = function (progress) {
         throw new Error(this.type + " has no build progress");
     }
 
-    var prev = this.buildProgress;
-    this.buildProgress = progress;
+    // Only calls if the value get modified
+    if (this.buildProgress !== progress) {
+        this.buildProgress = progress;
 
-    if (prev !== this.buildProgress) {
         this.onBuildProgressChange();
     }
 };
@@ -321,10 +383,10 @@ Square.prototype.setRent = function (rent) {
         throw new Error(this.type + " has no rent");
     }
 
-    var prev = this.rent;
-    this.rent = rent;
+    // Only calls if the value get modified
+    if (this.rent !== rent) {
+        this.rent = rent;
 
-    if (prev !== this.rent) {
         this.onRentChange();
     }
 };
@@ -393,6 +455,7 @@ Square.prototype.sell = function (buildProgress, rent) {
 Square.prototype.showDetail = function () {
     ViewController.currentSelectedSquare = this.id;
     var squareName = ViewController.tableName[this.id];
+    var ownerInfo = undefined;
 
     switch (this.type) {
         case SQUARE_TYPE.action:
@@ -424,16 +487,21 @@ Square.prototype.showDetail = function () {
             $("#property-estate").text("Estate: " + this.estate);
             // Build Progress
             $("#property-build").text(generateProgressBar(this.buildProgress));
-            // Owner
+            // Owner & mortgage
             if (this.owner === -1) {
-                $("#property-owner").text("ON SALE");
+                ownerInfo = "ON SALE";
             } else {
                 if (game.isThisClient(this.owner)) {
-                    $("#property-owner").text("Owner: You");
+                    ownerInfo = "Owner: You";
                 } else {
-                    $("#property-owner").text("Owner: Player " + this.owner);
+                    ownerInfo = "Owner: Player " + this.owner;
+                }
+
+                if (this.mortgaged) {
+                    ownerInfo += " [Mortgaged]";
                 }
             }
+            $("#property-owner").text(ownerInfo);
             // Price
             $("#property-price").text("Price: £" + this.price);
             // Rent
@@ -448,15 +516,18 @@ Square.prototype.showDetail = function () {
                     // Update Build Cost
                     $("#build-cost").text(this.buildCost);
                 }
-
-                // Mortgage button
-                btnToDisplay.push(BUTTONS_PROPERTY.mortgage);
-
+                if (game.model.canMortgageProperty(this.id)) {
+                    // Mortgage button
+                    btnToDisplay.push(BUTTONS_PROPERTY.mortgage);
+                }
+                if (game.model.canUnmortgageProperty(this.id)) {
+                    // Un-Mortgage button
+                    btnToDisplay.push(BUTTONS_PROPERTY.unmortgage);
+                }
                 // Sell button
                 if (game.model.canSellHouse(this.id)) {
                     btnToDisplay.push(BUTTONS_PROPERTY.sell);
                 }
-
                 showPropertyButtons(btnToDisplay);
             }
             break;
@@ -480,14 +551,19 @@ Square.prototype.showDetail = function () {
             $("#property-build").text(" --- ");
             // Owner
             if (this.owner === -1) {
-                $("#property-owner").text("ON SALE");
+                ownerInfo = "ON SALE";
             } else {
                 if (game.isThisClient(this.owner)) {
-                    $("#property-owner").text("Owner: You");
+                    ownerInfo = "Owner: You";
                 } else {
-                    $("#property-owner").text("Owner: Player " + this.owner);
+                    ownerInfo = "Owner: Player " + this.owner;
+                }
+
+                if (this.mortgaged) {
+                    ownerInfo += " [Mortgaged]";
                 }
             }
+            $("#property-owner").text(ownerInfo);
             // Price
             $("#property-price").text("Price: £" + this.price);
             // Rent
@@ -495,7 +571,15 @@ Square.prototype.showDetail = function () {
             // Control Pane
             if (game.isThisClient(this.owner) && game.state !== GAME_STATE.SPECTATOR) {
                 $("#property-controls").show();
-                showPropertyButtons([BUTTONS_PROPERTY.mortgage]);
+
+                if (game.model.canMortgageProperty(this.id)) {
+                    // Mortgage button
+                    showPropertyButtons([BUTTONS_PROPERTY.mortgage]);
+                }
+                if (game.model.canUnmortgageProperty(this.id)) {
+                    // Un-Mortgage button
+                    showPropertyButtons([BUTTONS_PROPERTY.unmortgage]);
+                }
             }
             break;
 
@@ -554,6 +638,10 @@ Player.prototype.setMoney = function (money) {
     }
 };
 
+/**
+ * Change balance by amount
+ * @param {number} amount
+ */
 Player.prototype.changeMoney = function (amount) {
     this.setMoney(this.money + amount);
 };

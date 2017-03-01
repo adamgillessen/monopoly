@@ -91,6 +91,18 @@ ViewController.addCallbacksToEvents = function () {
         }
     };
 
+    Square.prototype.onMortgageChange = function () {
+        if (this.id === ViewController.currentSelectedSquare) {
+            selectSquareModel(this.id).showDetail();
+        }
+    };
+
+    Square.prototype.onRentChange = function () {
+        if (this.id === ViewController.currentSelectedSquare) {
+            selectSquareModel(this.id).showDetail();
+        }
+    };
+
     Square.prototype.onBuildProgressChange = function () {
         if (this.id === ViewController.currentSelectedSquare) {
             selectSquareModel(this.id).showDetail();
@@ -239,7 +251,18 @@ ViewController.addCallbacksToButtons = function () {
 
     // Mortgage property
     $("#p-c-mortgage").click(function () {
-        // todo: mortgage
+        game.connector.sendMessage(generateMessage("mortgage_property", {
+            property: ViewController.currentSelectedSquare,
+            unmortgage: false
+        }));
+    });
+
+    // Un-mortgage property
+    $("#p-c-unmortgage").click(function () {
+        game.connector.sendMessage(generateMessage("mortgage_property", {
+            property: ViewController.currentSelectedSquare,
+            unmortgage: true
+        }));
     });
 
     // Sell property
