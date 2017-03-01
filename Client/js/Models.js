@@ -125,7 +125,6 @@ Board.prototype.selectPlayer = function (id) {
  * @return {Boolean}
  */
 Board.prototype.canBuildHouse = function (propertyID) {
-    // todo: bug fix
     var estate = this.squares[propertyID].estate;
 
     /**
@@ -140,7 +139,8 @@ Board.prototype.canBuildHouse = function (propertyID) {
     for (lop = 0; lop < properties.length; lop++) {
         // If not all owned by this player
         // Return false
-        if (!game.isThisClient(this.squares[properties[lop]].owner)) {
+        // todo: Mortgage
+        if (!game.isThisClient(this.squares[properties[lop]].owner) /*|| selectSquareModel(propertyID).isMortgaged*/) {
             return false;
         }
 
