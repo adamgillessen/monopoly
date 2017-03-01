@@ -352,7 +352,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
 
         if json_string["type"] == "player_join":
             new_id =  s.next_id()
-            """client_ids[client["id"]] = new_id"""
+
+            if num_clients.game_started:
+                del server.clients[server.clients.index(client)]
+                return
 
             response_json = {
                 "type" : "player_join_ack",
@@ -378,6 +381,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+                num_clients.game_started = True
 
                 queue.put(("new_board", game_id))
 
@@ -406,6 +411,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
             }
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+            num_clients.game_started = True
 
             queue.put(("new_board", game_id))
         
@@ -494,7 +501,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
         elif json_string["type"] == "auction_bid":
             player_id = json_string["source"]
             bid_amount = json_string["price"]
-            s.bids[player_id] = bid_amount
+            if bid_amount != 0:
+                s.bids[player_id] = bid_amount
+            else:
+                s.current_bidders.remove(player_id)
 
             response_json = {
                 "type": "auction_bid_ack",
@@ -503,7 +513,19 @@ def new_game_board(hostname, portnumber, queue, game_id):
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
             
-            if len(s.bids) == len(s.current_bidders):
+            if len(s.current_bidders) == 0:
+                response_json = {
+                    "type": "auction_finished",
+                    "property": s.auction_property,
+                    "price": 0,
+                    "winner": -1,
+                }
+                response_json_string = json.dumps(response_json)
+                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            
+                s.current_turn_generator.send((None, 0))
+
+            elif len(s.bids) == len(s.current_bidders):
                 max_bid_players, max_bid = s.get_auction_result()
                 if len(max_bid_players) == 1:
                     response_json = {
@@ -620,6 +642,7 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "type": "mortgage_property_ack",
                     "property": property_id, 
                     "player": player_id, 
+                    "unmortgage": json_string["unmortgage"],
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
@@ -649,6 +672,8 @@ if __name__ == "__main__":
     comms_queue = SimpleQueue()
     game_id = 0
     while True:
+        with open("current_game_port.dat", "w") as f:
+            f.write(str(portnumber))
         p = Process(target=new_game_board, args = (
             hostname, portnumber, comms_queue, game_id))
         p.start()

@@ -119,14 +119,6 @@ Board.prototype.selectPlayer = function (id) {
 };
 
 /**
- * Return ID of square where the player lands
- * @param {number} id
- */
-Board.prototype.playerAtByID = function (id) {
-    return this.players[id].position;
-};
-
-/**
  * Check if this client can build a house on given property
  * Return true if all properties in the same estate is owned by this player
  * @param {number} propertyID
@@ -447,7 +439,7 @@ Square.prototype.showDetail = function () {
             // Rent
             $("#property-rent").text("Rent: £" + this.rent);
             // Control Pane
-            if (game.isThisClient(this.owner)) {
+            if (game.isThisClient(this.owner) && game.state !== GAME_STATE.SPECTATOR) {
                 $("#property-controls").show();
                 var btnToDisplay = [];
                 // Build button
@@ -501,7 +493,7 @@ Square.prototype.showDetail = function () {
             // Rent
             $("#property-rent").text(" --- ");
             // Control Pane
-            if (game.isThisClient(this.owner)) {
+            if (game.isThisClient(this.owner) && game.state !== GAME_STATE.SPECTATOR) {
                 $("#property-controls").show();
                 showPropertyButtons([BUTTONS_PROPERTY.mortgage]);
             }

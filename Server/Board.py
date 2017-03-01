@@ -584,18 +584,19 @@ class Board:
                 elif buy_auction == "auction":
                     #print(">>User will auction")
                     highest_bidder, bid = yield None
-                    square.owner = highest_bidder
-                    self.take_money(highest_bidder, bid)
-                    new_owner = self._players[highest_bidder]
+                    if not highest_bidder:
+                        square.owner = highest_bidder
+                        self.take_money(highest_bidder, bid)
+                        new_owner = self._players[highest_bidder]
 
-                    square.is_owned = True
+                        square.is_owned = True
 
-                    if square.square_type == Square.PROPERTY:
-                        new_owner.add_property(square)
-                    elif square.square_type == Square.UTILITY:
-                        new_owner.add_utility(square)
-                    elif square.square_type == Square.TRANSPORT:
-                        new_owner.add_transport(Square)
+                        if square.square_type == Square.PROPERTY:
+                            new_owner.add_property(square)
+                        elif square.square_type == Square.UTILITY:
+                            new_owner.add_utility(square)
+                        elif square.square_type == Square.TRANSPORT:
+                            new_owner.add_transport(Square)
 
                     yield "property_auctioned"
 

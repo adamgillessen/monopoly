@@ -4,15 +4,16 @@
 "use strict";
 
 /**
- * Useless for now
- * @type {{OTHERS_TURN: string, ROLL: string, BUY: string, AUCTION: string, EOT: string}}
+ *
+ * @type {{OTHERS_TURN: string, ROLL: string, BUY: string, AUCTION: string, EOT: string, SPECTATOR: string}}
  */
 var GAME_STATE = {
     OTHERS_TURN: "OTHERS_TURN",
     ROLL: "ROLL",
     BUY: "BUY",
     AUCTION: "AUCTION",
-    EOT: "END OF TURN"
+    EOT: "END OF TURN",
+    SPECTATOR: "Watching"
 };
 
 function Game() {
@@ -110,6 +111,11 @@ Game.prototype.endAuction = function (data) {
     }
 
     this.auctionHandler = null;
+};
+
+Game.prototype.gameOver = function () {
+    alert("GAME OVER!\nYou lose!");
+    this.state = GAME_STATE.SPECTATOR;
 };
 
 /**
