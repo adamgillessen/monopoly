@@ -1,7 +1,7 @@
 #!/usr/bin python3
 
 if __name__ == "__main__":
-    port_file = "current_game_port.dat" # TODO decide on where to put stuff permanently
+    port_file = "/home/pi/monopoly_server/current_game_port.dat" # TODO decide on where to put stuff permanently
     with open(port_file) as f:
         try:
             portnumber = f.read().strip()
