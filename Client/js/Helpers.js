@@ -124,6 +124,7 @@ function log(obj, source) {
 var BUTTONS_PROPERTY = {
     build: "#p-c-build",
     mortgage: "#p-c-mortgage",
+    unmortgage: "#p-c-unmortgage",
     sell: "#p-c-sell"
 };
 

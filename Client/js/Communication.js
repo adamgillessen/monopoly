@@ -379,6 +379,37 @@ function parseMessage(data) {
 
                 selectSquareModel(property).setRent(currentRent);
                 selectSquareModel(property).setBuildProgress(numHouses);
+            },
+            "mortgage_property_ack": function (data) {
+                var property = data["property"];
+                var source = data["player"];
+                var unmortgage = data["unmortgage"];
+
+                if (unmortgage === false) {
+                    // Mortgage property
+                    var moneyGained = selectSquareModel(property).price / 2;
+                    if (game.isThisClient(source)) {
+                        log(sprintf("You have mortgaged Property %d for £%d", property, moneyGained), source);
+                    } else {
+                        log(sprintf("Player %d has mortgaged Property %d for £%d", source, property, moneyGained), source);
+                    }
+                    // Update Model
+                    // Get half the price of this property
+                    selectPlayerModel(source).changeMoney(moneyGained);
+                    selectSquareModel(property).setMortgage(true);
+                } else {
+                    // Unmortgage property
+                    var moneyPaid = selectSquareModel(property).price / 2 * 1.1;
+                    if (game.isThisClient(source)) {
+                        log(sprintf("You have un-mortgaged Property %d for £%d", property, moneyPaid), source);
+                    } else {
+                        log(sprintf("Player %d has un-mortgaged Property %d for £%d", source, property, moneyPaid), source);
+                    }
+
+                    // Update model
+                    selectPlayerModel(source).changeMoney(-moneyPaid);
+                    selectSquareModel(property).setMortgage(false);
+                }
             }
         };
     }
@@ -419,6 +450,9 @@ function _generateHeader(type, include) {
         }
 
         switch (include[each]) {
+            case "player":
+                obj.player = game.clientID;
+                break;
             case "source":
                 obj.source = game.clientID;
                 break;
@@ -502,6 +536,13 @@ function generateMessage(type, parameter) {
         "pay_bail": function (parameter) {
             var ret = _generateHeader("pay_bail", ["source"]);
             ret.get_out_of_jail_free = parameter.useCard;
+
+            return ret;
+        },
+        "mortgage_property": function (parameter) {
+            var ret = _generateHeader("mortgage_property", ["player"]);
+            ret.unmortgage = parameter.unmortgage;
+            ret.property = parameter.property;
 
             return ret;
         }

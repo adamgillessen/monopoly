@@ -42,6 +42,7 @@ Auction.prototype.bid = function (price) {
     this.state = AUCTION_STATE.YOU_BIDED;
     $("#submit").text("Send");
 
+    // Bid 0 to quit Auction
     if (price === 0) {
         log("You quit this Auction", 5);
         game.connector.sendMessage(generateMessage("auction_bid", {
