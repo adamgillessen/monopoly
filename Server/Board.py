@@ -57,6 +57,7 @@ class Board:
     _JAIL_POS = 10
     _GO_AMOUNT = 200
     _GO_POS = 0
+    _BAIL_COST = 50
     def __init__(self, num_players):
         """
         Initialises the board with the relevant squares in the correct place.
@@ -334,6 +335,7 @@ class Board:
         player.jail = False
         if free_card:
             player.free = False
+        self.take_money(player_id, Board._BAIL_COST)
         
     def remove_player(self, player_id):
         """
