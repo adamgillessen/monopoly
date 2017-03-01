@@ -8,19 +8,14 @@
   box-sizing: border-box;
 }
 
-#game-area {
-  min-width: 1200px;
-  min-height: 900px;
-}
-
 #game-area #main-board {
   padding: 0;
   border-top: 1px solid black;
   border-right: 1px solid black;
   box-sizing: border-box;
   margin: 4em auto;
-  width: 700px;
-  height: 700px;
+  width: 600px;
+  height: 600px;
   -webkit-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
   box-shadow: 3px 5px 10px 0px rgba(0,0,0,0.5);
@@ -84,8 +79,8 @@
 }
 
 #game-area #pane #detail-pane {
-  width: 200px;
-  height: 300px;
+  width: 170px;
+  height: 255px;
 }
 
 #game-area .player {
