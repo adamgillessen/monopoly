@@ -1,6 +1,7 @@
 # Server part
 /*/*.pyc
 /*/__pycache__
+/*/*.dat
 
 # Client part
 Client/test
