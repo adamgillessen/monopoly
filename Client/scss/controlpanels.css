@@ -123,11 +123,11 @@
 
   /*#prompt-buy {
     width: 32em !important;
-  }
+  }*/
 
   #inventory {
-    left: 51.5em;
-  }*/
+    left: calc(80vh + 4em + 2em);
+  }
 
   #inventory::-webkit-scrollbar {
     display: none;
@@ -142,11 +142,11 @@
 
     /*#prompt-buy {
       width: 32em !important;
-    }
+    }*/
 
     #inventory {
-      left: 51.5em;
-    }*/
+      left: calc(80vh + 4em + 2em);
+    }
 
     #inventory::-webkit-scrollbar {
       display: none;
@@ -160,11 +160,11 @@
 
   /*#prompt-buy {-chrome-:only(;
      width: 32em !important;
-  );}
+  );}*/
 
   #inventory {-chrome-:only(;
-    left: 51.5em;
-  );}*/
+    left: calc(80vh + 4em + 2em);
+  );}
 
   #inventory::-webkit-scrollbar {-chrome-:only(;
     display: none;
