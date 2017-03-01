@@ -79,8 +79,8 @@
 }
 
 #game-area #pane #detail-pane {
-  width: 170px;
-  height: 255px;
+  width: 23.33vh;
+  height: 35vh;
 }
 
 #game-area .player {
