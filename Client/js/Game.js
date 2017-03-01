@@ -25,6 +25,12 @@ function Game() {
     this.clientID = undefined;
 
     /**
+     * Stores players lose or not
+     * @type {{1: boolean, 2: boolean}}
+     */
+    this.playerStates = {};
+
+    /**
      * Instance of Connector class
      * @type {Connector}
      */
@@ -67,6 +73,11 @@ function Game() {
  * @param {number} num: number of players
  */
 Game.prototype.initGame = function (num) {
+    // Not lose
+    for (var lop = 1; lop <= num; lop++) {
+        this.playerStates[lop] = false;
+    }
+
     this.model.initCells();
     this.model.initPlayers(num);
 
@@ -89,10 +100,16 @@ Game.prototype.isMyTurn = function () {
  * @return {boolean}
  */
 Game.prototype.isThisClient = function (source) {
+    valid(source);
+    if (typeof source !== "number") {
+        source = parseInt(source);
+    }
     return this.clientID === source;
 };
 
 Game.prototype.startAuction = function (data) {
+    valid(data);
+
     this.state = GAME_STATE.AUCTION;
 
     if (this.auctionHandler === null) {
@@ -113,9 +130,25 @@ Game.prototype.endAuction = function (data) {
     this.auctionHandler = null;
 };
 
-Game.prototype.gameOver = function () {
-    alert("GAME OVER!\nYou lose!");
+Game.prototype.youLose = function () {
+    alert("You lose!\nYou are now spectating game");
     this.state = GAME_STATE.SPECTATOR;
+};
+
+Game.prototype.youWin = function () {
+    alert("YOU WIN!");
+};
+
+Game.prototype.otherWin = function (id) {
+    alert(sprintf("Player %d has WON!", id));
+};
+
+Game.prototype.otherLose = function (id) {
+    alert(sprintf("Player %d has lose", id));
+};
+
+Game.prototype.gameOver = function () {
+    alert("This round is OVER\nYou can now close this page");
 };
 
 /**

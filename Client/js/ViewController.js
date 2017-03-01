@@ -259,6 +259,11 @@ ViewController.addCallbacksToButtons = function () {
 
     // Un-mortgage property
     $("#p-c-unmortgage").click(function () {
+        if (!getThisPlayerModel().hasEnoughMoneyThan(selectSquareModel(ViewController.currentSelectedSquare).price / 2 * 1.1)) {
+            alert("You don't have enough money to buy back this property!");
+            return;
+        }
+
         game.connector.sendMessage(generateMessage("mortgage_property", {
             property: ViewController.currentSelectedSquare,
             unmortgage: true

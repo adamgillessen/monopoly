@@ -334,9 +334,44 @@ function parseMessage(data) {
             },
             "player_lose": function (data) {
                 var player = data["player"];
+                game.playerStates[player] = true;
 
-                if (game.isThisClient(player)) {
-                    game.gameOver();
+                // Check number of players left
+                var numPlayersLeft = 0;
+                var indexPlayerWin = 0;
+                var lop;
+                for (lop in game.playerStates) {
+                    if (game.playerStates[lop] === false) {
+                        numPlayersLeft += 1;
+                        // Winner
+                        indexPlayerWin = lop;
+                    }
+                }
+
+                if (numPlayersLeft >= 2) {
+                    // Two or more players left
+                    // Game still going
+                    if (game.isThisClient(player)) {
+                        game.youLose();
+                    } else {
+                        game.otherLose(player);
+                    }
+                } else {
+                    // GAME OVER
+                    // Notify every player
+                    for (lop in game.playerStates) {
+                        if (!game.isThisClient(lop)) {
+                            continue;
+                        }
+
+                        // Are you winner?
+                        if (indexPlayerWin === lop) {
+                            game.youWin();
+                        } else {
+                            game.otherWin(indexPlayerWin);
+                        }
+                        game.gameOver();
+                    }
                 }
             },
             "textual_update": function (data) {
