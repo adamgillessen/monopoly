@@ -164,6 +164,7 @@
 
   #inventory {-chrome-:only(;
     left: calc(80vh + 4em + 2em);
+    height: calc(100vh - 35vh - 8em);
   );}
 
   #inventory::-webkit-scrollbar {-chrome-:only(;
