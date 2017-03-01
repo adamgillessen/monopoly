@@ -131,7 +131,7 @@ class OwnableSquare(Square):
         super().__init__(square_id)
         self._price = price
         self._is_owned = False
-        self._owner = None 
+        self._owner = -1 
         self._is_mortgaged = False
         self._mortgage_value = price // 2
 
