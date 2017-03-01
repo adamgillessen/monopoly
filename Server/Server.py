@@ -352,7 +352,7 @@ def new_game_board(hostname, portnumber, queue, game_id):
 
         if json_string["type"] == "player_join":
             new_id =  s.next_id()
-            
+
             if num_clients.game_started:
                 del server.clients[server.clients.index(client)]
                 return
@@ -656,6 +656,8 @@ if __name__ == "__main__":
     comms_queue = SimpleQueue()
     game_id = 0
     while True:
+        with open("current_game_port.dat", "w") as f:
+            f.write(str(portnumber))
         p = Process(target=new_game_board, args = (
             hostname, portnumber, comms_queue, game_id))
         p.start()
