@@ -447,7 +447,7 @@ Square.prototype.showDetail = function () {
             // Rent
             $("#property-rent").text("Rent: £" + this.rent);
             // Control Pane
-            if (game.isThisClient(this.owner)) {
+            if (game.isThisClient(this.owner) && game.state !== GAME_STATE.SPECTATOR) {
                 $("#property-controls").show();
                 var btnToDisplay = [];
                 // Build button
@@ -501,7 +501,7 @@ Square.prototype.showDetail = function () {
             // Rent
             $("#property-rent").text(" --- ");
             // Control Pane
-            if (game.isThisClient(this.owner)) {
+            if (game.isThisClient(this.owner) && game.state !== GAME_STATE.SPECTATOR) {
                 $("#property-controls").show();
                 showPropertyButtons([BUTTONS_PROPERTY.mortgage]);
             }

@@ -42,6 +42,7 @@ Auction.prototype.bid = function (price) {
     this.state = AUCTION_STATE.YOU_BIDED;
     $("#submit").text("Send");
 
+    // What players bid must be greater than base line
     var finalPrice = price >= this.basePrice ? price : this.basePrice;
 
     // Base price is greater than what player has
