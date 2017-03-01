@@ -1,5 +1,7 @@
 import unittest
 from Server import *
+import os
+import signal
 import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -7,7 +9,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
-import os
 
 
 class GameTest(unittest.TestCase):
@@ -22,19 +23,24 @@ class GameTest(unittest.TestCase):
         Download Chrome driver : https://sites.google.com/a/chromium.org/chromedriver/downloads
         Place driver in PATH
 
-    Edit line 32 to your to the client index.html file
-
     """
-    client_location = "file:///Users/caoifedavis/Documents/monopoly/Client/index.html"
     
     def setUp(self):
-        self.server = subprocess.Popen(["python3", "Server.py"])
+        self.server = subprocess.Popen(["python3", "Server.py"], preexec_fn=os.setsid)
+        cwd = os.getcwd()
+        client_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "index.html"))
+        client_location = "file://"  + client_path
         self.keys = [1,2,3,4]
         self.players = { i: webdriver.Chrome() for i in self.keys}
         for player in self.players:
-            self.players[player].get(GameTest.client_location)
+            self.players[player].get(client_location)
             self.players[player].find_element_by_id("btn-connect").click()
         WebDriverWait(self.players[player], 5).until(EC.visibility_of_element_located((By.ID, "game-area")))
+
+    def tearDown(self):
+        for player in self.players:
+            self.players[player].close()
+        os.killpg(os.getpgid(self.server.pid), signal.SIGTERM)
    
     def test_full_game_auction_and_buy(self):
         
@@ -84,7 +90,7 @@ class GameTest(unittest.TestCase):
                                         base_bid = int(bid_area.get_attribute("value"))
                                         bid_area.clear()
                                         if money < base_bid:
-                                            money = 0
+                                            money = base_bid
                                             base_bid = 0
                                         elif money > 400:
                                             money = 400
@@ -95,6 +101,7 @@ class GameTest(unittest.TestCase):
 
                             print(">> Player ",player, " ended their turn")
                             WebDriverWait(players[player], 5).until(EC.element_to_be_clickable((By.ID, "btn-end-turn"))).click()
+
             if round_no_roll:
                 break      
 
@@ -103,14 +110,9 @@ class GameTest(unittest.TestCase):
                 
                     
     
-    def tearDown(self):
-        for player in self.players:
-            self.players[player].close()
-        self.server.kill()
 
-cwd = os.getcwd()
-client_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "index.html"))
-GameTest.client_location = "file://"  + client_path
+
+
 
 if __name__ == "__main__":
     unittest.main()
