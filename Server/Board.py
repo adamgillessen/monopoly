@@ -584,7 +584,7 @@ class Board:
                 elif buy_auction == "auction":
                     #print(">>User will auction")
                     highest_bidder, bid = yield None
-                    if not highest_bidder:
+                    if highest_bidder:
                         square.owner = highest_bidder
                         self.take_money(highest_bidder, bid)
                         new_owner = self._players[highest_bidder]
