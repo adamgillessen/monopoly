@@ -352,7 +352,10 @@ def new_game_board(hostname, portnumber, queue, game_id):
 
         if json_string["type"] == "player_join":
             new_id =  s.next_id()
-            """client_ids[client["id"]] = new_id"""
+            
+            if num_clients.game_started:
+                del server.clients[server.clients.index(client)]
+                return
 
             response_json = {
                 "type" : "player_join_ack",
@@ -378,6 +381,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 }
                 response_json_string = json.dumps(response_json)
                 server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+                num_clients.game_started = True
 
                 queue.put(("new_board", game_id))
 
@@ -406,6 +411,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
             }
             response_json_string = json.dumps(response_json)
             server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+
+            num_clients.game_started = True
 
             queue.put(("new_board", game_id))
         
