@@ -42,12 +42,20 @@ Auction.prototype.bid = function (price) {
     this.state = AUCTION_STATE.YOU_BIDED;
     $("#submit").text("Send");
 
+    if (price === 0) {
+        log("You quit this Auction", 5);
+        game.connector.sendMessage(generateMessage("auction_bid", {
+            price: 0
+        }));
+
+        return;
+    }
+
     // What players bid must be greater than base line
     var finalPrice = price >= this.basePrice ? price : this.basePrice;
-
     // Base price is greater than what player has
     if (this.basePrice >= game.model.selectPlayer(game.clientID).money) {
-        log("Invalid bid:\nYou don't have enough money to place minimal bid", 5);
+        log("Invalid bid:\nYou don't have enough money to place minimal bid\nYou automatically quit this Auction", 5);
         finalPrice = 0;
     } else if (finalPrice >= game.model.selectPlayer(game.clientID).money) {
         // So Base price is lower than what player has,
@@ -57,12 +65,11 @@ Auction.prototype.bid = function (price) {
         finalPrice = this.basePrice;
     }
 
+    log("You have placed bid: £" + finalPrice, game.clientID);
 
     game.connector.sendMessage(generateMessage("auction_bid", {
         price: finalPrice
     }));
-
-    return finalPrice;
 };
 
 Auction.prototype.finish = function (data) {

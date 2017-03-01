@@ -302,6 +302,13 @@ function parseMessage(data) {
                 var property = data["property"];
                 var price = data["price"];
 
+                if (winner == -1) {
+                    log("Auction finished with no winner", 5);
+
+                    game.endAuction(data);
+                    return;
+                }
+
                 if (game.isThisClient(winner)) {
                     log(sprintf("You have bought Property %d for £%d", property, price), winner);
                 } else {

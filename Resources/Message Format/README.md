@@ -13,6 +13,7 @@ ID is odd number
 |  15  |       chat       |
 |  17  |   build\_house   |
 |19|pay\_bail|
+|21|mortgage_property|
 
 ------
 
@@ -33,3 +34,4 @@ ID is even number
 |  20  |   player\_lose    |    yes    |
 |  22  |  textual\_update   |    yes    |
 |  24  |    build\_ack     |    yes    |
+|26|mortgage\_property\_ack|yes|

@@ -309,9 +309,7 @@ ViewController.chatButtonClicked = function () {
             log("Please enter valid integer!", 5);
         }
 
-        var bid = game.auctionHandler.bid(price);
-
-        log("You have placed bid: £" + bid, game.clientID);
+        game.auctionHandler.bid(price);
     } else {
         // Send Chat
         game.connector.sendMessage(generateMessage("chat", {
