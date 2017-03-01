@@ -11,7 +11,7 @@
 
 #control-pane button {
   background-color: #e75a56;
-  width: 10.75em;
+  width: 26.2vh;
   height: 2.3em;
   font-size: 1.23em;
   border: 1px solid #b73531;
@@ -34,7 +34,7 @@
 #money {
   position: relative;
   background-color: rgba(86, 86, 86, 0.99);
-  width: 4.97em;
+  width: 21vh;
   height: 100%;
   float: right;
   text-align: center;
@@ -51,18 +51,18 @@
 }
 
 #inventory {
-  width: 18.7em;
-  height: calc(100vh - 21.5em - 1em);
+  width: 40vh;
+  height: calc(100vh - 35vh - 7em);
   background: #ffffff;
-  position: relative;
+  position: absolute;
   float: left;
   box-sizing: border-box;
   overflow: scroll;
-  top: 21.5em;
-  left: -12.6em;
+  top: calc(3em + 35vh + 3em);
+  left: calc(80vh + 3.3em + 2em);
   padding: 0.85em;
   border: 1px solid #000000;
-  background-color: rgba(39,39,39, 0.95);
+  background-color: rgba(39, 39, 39, 0.95);
   color: #ffffff;
 }
 
