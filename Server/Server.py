@@ -379,13 +379,15 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 "game_start" : False if s.num_players() < 4 else True,
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
             if s.num_players() == 4:
                 s.start_game()
 
                 board_sync_json = s.game_state()
                 board_sync_string = json.dumps(board_sync_json)
-                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                server.send_message_to_all(board_sync_string.encode("utf-8"))
+                print("Sending: {}".format(board_sync_string))
 
 
                 response_json = {
@@ -393,7 +395,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "source": 1,
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
                 num_clients.game_started = True
 
@@ -412,18 +415,21 @@ def new_game_board(hostname, portnumber, queue, game_id):
 
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
             
             board_sync_json = s.game_state()
             board_sync_string = json.dumps(board_sync_json)
-            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+            server.send_message_to_all(board_sync_string.encode("utf-8"))
+            print("Sending: {}".format(board_sync_string))
 
             response_json = {
                 "type": "your_turn",
                 "source": 1,
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
 
             num_clients.game_started = True
 
@@ -443,7 +449,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
             }
 
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
 
             s.current_turn_generator = s.take_turn(player_id, dice1, dice2)
             try:
@@ -456,7 +463,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     }
 
                     response_json_string = json.dumps(response_json)
-                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    server.send_message_to_all(response_json_string.encode("utf-8"))
+                    print("Sending: {}".format(response_json_string))
 
             except PlayerLostError:
                 response_json = {
@@ -464,11 +472,13 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "player": s.current_player(),
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
                 board_sync_json = s.game_state()
                 board_sync_string = json.dumps(board_sync_json)
-                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                server.send_message_to_all(board_sync_string.encode("utf-8"))
+                print("Sending: {}".format(board_sync_string))
                             
                 s.next_player()
                 new_current_player_id = s.current_player()
@@ -477,7 +487,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "source": new_current_player_id,
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
 
             
@@ -494,7 +505,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 }
 
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
         elif json_string["type"] == "auction":
             response_json = {
@@ -505,7 +517,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 "base_price": 10,
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
             s.current_bidders = s.get_all_players()
             s.bids = {}
             s.auction_property = json_string["property"]
@@ -524,7 +537,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                 "source": json_string["source"],
             }
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
             
             if len(s.current_bidders) == 0:
                 response_json = {
@@ -534,7 +548,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "winner": -1,
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
             
                 s.current_turn_generator.send((None, 0))
 
@@ -548,7 +563,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                         "winner": max_bid_players[0],
                     }
                     response_json_string = json.dumps(response_json)
-                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    server.send_message_to_all(response_json_string.encode("utf-8"))
+                    print("Sending: {}".format(response_json_string))
                 
                     s.current_turn_generator.send((max_bid_players[0], max_bid))
 
@@ -561,7 +577,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                         "base_price": max_bid,
                     }
                     response_json_string = json.dumps(response_json)
-                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    server.send_message_to_all(response_json_string.encode("utf-8"))
+                    print("Sending: {}".format(response_json_string))
                     s.current_bidders = max_bid_players
                     s.bids = {}
 
@@ -569,7 +586,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
             if s.is_valid_player(json_string["source"]):
                 board_sync_json = s.game_state()
                 board_sync_string = json.dumps(board_sync_json)
-                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                server.send_message_to_all(board_sync_string.encode("utf-8"))
+                print("Sending: {}".format(board_sync_string))
                 
                 re_check_location, new_roll = s.current_turn_generator.send(None)
                 if not re_check_location:
@@ -584,13 +602,15 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "source": new_current_player_id,
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
         elif json_string["type"] == "chat":
             response_json = json_string
             response_json["type"] = "chat_sync"
             response_json_string = json.dumps(response_json)
-            server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+            server.send_message_to_all(response_json_string.encode("utf-8"))
+            print("Sending: {}".format(response_json_string))
 
         elif json_string["type"] == "build_house":
             player_id = json_string["source"]
@@ -612,7 +632,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                         "gained_money": gained_money,
                     }
                     response_json_string = json.dumps(response_json)
-                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    server.send_message_to_all(response_json_string.encode("utf-8"))
+                    print("Sending: {}".format(response_json_string))
                     
                 else:
                     s.build_house(player_id, property_id)
@@ -627,7 +648,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
                         "num_houses": num_houses,
                     }
                     response_json_string = json.dumps(response_json)
-                    server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                    server.send_message_to_all(response_json_string.encode("utf-8"))
+                    print("Sending: {}".format(response_json_string))
             except BuildException:
                         pass
 
@@ -640,7 +662,8 @@ def new_game_board(hostname, portnumber, queue, game_id):
 
             board_sync_json = s.game_state()
             board_sync_string = json.dumps(board_sync_json)
-            server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+            server.send_message_to_all(board_sync_string.encode("utf-8"))
+            print("Sending: {}".format(board_sync_string))
 
         elif json_string["type"] == "mortgage_property":
             player_id = json_string["player"]
@@ -658,11 +681,13 @@ def new_game_board(hostname, portnumber, queue, game_id):
                     "unmortgage": json_string["unmortgage"],
                 }
                 response_json_string = json.dumps(response_json)
-                server.send_message_to_all(response_json_string.encode("utf-8"));print("Sending: {}".format(response_json_string))
+                server.send_message_to_all(response_json_string.encode("utf-8"))
+                print("Sending: {}".format(response_json_string))
 
                 board_sync_json = s.game_state()
                 board_sync_string = json.dumps(board_sync_json)
-                server.send_message_to_all(board_sync_string.encode("utf-8"));print("Sending: {}".format(board_sync_string))
+                server.send_message_to_all(board_sync_string.encode("utf-8"))
+                print("Sending: {}".format(board_sync_string))
         
             except MortgageException:
                 pass
