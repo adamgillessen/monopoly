@@ -9,7 +9,7 @@
 }
 
 #main {
-	width: 22.1em;
+	width: 45vh;
 	height: auto;
 	margin: 0 auto;
 	overflow: hidden;
@@ -17,7 +17,8 @@
 	top: 50%;
 	transform: translateY(-50%);
 	background: rgba(39, 39, 39, 0.75);
-	padding: 0.85em;
+	padding: 1vh;
+	padding-bottom: 1.5vh;
 	border-radius: 5px;
 	border: 1px solid #373737;
 }
