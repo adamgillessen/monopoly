@@ -29,7 +29,7 @@
 }
 
 #textfield input[type="text"] {
-  width: 11.6em;
+  width: 12em;
   padding: 0.5em;
   padding-left: 1em;
   font-size: 0.935em;
@@ -38,7 +38,8 @@
   color: #ffffff;
   /* float: right; */
   position: relative;
-  right: -3.39em;
+  right: -3.35em;
+  border: 1px solid #565656;
 }
 
 #submit {
