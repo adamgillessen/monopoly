@@ -1,3 +1,5 @@
 cd js
 jsdoc *.js 
-mv ./out ./../../docs/Client
+rm -r ./../../docs/Client/*
+mv ./out/* ./../../docs/Client
+rm -r ./out
