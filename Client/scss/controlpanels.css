@@ -80,7 +80,7 @@
 
 .owned {
   width: 100%;
-  height: 10vh;
+  height: 4.5em;
   color: #ffffff;
   box-sizing: border-box;
   padding: 0.5em 0em 0.5em 0em;
@@ -89,8 +89,8 @@
 }
 
 .square {
-  width: calc(10vh - 1em);
-  height: calc(10vh - 1em);
+  width: 3.5em;
+  height: 3.5em;
   float: left;
   line-height: 3.5em;
   text-align: center;
@@ -99,10 +99,9 @@
 }
 
 .placename {
-  float: left;
   font-size: 1.4em;
   font-weight: 100;
-  padding-left: 0.75em;
+  margin-left: 3.1em;
   line-height: 2.3em;
   width: 200px;
   white-space: nowrap;
