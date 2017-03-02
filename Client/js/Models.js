@@ -678,7 +678,7 @@ Player.prototype.canBuyProperty = function (propertyIndex) {
  * @return {boolean}
  */
 Player.prototype.hasEnoughMoneyThan = function (money) {
-    return this.money >= money;
+    return this.money > money;
 };
 
 /**
