@@ -4,7 +4,7 @@
 "use strict";
 
 /**
- *
+ * Possible states of game
  * @type {{OTHERS_TURN: string, ROLL: string, BUY: string, AUCTION: string, EOT: string, SPECTATOR: string}}
  */
 var GAME_STATE = {
@@ -16,6 +16,11 @@ var GAME_STATE = {
     SPECTATOR: "Watching"
 };
 
+/**
+ * Game class
+ * Contains info about current game
+ * @constructor
+ */
 function Game() {
     /**
      * Unique ID for this player/client

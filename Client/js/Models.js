@@ -24,7 +24,7 @@ function defaultCallback() {
 function Board() {
     /**
      * A dict holds all squares info
-     * @type {{number:Square}}
+     * @type {{number:number[]}}
      */
     this.squares = {};
 
@@ -42,7 +42,7 @@ function Board() {
 
     /**
      * Array of properties owned by this player
-     * @type {Array}
+     * @type {number[]}
      */
     this.propertiesOwnedByThisPlayer = [];
 }
@@ -132,7 +132,7 @@ Board.prototype.canBuildHouse = function (propertyID) {
 
     /**
      * ID of properties in this Estate
-     * @type {Array}
+     * @type {number[]}
      */
     var properties = game.model.propertyEstate[estate];
     var lop;
@@ -212,7 +212,7 @@ Board.prototype.canSellHouse = function (propertyID) {
 /**
  * Move player given roll_result
  * @param {number} source
- * @param {Array} result
+ * @param {number[]} result
  */
 Board.prototype.movePlayer = function (source, result) {
     // Update model
@@ -281,7 +281,7 @@ function Square(id, type) {
  * @param {number} estate
  * @param {number} price
  * @param {number} rent
- * @return {Square}
+ * @return {Square}: return this for method chaining
  */
 Square.prototype.initProperty = function (estate, price, rent) {
     this.estate = estate;
@@ -681,6 +681,11 @@ Player.prototype.hasEnoughMoneyThan = function (money) {
     return this.money >= money;
 };
 
+/**
+ * Move this player by several steps forward
+ * @param {number} steps
+ * @return {*|number|undefined}
+ */
 Player.prototype.moveByStep = function (steps) {
     if (steps === 0) {
         return this.position;

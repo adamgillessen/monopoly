@@ -2,7 +2,10 @@
  * Created by jeff on 2017/2/22.
  */
 
-// Model and view layer
+/**
+ * Auction handler
+ * @constructor
+ */
 function Auction() {
     this.property = undefined;
 
@@ -11,12 +14,20 @@ function Auction() {
     this.state = undefined;
 }
 
+/**
+ * State during Auction
+ * @type {{YOU_BID: string, YOU_BIDED: string, NOT_YOUR_BID: string}}
+ */
 var AUCTION_STATE = {
     YOU_BID: "You should bid now",
     YOU_BIDED: "You have bided, please wait now",
     NOT_YOUR_BID: "None of your business"
 };
 
+/**
+ * Start Auction
+ * @param {object} data: "auction_start" json object
+ */
 Auction.prototype.start = function (data) {
     this.property = data["property"];
     this.basePrice = data["base_price"];
@@ -34,6 +45,10 @@ Auction.prototype.start = function (data) {
     }
 };
 
+/**
+ * This client places bid
+ * @param {number} price: The price this player placed
+ */
 Auction.prototype.bid = function (price) {
     if (this.state !== AUCTION_STATE.YOU_BID) {
         return;

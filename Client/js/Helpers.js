@@ -38,7 +38,7 @@ function selectSquareModel(id) {
 
 /**
  * Get player by id
- * @param id
+ * @param {number} id
  * @return {Player}
  */
 function selectPlayerModel(id) {
@@ -56,7 +56,7 @@ function getThisPlayerModel() {
 /**
  * Set value in HTML
  * @param {string} name
- * @param {string | Number} value
+ * @param {string|number} value
  */
 function setContextValue(name, value) {
     $("#context-" + name).text(value);
@@ -120,7 +120,10 @@ function log(obj, source) {
     updateScroll();
 }
 
-
+/**
+ * Buttons in Property Control Pane
+ * @type {{build: string, mortgage: string, unmortgage: string, sell: string}}
+ */
 var BUTTONS_PROPERTY = {
     build: "#p-c-build",
     mortgage: "#p-c-mortgage",
@@ -130,7 +133,7 @@ var BUTTONS_PROPERTY = {
 
 /**
  * Show given property control button
- * @param {Array} buttons
+ * @param {BUTTONS_PROPERTY[]} buttons
  */
 function showPropertyButtons(buttons) {
     // Hide all buttons first
@@ -151,6 +154,10 @@ function showPropertyButtons(buttons) {
     }
 }
 
+/**
+ * Buttons in this game
+ * @type {{connect: string, start_game_now: string, roll: string, end_turn: string, buy_options: string, pay_bail: string}}
+ */
 var BUTTONS = {
     connect: "#btn-connect",
     start_game_now: "#btn-start-now",
@@ -162,7 +169,7 @@ var BUTTONS = {
 
 /**
  * Show given button
- * @param {Array} buttons
+ * @param {BUTTONS[]} buttons
  */
 function showButtons(buttons) {
     // Hide all buttons first
@@ -184,7 +191,7 @@ function showButtons(buttons) {
 }
 
 /**
- * Randomly generate a int from range [0, max]
+ * Randomly generate a int within range [0, max)
  * @param {number} max: Max number allowed to be generated
  * @returns {number} integer in range [0, max)
  */
@@ -194,7 +201,7 @@ function ranRange(max) {
 
 /**
  * Random color
- * @return {string} "rgb(x, y, z)"
+ * @return {string}: "rgb(x, y, z)"
  */
 function ranColor() {
     return "rgb(" + ranRange(255) + "," + ranRange(255) + "," + ranRange(255) + ")";

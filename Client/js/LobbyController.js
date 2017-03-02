@@ -33,6 +33,10 @@ function hideLobbyShowBoard() {
     showButtons([]);
 }
 
+/**
+ * Initilize components
+ * Hide or show them
+ */
 function initUI() {
     $("#game-area").hide();
     $("#lobby").show();
@@ -44,8 +48,18 @@ function initUI() {
     $("#btn-use-card").hide();
 }
 
+function getGamePort() {
+    $.get("localhost:8000\current_game_port",
+        function (data) {
+            alert(data);
+        });
+}
+
 $(document).ready(function () {
     initUI();
+
+    // todo: Test
+    getGamePort();
 
     $("#btn-connect").click(function () {
         var ip = $("#input-IP").val();
@@ -58,3 +72,5 @@ $(document).ready(function () {
         game.connector.sendMessage(generateMessage("start_game_now", null));
     });
 });
+
+// todo: read port info from file: current_game_port

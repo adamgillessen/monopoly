@@ -4,6 +4,11 @@
  */
 "use strict";
 
+/**
+ * Model
+ * Connector to server
+ * @constructor
+ */
 function Connector() {
     this.webSocket = undefined;
     /**
@@ -463,13 +468,6 @@ function parseMessage(data) {
     }
 }
 
-/**
- * Generate some common fields of a message
- * Like "type" and "source"
- * @param {string} type
- * @param {Array|null} include
- * @returns {{}}
- */
 function _generateHeader(type, include) {
     var obj = {
         type: type
