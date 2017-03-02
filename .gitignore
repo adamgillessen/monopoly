@@ -2,7 +2,7 @@
 /*/*.pyc
 /*/__pycache__
 /*/*.dat
-
+/Client/current_game_port
 # Client part
 Client/test
 
