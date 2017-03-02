@@ -12,6 +12,7 @@ import random
 from Board import * 
 import sys 
 from multiprocessing import Process, SimpleQueue
+import time
 
 class Server:
     """
@@ -324,9 +325,18 @@ def new_game_board(hostname, portnumber, queue, game_id):
         :param client: the new client dictionary
         :param server: a reference to the WebSocket Server
         """
-        num_clients.dec()
-        if num_clients.val() == 0:
+        
+        if not num_clients.game_started:
+            queue.put(("new_board", game_id))
+            time.sleep(0.1)
+            ws.shutdown()
             queue.put(("exit", game_id))
+
+        num_clients.dec()
+        if num_clients.val() <= 0:
+            ws.shutdown()
+            queue.put(("exit", game_id))
+
 
     def new_client(client, server):
         """
@@ -671,19 +681,24 @@ if __name__ == "__main__":
     ps = {}
     comms_queue = SimpleQueue()
     game_id = 0
+    new_game = True
     while True:
-        with open("current_game_port.dat", "w") as f:
-            f.write(str(portnumber))
-        p = Process(target=new_game_board, args = (
-            hostname, portnumber, comms_queue, game_id))
-        p.start()
-        ps[game_id] = p 
+        if new_game:
+            with open("current_game_port.dat", "w") as f:
+                f.write(str(portnumber))
+
+            p = Process(target=new_game_board, args = (
+                hostname, portnumber, comms_queue, game_id))
+            p.start()
+            ps[game_id] = p 
+            new_game = False
+            portnumber += 1
+            game_id += 1
 
 
-        result, game_id = comms_queue.get()
+        result, from_game_id = comms_queue.get()
         if result == "exit":
-            ps[game_id].terminate()
-        elif result == "new_board":
-            print("Creating new board..")
+            ps[from_game_id].terminate()
 
-        portnumber += 1
+        elif result == "new_board":
+            new_game = True
