@@ -1,5 +1,5 @@
 pi_client="pi@adamgillessen.ddns.net:/var/www/html/"
-pi_server="pi@adamgillessen.ddns.net:/home/pi/monopoly_server/"
+pi_server="pi@adamgillessen.ddns.net:/var/www/monopoly_server/"
 netsoc_client="gilly@leela.netsoc.co:/media/thor/home/gilly/public_html/"
 netsoc_server="gilly@leela.netsoc.co:/media/thor/home/gilly/monopoly_server/"
 
@@ -14,13 +14,13 @@ then
     server_location=$pi_server
     echo ">> Sending to pi server"
 else
-    echo ">> copy_to_host.sh <pi|netsoc> <client|server|all>"
+    echo ">> copy_to_host.sh <pi|netsoc> <client|server|both>"
     exit
 fi
 
 if [ "$2" != "client" ] && [ "$2" != "server" ] && [ "$2" != "both" ]
 then
-    echo ">> copy_to_host.sh <pi|netsoc> <client|server|all>"
+    echo ">> copy_to_host.sh <pi|netsoc> <client|server|both>"
     exit
 fi
 
