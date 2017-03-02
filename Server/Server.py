@@ -13,6 +13,8 @@ from Board import *
 import sys 
 from multiprocessing import Process, SimpleQueue
 import time
+import os 
+
 
 class Server:
     """
@@ -678,13 +680,16 @@ if __name__ == "__main__":
         hostname = "localhost"
         portnumber = 4444
 
+    print("Hostname:", hostname)
+    current_game_port_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Client', "current_game_port"))
+
     ps = {}
     comms_queue = SimpleQueue()
     game_id = 0
     new_game = True
     while True:
         if new_game:
-            with open("current_game_port.dat", "w") as f:
+            with open(current_game_port_path, "w") as f:
                 f.write(str(portnumber))
 
             p = Process(target=new_game_board, args = (
