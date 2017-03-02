@@ -30,7 +30,7 @@ function Board() {
 
     /**
      * Contains properties in each estate
-     * @type {{number:[number]}}
+     * @type {{number:Array}}
      */
     this.propertyEstate = {};
 
@@ -132,7 +132,7 @@ Board.prototype.canBuildHouse = function (propertyID) {
 
     /**
      * ID of properties in this Estate
-     * @type {[number]}
+     * @type {Array}
      */
     var properties = game.model.propertyEstate[estate];
     var lop;
@@ -212,7 +212,7 @@ Board.prototype.canSellHouse = function (propertyID) {
 /**
  * Move player given roll_result
  * @param {number} source
- * @param {[int, int]} result
+ * @param {Array} result
  */
 Board.prototype.movePlayer = function (source, result) {
     // Update model
