@@ -12,7 +12,7 @@ These have been completed using [draw.io] (http://draw.io)
 ![Building Houses](./images/build_house.png)
 
 ### Mortgaging Property;
-![Mortgage Property](./images/mortgaging_property.png)
+![Mortgage Property](./images/mortgage_property.png)
 
 ### Getting Out of Jail:
 ![Leave Jail](./images/leave_jail.png)
@@ -21,7 +21,7 @@ These have been completed using [draw.io] (http://draw.io)
 ![Chat](./images/player_chat.png)
 
 ### Special Textual Updates:
-![Text](./images/textual_updates.png)
+![Text](./images/textual_update.png)
 
 ### When a Player Loses:
 ![Lose](./images/player_lose.png)
