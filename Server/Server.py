@@ -7,6 +7,7 @@ try:
 except ImportError:
     print("You need to install websocket-server")
     print("Run:\n\tpip3 install websocket-server")
+    exit(1)
 import json
 import random
 from Board import * 
