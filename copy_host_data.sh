@@ -1,7 +1,7 @@
 pi_client="pi@adamgillessen.ddns.net:/var/www/html/"
 pi_server="pi@adamgillessen.ddns.net:/home/pi/monopoly_server/"
 netsoc_client="gilly@leela.netsoc.co:/media/thor/home/gilly/public_html/"
-netsoc_server="gilly@leela.netsoc.co:/home/gilly/monopoly_server"
+netsoc_server="gilly@leela.netsoc.co:/media/thor/home/gilly/monopoly_server/"
 
 if [ "$1" = "netsoc" ]
 then
