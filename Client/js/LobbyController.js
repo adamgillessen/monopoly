@@ -49,7 +49,7 @@ function initUI() {
 }
 
 function getGamePort() {
-    $.get("localhost:8000\current_game_port",
+    $.get("localhost:8000/current_game_port",
         function (data) {
             alert(data);
         });
