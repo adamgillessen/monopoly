@@ -49,16 +49,20 @@ function initUI() {
 }
 
 function getGamePort() {
-    $.get("localhost:8000/current_game_port",
+    $.get("current_game_port",
         function (data) {
-            alert(data);
-        });
+            if (data === undefined || data === null) {
+                return;
+            }
+
+            $("#input-port").val(data);
+        }
+    );
 }
 
 $(document).ready(function () {
     initUI();
 
-    // todo: Test
     getGamePort();
 
     $("#btn-connect").click(function () {
