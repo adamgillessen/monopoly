@@ -130,7 +130,7 @@ var BUTTONS_PROPERTY = {
 
 /**
  * Show given property control button
- * @param {[BUTTONS_PROPERTY]} buttons
+ * @param {Array} buttons
  */
 function showPropertyButtons(buttons) {
     // Hide all buttons first
@@ -162,7 +162,7 @@ var BUTTONS = {
 
 /**
  * Show given button
- * @param {[BUTTONS]} buttons
+ * @param {Array} buttons
  */
 function showButtons(buttons) {
     // Hide all buttons first
