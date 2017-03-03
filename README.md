@@ -22,8 +22,8 @@ SystemTesting - scripts which test the overall functionality of the game
 
 ## Todos:  
 1. Prepare the 4 minute presentation
-1. Do the group report
-1. Do individual reports
+2. Do the group report
+3. Do individual reports
 
 ## Presentation 1:
 * [Slides](https://docs.google.com/presentation/d/1RgGA1iphYtJ6-hlgfj2Q05BOLP61_Ed8p4W8L9lnqEk/edit#slide=id.g1cb33f25ef_3_1)

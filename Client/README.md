@@ -7,15 +7,15 @@ This is the ReadMe for Client-side
 ### Index  
 1. [How to run the game](#1)
 2. [Documentation](#2)
-	1. [What does each file do](#2-1)
-	2. [Principle of JavaScript](#2-2)
+   1. [What does each file do](#2-1)
+   2. [Principle of JavaScript](#2-2)
 
 --
 
 ### <a name="1"></a>1. How to run the game
 1. Make sure __TWO__ servers are up and running  
 
-	> For more detail please see [README.md](../Server/README.md) in Server folder
+   > For more detail please see [README.md](../Server/README.md) in Server folder
 2. Open up a broswer and go to ["localhost:8000"](http://localhost:8000)
 3. Click __"Connect"__ button in the webpage
 4. Wait for enough player to start the game.
@@ -25,15 +25,15 @@ This is the ReadMe for Client-side
 ### <a name="2"></a>2. Documentation
 #### <a name="2-1"></a>1. What does each file do
 
-|Name (.js)|Description|
-|:-:|:-- |
-|[Auction](js/Auction.js)|A specific class used to handle the game logic during an Auction|
-|[Communication](js/Communication.js)|Send and receive messages to/from server|
-|[Game](js/Game.js)|A class that encapsulates variables that stores game state and data|
-|[Helpers](js/Helpers.js)|A place for some frequently used helper functions|
-|[LobbyController](js/LobbyController.js)|View Controller for the lobby (Connect Screen)|
-|[Models](js/Models.js)|Contains Classes at Model-layer in the MVC archtitecture|
-|[ViewController](js/ViewController.js)|View Controller for the main game|
+|                Name (.js)                | Description                              |
+| :--------------------------------------: | :--------------------------------------- |
+|         [Auction](js/Auction.js)         | A specific class used to handle the game logic during an Auction |
+|   [Communication](js/Communication.js)   | Send and receive messages to/from server |
+|            [Game](js/Game.js)            | A class that encapsulates variables that stores game state and data |
+|         [Helpers](js/Helpers.js)         | A place for some frequently used helper functions |
+| [LobbyController](js/LobbyController.js) | View Controller for the lobby (Connect Screen) |
+|          [Models](js/Models.js)          | Contains Classes at Model-layer in the MVC archtitecture |
+|  [ViewController](js/ViewController.js)  | View Controller for the main game        |
 
 #### <a name="2-2"></a>2. Principle of JavaScript
 
@@ -45,9 +45,9 @@ So nearly half of the codes are dealing with all kinds of events, they are calle
 
 In this project, there are two main sources of events:  
 
-|Source of event|location of callback func that handles event|
-|:-:|:-:|
-|User inputs| [`js/ViewController.js`](js/ViewController.js) > `addCallbacksToButtons` |
-|Messages from server | [`js/Communication.js`](js/Communication.js) > `parseMessage` |
+|   Source of event    | location of callback func that handles event |
+| :------------------: | :--------------------------------------: |
+|     User inputs      | [`js/ViewController.js`](js/ViewController.js) > `addCallbacksToButtons` |
+| Messages from server | [`js/Communication.js`](js/Communication.js) > `parseMessage` |
 
 If you want to change some codes so it receive messages from your server, just modify the codes inside [`js/Communication.js`](js/Communication.js)
