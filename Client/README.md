@@ -28,8 +28,8 @@ This is the ReadMe for Client-side
 |Name (.js)|Description|
 |:-:|:-- |
 |Auction|A specific class used to handle the game logic during an Auction|
-|Communication|Send and receive messages from/to server|
-|Game|A class that encapsulates variables that stores game state or data|
+|Communication|Send and receive messages to/from server|
+|Game|A class that encapsulates variables that stores game state and data|
 |Helpers|A place for some frequently used helper functions|
 |LobbyController|View Controller for the lobby (Connect Screen)|
 |Models|Contains Classes at Model-layer in the MVC archtitecture|
@@ -41,13 +41,13 @@ JavaScript is an unique language where function is "the First Class citizen" lik
 
 There is no traditional main() entry in this project.
 
-So nearly half of the codes are dealing with all kinds of events, they are called "callback" functinos, because them don't get a change to run until some events occur and call them.
+So nearly half of the codes are dealing with all kinds of events, they are called "callback" functinos, because they don't get a change to run until some events occur and call them.
 
 In this project, there are two main sources of events:  
 
 |Source of event|location of callback func that handles event|
 |:-:|:-:|
-|User inputs| `js/ViewController.js` > `addCallbacksToButtons` |
-|Messages from server | `js/Communication` > `parseMessage` |
+|User inputs| [`js/ViewController.js`](js/ViewController.js) > `addCallbacksToButtons` |
+|Messages from server | [`js/Communication.js`](js/Communication.js) > `parseMessage` |
 
-If you want to change some codes so it receive messages from your server, just modify the codes inside `js/Communication.js`
+If you want to change some codes so it receive messages from your server, just modify the codes inside [`js/Communication.js`](js/Communication.js)

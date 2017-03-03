@@ -17,8 +17,8 @@ Resources - assorted development information
 SystemTesting - scripts which test the overall functionality of the game
 
 ## To run the game
-1. Read [README](Client/README.md) in Server folder
-2. Read [README](Server/README.md) in Client folder
+1. Read [README](Server/README.md) in Server folder
+2. Read [README](Client/README.md) in Client folder
 
 ## Todos:  
 1. Prepare the 4 minute presentation
