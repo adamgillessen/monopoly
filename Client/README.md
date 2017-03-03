@@ -27,13 +27,13 @@ This is the ReadMe for Client-side
 
 |Name (.js)|Description|
 |:-:|:-- |
-|Auction|A specific class used to handle the game logic during an Auction|
-|Communication|Send and receive messages to/from server|
-|Game|A class that encapsulates variables that stores game state and data|
-|Helpers|A place for some frequently used helper functions|
-|LobbyController|View Controller for the lobby (Connect Screen)|
-|Models|Contains Classes at Model-layer in the MVC archtitecture|
-|ViewController|View Controller for the main game|
+|[Auction](js/Auction.js)|A specific class used to handle the game logic during an Auction|
+|[Communication](js/Communication.js)|Send and receive messages to/from server|
+|[Game](js/Game.js)|A class that encapsulates variables that stores game state and data|
+|[Helpers](js/Helpers.js)|A place for some frequently used helper functions|
+|[LobbyController](js/LobbyController.js)|View Controller for the lobby (Connect Screen)|
+|[Models](js/Models.js)|Contains Classes at Model-layer in the MVC archtitecture|
+|[ViewController](js/ViewController.js)|View Controller for the main game|
 
 #### <a name="2-2"></a>2. Principle of JavaScript
 
