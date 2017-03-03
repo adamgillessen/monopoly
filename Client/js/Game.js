@@ -112,6 +112,10 @@ Game.prototype.isThisClient = function (source) {
     return this.clientID === source;
 };
 
+/**
+ * Start Auction
+ * @param {Object} data: Message obj of type "auction_start"
+ */
 Game.prototype.startAuction = function (data) {
     valid(data);
 
@@ -123,6 +127,10 @@ Game.prototype.startAuction = function (data) {
     this.auctionHandler.start(data);
 };
 
+/**
+ * End Auction
+ * @param {Object} data: Message obj of type "auction_finished"
+ */
 Game.prototype.endAuction = function (data) {
     this.auctionHandler.finish(data);
 

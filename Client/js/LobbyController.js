@@ -4,7 +4,7 @@
 "use strict";
 
 /**
- * Used to update lobby display's info
+ * Update lobby displayer's info
  * @param {number} current
  * @param {number} expects
  */
@@ -48,6 +48,9 @@ function initUI() {
     $("#btn-use-card").hide();
 }
 
+/**
+ * Start a GET request to server and get the port number to connect to.
+ */
 function getGamePort() {
     $.get("current_game_port",
         function (data) {
@@ -76,5 +79,3 @@ $(document).ready(function () {
         game.connector.sendMessage(generateMessage("start_game_now", null));
     });
 });
-
-// todo: read port info from file: current_game_port

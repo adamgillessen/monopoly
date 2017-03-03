@@ -20,8 +20,8 @@ function Connector() {
 
 /**
  * Connect to server by creating new WebSocket
- * @param {string} ip
- * @param {string} port
+ * @param {string} ip: ip of server
+ * @param {string} port: port of server
  */
 Connector.prototype.connect = function (ip, port) {
     if (this.webSocket !== undefined) {
@@ -68,7 +68,7 @@ Connector.prototype.sendMessage = function (msg) {
 
 
 /**
- * Parse message that received from server and excute codes accordingly
+ * Parse message that received from server and do actions
  * @param {Object|string} data: could be JSON object or JSON string
  */
 function parseMessage(data) {
@@ -499,9 +499,9 @@ function _generateHeader(type, include) {
 
 /**
  * Generate messages, given type and parameter to be included in the message
- * @param {string} type
- * @param {Object|Array|null} parameter: Array of parameter to be added to message, or null for no additional parameter
- * @returns {*} message object
+ * @param {string} type: type of this message, must be one of the predefined messages
+ * @param {Object|null} parameter: Array of parameter to be added to message, or null for no additional parameter
+ * @returns {*} message object to be sent to server
  */
 function generateMessage(type, parameter) {
     generateMessage._messageTree = {

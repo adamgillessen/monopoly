@@ -49,7 +49,7 @@ function Board() {
 
 
 /**
- * Initialize data from fixed JSON string
+ * Initialize data from hard coded JSON string (from data/model.json)
  */
 Board.prototype.initCells = function () {
     // I had no choice but to put this long text here...
@@ -91,7 +91,7 @@ Board.prototype.addPlayer = function (id) {
 };
 
 /**
- * Initalize players, create new Player() and set money
+ * Initalize players, create new Player() and set thier money
  * @param num
  */
 Board.prototype.initPlayers = function (num) {
@@ -119,11 +119,13 @@ Board.prototype.selectPlayer = function (id) {
 };
 
 /**
+ * <pre>
  * Check if this client can build a house on given property
  * Return true if
  * All properties in the same estate is owned by this player
  * And none of them is mortgaged
  * And they are evenly built
+ * </pre>
  * @param {number} propertyID
  * @return {Boolean}
  */
@@ -169,11 +171,13 @@ Board.prototype.canBuildHouse = function (propertyID) {
 };
 
 /**
+ * <pre>
  * Check if this client can mortgage this property
  * Return true if
  * Not mortgaged
  * And client owns this property
  * And it has no houses built on top of this property
+ * </pre>
  * @param {number} propertyID
  * @return {Boolean}
  */
@@ -187,10 +191,12 @@ Board.prototype.canMortgageProperty = function (propertyID) {
 };
 
 /**
+ * <pre>
  * Check if this client can un-mortgage this property
  * Return true if
  * Client owns this property
  * And mortgaged
+ * </pre>
  * @param {number} propertyID
  * @return {Boolean}
  */
@@ -199,6 +205,13 @@ Board.prototype.canUnmortgageProperty = function (propertyID) {
     return property.mortgaged && game.isThisClient(property.owner);
 };
 
+/**
+ * <pre>
+ *  Check if this client can sell house on property
+ * </pre>
+ * @param {number} propertyID
+ * @return {boolean}
+ */
 Board.prototype.canSellHouse = function (propertyID) {
     // Only property may have "Sell" option
     if (!this.squares[propertyID].isProperty()) {
@@ -210,7 +223,7 @@ Board.prototype.canSellHouse = function (propertyID) {
 };
 
 /**
- * Move player given roll_result
+ * Move player, given roll_result
  * @param {number} source
  * @param {number[]} result
  */
@@ -313,19 +326,38 @@ Square.prototype.initUtilOrTrans = function (price) {
 ////////////////
 // Callbacks //
 ///////////////
+/**
+ * Execute when the owner changes
+ */
 Square.prototype.onOwnerChange = defaultCallback;
 
+/**
+ * Execute when the mortgage state changes
+ */
 Square.prototype.onMortgageChange = defaultCallback;
 
+/**
+ * Execute when the build cost changes
+ */
 Square.prototype.onBuildCostChange = defaultCallback;
 
+/**
+ * Execute when the build progress changes
+ */
 Square.prototype.onBuildProgressChange = defaultCallback;
 
+/**
+ * Execute when the rent changes
+ */
 Square.prototype.onRentChange = defaultCallback;
 
 ////////////
 // Setter //
 ////////////
+/**
+ * Set owner
+ * @param {number} owner: new owner value
+ */
 Square.prototype.setOwner = function (owner) {
     if (!this.isBaseProperty()) {
         throw new Error(this.type + " has no owner");
@@ -339,6 +371,10 @@ Square.prototype.setOwner = function (owner) {
     }
 };
 
+/**
+ * Set mortgage state
+ * @param {number} mortgage: new mortgage value
+ */
 Square.prototype.setMortgage = function (mortgage) {
     if (!this.isBaseProperty()) {
         throw new Error(this.type + " has no mortgage flag");
@@ -352,6 +388,10 @@ Square.prototype.setMortgage = function (mortgage) {
     }
 };
 
+/**
+ * Set buildCost
+ * @param {number} buildCost: new buildCost value
+ */
 Square.prototype.setBuildCost = function (buildCost) {
     if (!this.isProperty()) {
         throw new Error(this.type + " has no build cost");
@@ -365,6 +405,10 @@ Square.prototype.setBuildCost = function (buildCost) {
     }
 };
 
+/**
+ * Set buildProgress
+ * @param {number} progress: new progress value
+ */
 Square.prototype.setBuildProgress = function (progress) {
     if (!this.isProperty()) {
         throw new Error(this.type + " has no build progress");
@@ -378,6 +422,10 @@ Square.prototype.setBuildProgress = function (progress) {
     }
 };
 
+/**
+ * Set rent
+ * @param {number} rent: new rent value
+ */
 Square.prototype.setRent = function (rent) {
     if (!this.isBaseProperty()) {
         throw new Error(this.type + " has no rent");
@@ -439,6 +487,10 @@ Square.prototype.onLandOn = function (id) {
     }
 };
 
+/**
+ * Preform build action on this property
+ * <strong>Do check whether you can build first!</strong>
+ */
 Square.prototype.build = function () {
     if (!this.isProperty()) {
         throw new Error("Cannot build on" + this.type);
@@ -447,11 +499,19 @@ Square.prototype.build = function () {
     this.setBuildProgress(this.buildProgress + 1);
 };
 
+/**
+ * Sell a house on property
+ * @param {number} buildProgress: buildProgress after selling a house
+ * @param {number} rent: rent after selling a house
+ */
 Square.prototype.sell = function (buildProgress, rent) {
     this.setBuildProgress(buildProgress);
     this.setRent(rent);
 };
 
+/**
+ * Show the detail of this Square to the detail pane in HTML
+ */
 Square.prototype.showDetail = function () {
     ViewController.currentSelectedSquare = this.id;
     var squareName = ViewController.tableName[this.id];
@@ -610,6 +670,9 @@ Player.prototype.initPlayer = function (money) {
     return this;
 };
 
+////////////////
+// Callbacks //
+///////////////
 Player.prototype.onGoPassed = defaultCallback;
 
 Player.prototype.onPositionChange = defaultCallback;
@@ -620,6 +683,9 @@ Player.prototype.onJailChange = defaultCallback;
 
 Player.prototype.onCardChange = defaultCallback;
 
+//////////////
+// Setters //
+/////////////
 Player.prototype.setPosition = function (pos) {
     var prev = this.position;
     this.position = pos;
@@ -639,7 +705,7 @@ Player.prototype.setMoney = function (money) {
 };
 
 /**
- * Change balance by amount
+ * Change the balance of this player by amount
  * @param {number} amount
  */
 Player.prototype.changeMoney = function (amount) {

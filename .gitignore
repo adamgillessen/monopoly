@@ -2,8 +2,9 @@
 /*/*.pyc
 /*/__pycache__
 /*/*.dat
-/Client/current_game_port
+
 # Client part
+/Client/current_game_port
 Client/test
 
 # General

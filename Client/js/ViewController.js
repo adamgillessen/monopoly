@@ -35,6 +35,9 @@ ViewController.createPlayers = function (num) {
     });
 };
 
+/**
+ * Add callback functions to events generated in Models.js
+ */
 ViewController.addCallbacksToEvents = function () {
     Player.prototype.onCardChange = function () {
         if (game.isThisClient(this.id)) {
@@ -111,7 +114,7 @@ ViewController.addCallbacksToEvents = function () {
 };
 
 /**
- * Add all callback functions to button here
+ * Add all callback functions to buttons
  */
 ViewController.addCallbacksToButtons = function () {
     $("#btn-roll").click(function () {
