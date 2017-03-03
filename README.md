@@ -16,6 +16,10 @@ Server - the server which will run the game for all clients
 Resources - assorted development information
 SystemTesting - scripts which test the overall functionality of the game
 
+## To run the game
+1. Read [README](Client/README.md) in Server folder
+2. Read [README](Server/README.md) in Client folder
+
 ## Todos:  
 1. Prepare the 4 minute presentation
 1. Do the group report
