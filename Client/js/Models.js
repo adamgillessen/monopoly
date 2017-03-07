@@ -9,7 +9,7 @@ var SQUARE_TYPE = {
     others: "Utility or transportation-square"
 };
 
-var FULL_BUILT_TIMES = 5;
+var MAX_HOUSES = 5;
 
 function defaultCallback() {
     console.log("Callback not implemented");
@@ -163,7 +163,7 @@ Board.prototype.canBuildHouse = function (propertyID) {
     // All properties are evenly built, so you can build new one on top of them
     if (selectSquareModel(properties[iHigh]).buildProgress === selectSquareModel(properties[iLow]).buildProgress) {
         // 5 max houses allowed
-        return selectSquareModel(propertyID).buildProgress !== FULL_BUILT_TIMES;
+        return selectSquareModel(propertyID).buildProgress !== MAX_HOUSES;
     }
 
     // Not evenly built, you can only build on lower one
