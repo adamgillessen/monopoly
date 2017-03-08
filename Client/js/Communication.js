@@ -68,8 +68,8 @@ Connector.prototype.sendMessage = function (msg) {
 
 
 /**
- * Parse message that received from server and do actions
- * @param {Object|string} data: could be JSON object or JSON string
+ * Parse message that received from server and respond to it
+ * @param {Object|string} data: object converted from JSON message
  */
 function parseMessage(data) {
     if (parseMessage._parseTree === undefined) {
@@ -463,8 +463,7 @@ function parseMessage(data) {
     try {
         (parseMessage._parseTree[data["type"]])(data);
     } catch (e) {
-        console.log(e);
-        console.log(data);
+        console.log(e, data);
     }
 }
 
@@ -499,9 +498,9 @@ function _generateHeader(type, include) {
 
 /**
  * Generate messages, given type and parameter to be included in the message
- * @param {string} type: type of this message, must be one of the predefined messages
+ * @param {string} type: type of this message, must be one of the pre-defined message types
  * @param {Object|null} parameter: Array of parameter to be added to message, or null for no additional parameter
- * @returns {*} message object to be sent to server
+ * @returns {*} message object to be sent to server, should be the same as defined inside the "Message Format" folder
  */
 function generateMessage(type, parameter) {
     generateMessage._messageTree = {

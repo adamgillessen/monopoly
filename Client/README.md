@@ -9,6 +9,7 @@ This is the ReadMe for Client-side
 2. [Documentation](#2)
    1. [What does each file do](#2-1)
    2. [Principle of JavaScript](#2-2)
+   3. How to co-op with other groups' servers?
 
 --
 
@@ -50,4 +51,13 @@ In this project, there are two main sources of events:
 |     User inputs      | [`js/ViewController.js`](js/ViewController.js) > `addCallbacksToButtons` |
 | Messages from server | [`js/Communication.js`](js/Communication.js) > `parseMessage` |
 
-If you want to change some codes so it receive messages from your server, just modify the codes inside [`js/Communication.js`](js/Communication.js)
+### <a name="2-3"></a>3. How to co-op with other groups servers?
+
+I think there are 2 main obstacles for this thing:  
+1. Technology used to communicate _(We are using WebSocket)_  
+2. Message format for the communication _(We are using JSON and you can have a look at all the formats under the [/Resources/Message Format](../Resources/Message Format)_  
+
+So all we should do to make our games running with each other, is to adapt that two things. 
+
+The codes related to this two thing can be located inside [`js/Communication.js`](js/Communication.js) 
+So it should be enough to just modify the codes inside [`js/Communication.js`](js/Communication.js) 
