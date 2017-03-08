@@ -15,6 +15,6 @@ This game requires 2 servers both up and running to run the game.
 By default it runs on localhost:4444
 
 2. Run the built-in HTTP server for Python:  
-__Important: Make sure the working directory is under `[this repo]/Client/` before running the HTTP Server__  
-`python -m SimpleHTTPServer`  
+__Important: Navigate to the client directory (the folder with index.html, `[this repo]/Client/`) before running the HTTP Server__  
+`python -m http.server`  
 By default it runs on [localhost:8000](http://localhost:8000)
