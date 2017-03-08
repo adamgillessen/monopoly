@@ -9,7 +9,7 @@ This is the ReadMe for Client-side
 2. [Documentation](#2)
    1. [What does each file do](#2-1)
    2. [Principle of JavaScript](#2-2)
-   3. How to co-op with other groups' servers?
+   3. [How to co-op with other groups' servers?](#2-3)
 
 --
 
