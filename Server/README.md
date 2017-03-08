@@ -16,5 +16,5 @@ By default it runs on localhost:4444
 
 2. Run the built-in HTTP server for Python:  
 __Important: Navigate to the client directory (the folder with index.html, `[this repo]/Client/`) before running the HTTP Server__  
-`python -m http.server`  
+`python3 -m http.server`  
 By default it runs on [localhost:8000](http://localhost:8000)
