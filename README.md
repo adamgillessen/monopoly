@@ -34,3 +34,7 @@ SystemTesting - scripts which test the overall functionality of the game
 
 ## Final Report
 * [Write-up](https://docs.google.com/document/d/19WGIrSw-Pm5zk986Lz-UPBpR5XaNI3y2i7Df_mHkAok/edit?usp=sharing)
+
+## Slides
+
+* [Slides](https://docs.google.com/presentation/d/1ysOxpobpePZIZkWvBsyyX5Nknh06SJ2CxLj-sd87LUc/edit?usp=sharing)
