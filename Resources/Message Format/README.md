@@ -1,37 +1,59 @@
 ### Client -> Server
-ID is odd number
 
-|  ID  |       type       |
-| :--: | :--------------: |
-|  1   |   player_join    |
-|  3   |       roll       |
-|  5   |     end_turn     |
-|  7   |       buy        |
-|  9   | start\_game\_now |
-|  11  |     auction      |
-|  13  |   auction\_bid   |
-|  15  |       chat       |
-|  17  |   build\_house   |
-|19|pay\_bail|
-|21|mortgage_property|
-
-------
+player_join    
+roll       
+end_turn     
+buy        
+start\_game\_now 
+auction      
+auction\_bid   
+chat       
+build\_house   
+pay\_bail
+mortgage_property
 
 ### Server -> Client
-ID is even number
 
-|  ID  |       type        | broadcast |
-| :--: | :---------------: | :-------: |
-|  2   | player\_join\_ack |    yes    |
-|  4   |    board_sync     |    yes    |
-|  6   |    your\_turn     |    yes    |
-|  8   |   roll\_result    |    yes    |
-|  10  |      buy_ack      |    yes    |
-|  12  |   auction_start   |    yes    |
-|  14  | auction\_bid\_ack |    yes    |
-|  16  | auction\_finished |    yes    |
-|  18  |    chat\_sync     |    yes    |
-|  20  |   player\_lose    |    yes    |
-|  22  |  textual\_update   |    yes    |
-|  24  |    build\_ack     |    yes    |
-|26|mortgage\_property\_ack|yes|
+player\_join\_ack
+board_sync    
+your\_turn    
+roll\_result   
+buy_ack     
+auction_start  
+auction\_bid\_ack
+auction\_finished
+chat\_sync    
+player\_lose   
+textual\_update  
+build\_ack    
+mortgage\_property\_ack
+
+-------
+
+# Time Sequence Diagrams
+
+These have been completed using [draw.io](http://draw.io)
+
+### General Flow of Game:
+![Game Flow](./../Message\ Format/images/take_turn.png)
+
+### Buying and Auctioning Property:
+![Buy Auction](./../Message\ Format/images/buy_auction.png)
+
+### Building Houses on Property:
+![Building Houses](./../Message\ Format/images/build_house.png)
+
+### Mortgaging Property;
+![Mortgage Property](./../Message\ Format/images/mortgage_property.png)
+
+### Getting Out of Jail:
+![Leave Jail](./../Message\ Format/images/leave_jail.png)
+
+### In Game Chat:
+![Chat](./../Message\ Format/images/player_chat.png)
+
+### Special Textual Updates:
+![Text](./../Message\ Format/images/textual_update.png)
+
+### When a Player Loses:
+![Lose](./../Message\ Format/images/player_lose.png)
